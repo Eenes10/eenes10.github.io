@@ -124,9 +124,6 @@ p { color: var(--text-muted); }
     width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
     border: 2px solid var(--neon-main-color);
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
-    cursor: pointer; /* Tıklanabilir olduğunu belli eder */
-    /* Animasyonları kaldırıyoruz */
-    transition: box-shadow 0.3s ease; 
 }
 
 /* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
@@ -224,91 +221,3 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 /* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
-
-/* --- YENİ: DISCO TEMASI (SADECE GÖRSEL) --- */
-.disco-theme {
-    /* Ana Renk Değişimleri */
-    --bg-color: #000000;
-    --card-color: rgba(50, 0, 50, 0.7);
-    --text-color: #fce4ec; /* Açık Pembe */
-    --text-muted: #b39ddb; /* Mor-Pembe */
-    --nav-bg: rgba(0, 0, 0, 0.9);
-    --border-color: rgba(255, 0, 255, 0.5);
-    
-    /* Neon Renkleri */
-    --disco-glow-1: #ff00ff; /* Pembe */
-    --disco-glow-2: #00ffff; /* Turkuaz */
-    --disco-glow-3: #ff0000; /* Kırmızı */
-}
-
-/* Genel Vücut (Body) için Disko Tema Efektleri */
-.disco-theme {
-    background: repeating-linear-gradient(45deg, #000000 0%, #1a001a 5%, #000000 10%);
-    background-size: 400% 400%;
-    animation: gradient-animation 10s ease-in-out infinite; 
-    position: relative;
-    overflow: hidden; 
-}
-
-/* Disco Ortam Işıkları (Basitleştirildi) */
-.disco-theme body::before,
-.disco-theme body::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: -1;
-    mix-blend-mode: overlay; 
-    opacity: 0.5;
-    background: radial-gradient(circle at top left, var(--disco-glow-1) 0%, transparent 50%),
-                radial-gradient(circle at bottom right, var(--disco-glow-2) 0%, transparent 50%);
-    animation: disco-light-spread 10s infinite alternate;
-}
-.disco-theme body::after {
-    background: radial-gradient(circle at top right, var(--disco-glow-3) 0%, transparent 50%),
-                radial-gradient(circle at bottom left, var(--disco-glow-1) 0%, transparent 50%);
-    animation-delay: 5s;
-}
-
-
-/* Başlıklar ve diğer önemli metinler için daha belirgin disko parlama */
-.disco-theme h1, .disco-theme h2, .disco-theme .highlight, .disco-theme .logo {
-    animation: disco-text-glow 0.8s infinite alternate; 
-    -webkit-text-fill-color: var(--text-color);
-    text-shadow: 0 0 15px var(--disco-glow-1), 0 0 25px var(--disco-glow-2); 
-    background: none; 
-}
-
-/* Profil Resmine Tekrar Parlama Efekti */
-.disco-theme .profile-pic {
-    border: 2px solid var(--disco-glow-1);
-    box-shadow: 0 0 25px var(--disco-glow-1), 0 0 50px var(--disco-glow-2);
-    /* Artık dönmeyecek */
-    animation: none; 
-}
-
-/* Linkler ve Butonlar için Neon Efekti */
-.disco-theme .nav-links a:not(.active), .disco-theme .github-link, .disco-theme #theme-toggle {
-    color: var(--text-color) !important;
-    text-shadow: 0 0 15px var(--disco-glow-1), 0 0 25px var(--disco-glow-2); 
-    transition: all 0.2s ease;
-}
-.disco-theme .nav-links a:hover, .disco-theme .github-link:hover, .disco-theme #theme-toggle:hover {
-    color: var(--disco-glow-3) !important;
-    text-shadow: 0 0 25px var(--disco-glow-3), 0 0 50px var(--disco-glow-2);
-}
-
-/* --- DISCO ÖZEL KEYFRAMES (Basitleştirildi) --- */
-
-@keyframes disco-text-glow {
-    0% { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; color: #ff00ff; }
-    33% { text-shadow: 0 0 15px #00ffff, 0 0 25px #ff0000; color: #00ffff; }
-    66% { text-shadow: 0 0 15px #ff0000, 0 0 25px #ff00ff; color: #ff0000; }
-    100% { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; color: #ff00ff; }
-}
-
-@keyframes disco-light-spread {
-    0% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.2); opacity: 0.7; }
-    100% { transform: scale(1); opacity: 0.5; }
-}
