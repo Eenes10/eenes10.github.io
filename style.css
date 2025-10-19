@@ -156,7 +156,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
     position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; 
     background: var(--accent-gradient); background-size: 200% 200%;
     animation: gradient-animation 4s ease infinite; box-shadow: 0 0 15px var(--neon-main-color);
-    transition: width 0.3s ease-in-out; 
+    transition: width 0.4s ease-in-out; 
 }
 .nav-loader.loading { width: 100%; }
 
@@ -192,10 +192,6 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
     /* Menü Açıkken */
     .nav-active { transform: translateX(0%); }
-
-    /* Burger Menü İkonunu Göster */
-    .burger { display: block; z-index: 101; cursor: pointer; }
-    .burger div { width: 25px; height: 3px; background-color: var(--text-color); margin: 5px; transition: all 0.3s ease; }
 
     /* Burger Menü Animasyonu (X şekli) */
     .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
