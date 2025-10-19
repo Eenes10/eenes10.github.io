@@ -1,4 +1,4 @@
-/* --- HAREKETLİ ALTIN TEMA v3 (TÜM ELEMENTLER NEON) --- */
+/* --- YENİ TEMA: DOĞAL & SAKİN (TOPRAK TONLARI VE TURUNCU VURGU) --- */
 
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
@@ -7,29 +7,29 @@
 }
 
 :root {
-    /* DARK TEMA (VARSAYILAN) */
-    --bg-color: #111111;
-    --card-color: rgba(24, 24, 27, 0.7);
-    --text-color: #e2e8f0;
-    --text-muted: #94a3b8;
-    --accent-gradient: linear-gradient(60deg, #fffc7f, #ffffff, #fffc7f, #fffc7f); /* Altın Gradient */
-    --nav-bg: rgba(17, 17, 17, 0.9);
+    /* DARK TEMA (VARSAYILAN): Koyu Kahve/Gri ve Canlı Turuncu Vurgu */
+    --bg-color: #2B2824; /* Koyu Kahverengi/Gri */
+    --card-color: rgba(58, 54, 49, 0.7); /* Kart/Bölüm rengi: #3A3631'in transparan hali */
+    --text-color: #F0EFEA; /* Hafif Açık Bej */
+    --text-muted: #D3CACA; /* Daha koyu bej/gri tonu */
+    --accent-gradient: linear-gradient(60deg, #FF8C42, #FFC142, #FF8C42, #FF8C42); /* Canlı Turuncu Gradient */
+    --nav-bg: rgba(43, 40, 36, 0.9); /* Arka planın hafif transparan hali */
     --border-color: rgba(255, 255, 255, 0.1);
-    --neon-main-color: #ffffff; /* Altın */
-    --neon-glow-color: #fffc7f;  /* Parlak Sarı */
+    --neon-main-color: #FF8C42;  /* Canlı Turuncu */
+    --neon-glow-color: #FFC142;  /* Daha açık turuncu parlama rengi */
 }
 
-/* LIGHT TEMA */
+/* LIGHT TEMA: Krem ve Yanık Turuncu Vurgu */
 body.light-theme {
-    --bg-color: #f3f4f6;
-    --card-color: rgba(255, 255, 255, 0.8);
-    --text-color: #1f2937;
-    --text-muted: #4b5563;
-    --accent-gradient: linear-gradient(60deg, #ff9900, #ffcc00, #ff9900, #ff9900); /* Parlak Turuncu Gradient */
-    --nav-bg: rgba(255, 255, 255, 0.9);
+    --bg-color: #FFF8F3; /* Kirli Beyaz/Krem */
+    --card-color: rgba(245, 239, 234, 0.8); /* Kart/Bölüm rengi: #F5EFEA'nın transparan hali */
+    --text-color: #4A4540; /* Koyu Kahve */
+    --text-muted: #7A7066; /* Orta Kahve/Gri tonu */
+    --accent-gradient: linear-gradient(60deg, #D95300, #FF7B3B, #D95300, #D95300); /* Yanık Turuncu Gradient */
+    --nav-bg: rgba(255, 248, 243, 0.9); /* Arka planın hafif transparan hali */
     --border-color: rgba(0, 0, 0, 0.1);
-    --neon-main-color: #ff9900; 
-    --neon-glow-color: #ffcc00; 
+    --neon-main-color: #D95300; 
+    --neon-glow-color: #FF7B3B; 
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
