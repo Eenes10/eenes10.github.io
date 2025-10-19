@@ -1,4 +1,4 @@
-// --- YENİ VE TAMAMEN GÜNCELLENMİŞ SCRIPT.JS (Giscus Tema Desteği ve İkonlar Eklendi) ---
+// --- SCRIPT.JS (SON HALİ) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -11,21 +11,26 @@ const navSlide = () => {
         nav.classList.toggle('nav-active');
         burger.classList.toggle('toggle');
         
+        // Linklerin tek tek kayma animasyonu
         navLinks.forEach((link, index) => {
             if (nav.classList.contains('nav-active')) {
                 link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
             } else {
+                // Menü kapanırken animasyonu sıfırla
                 link.style.animation = '';
             }
         });
     });
 
-    // Mobil Menü Linkine Tıklayınca Kapatma
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
     navLinks.forEach(li => {
         li.querySelector('a').addEventListener('click', () => {
             if (nav.classList.contains('nav-active')) {
+                // Menüyü kapat
                 nav.classList.remove('nav-active');
+                // Burger ikonunu düzelt
                 burger.classList.remove('toggle');
+                // Animasyonları sıfırla (sayfa geçişi ile birlikte)
                 navLinks.forEach(link => link.style.animation = '');
             }
         });
@@ -44,8 +49,10 @@ const pageTransition = () => {
         link.addEventListener('click', (e) => {
             const url = link.href;
             
+            // # (sayfa içi link) veya _blank (yeni sekme) veya Ctrl/Meta tuşlarıyla açılmasını engelleme
             if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
             
+            // Aynı domain içindeki farklı bir sayfaya yönlendirme kontrolü
             if (url.startsWith(window.location.origin) && url !== window.location.href) {
                 e.preventDefault();
 
@@ -62,13 +69,16 @@ const pageTransition = () => {
     });
 };
 
-// YENİ FONKSİYON: Giscus'a Tema Değişikliğini Bildirme
+// Giscus'a Tema Değişikliğini Bildirme
 const setGiscusTheme = (theme) => {
+    // Giscus için temaları Dark temada 'dark', Light temada 'light' olarak kullanacağız.
     const giscusTheme = theme === 'light' ? 'light' : 'dark';
     
+    // Giscus iframe'ini bul
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
 
+    // iframe'e tema değişikliğini bildir
     iframe.contentWindow.postMessage(
         { giscus: { setConfig: { theme: giscusTheme } } },
         'https://giscus.app'
@@ -91,8 +101,9 @@ const themeHandler = () => {
         body.classList.remove('light-theme');
     }
 
-    // İlk yüklemede Giscus temasını ayarla
-    setGiscusTheme(currentTheme);
+    // İlk yüklemede Giscus temasını ayarla (Yorumlar sayfası varsa)
+    // Küçük bir gecikme eklemek, Giscus iframe'inin yüklenmesine izin verir
+    setTimeout(() => setGiscusTheme(currentTheme), 500); 
 
 
     // 2. Buton tıklama olayını dinle
@@ -100,6 +111,7 @@ const themeHandler = () => {
         toggleButton.addEventListener('click', () => {
             body.classList.toggle('light-theme');
             
+            // Temayı localStorage'a kaydet
             const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
             localStorage.setItem('theme', newTheme);
             
@@ -110,7 +122,7 @@ const themeHandler = () => {
 };
 
 
-// Proje çekme fonksiyonu (Mevcut kodunuz - eğer kullanıyorsanız)
+// Proje çekme fonksiyonu (Eğer kullanılıyorsa)
 async function fetchGitHubProjects() {
     const projectGrid = document.querySelector('.project-grid');
     if (!projectGrid) return;
@@ -185,5 +197,5 @@ document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
-    // fetchGitHubProjects(); // Projeler sayfanız yoksa bu yorumda kalabilir.
+    // fetchGitHubProjects(); // Eğer projeler sayfanız yoksa bu yorumda kalabilir.
 });
