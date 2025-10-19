@@ -82,33 +82,16 @@ const setGiscusTheme = (theme) => {
     );
 }
 
-// Disko topu elementini oluşturan fonksiyon
-const createDiscoBall = () => {
-    const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-    if (existingDiscoBall) return existingDiscoBall; // Zaten varsa tekrar oluşturma
-
-    const discoBall = document.createElement('div');
-    discoBall.id = 'dynamic-disco-ball';
-    discoBall.classList.add('disco-ball');
-    return discoBall;
-};
-
-// --- GÜNCEL: DISCO THEME HİLE KODU (Tema Geri Dönüşü Düzeltildi) ---
+// --- GÜNCEL: DISCO THEME HİLE KODU (Müzik ve Disko Topu Kaldırıldı) ---
 const discoHandler = () => {
-    const profilePic = document.querySelector('.profile-pic'); // Mevcut profil resmi
-    const aboutContainer = document.querySelector('.about-container'); // Profil resminin parent'ı
+    const profilePic = document.querySelector('.profile-pic');
     const body = document.body;
     let clickCount = 0;
     let discoTimeout;
     
-    const discoMusic = document.getElementById('disco-music');
+    if (!profilePic) return;
 
-    if (!profilePic || !aboutContainer) return;
-
-    // Disko topunun tıklama olayını burada tanımlıyoruz
-    profilePic.addEventListener('click', (e) => {
-        // 3 kez tıklama mantığı
-        
+    profilePic.addEventListener('click', () => {
         clickCount++;
         clearTimeout(discoTimeout);
 
@@ -125,24 +108,10 @@ const discoHandler = () => {
                 // Önceki temayı kaydet (Light/Dark)
                 localStorage.setItem('disco-previous-theme', previousTheme); 
                 
-                body.classList.remove('light-theme'); // Disco tema her zaman siyah tabanlıdır
+                body.classList.remove('light-theme'); // Disco tema siyah tabanlıdır
                 localStorage.setItem('theme', 'disco');
-                setGiscusTheme('dark_dimmed');
+                setGiscusTheme('dark_dimmed'); // Giscus'u Dark'a çek
 
-                // MÜZİĞİ BAŞLAT
-                if (discoMusic) {
-                    discoMusic.play().catch(error => {
-                        console.error("Müzik otomatik oynatılırken hata oluştu. Kullanıcı etkileşimi gerekebilir:", error);
-                    });
-                }
-
-                // Profil resmini gizle ve disko topunu ekle
-                profilePic.style.display = 'none';
-                const discoBall = createDiscoBall();
-                aboutContainer.prepend(discoBall);
-                // Disko topuna 3 kez tıklayınca kapanma özelliğini ekle
-                discoBall.addEventListener('click', profilePic.click);
-                
             } else {
                 // Disco modu KAPANDI
                 
@@ -150,32 +119,19 @@ const discoHandler = () => {
                 const originalTheme = localStorage.getItem('disco-previous-theme') || 'dark';
                 
                 localStorage.setItem('theme', originalTheme);
-                localStorage.removeItem('disco-previous-theme'); // Temizle
+                localStorage.removeItem('disco-previous-theme');
                 
-                // Eğer önceki tema light ise, light-theme sınıfını ekle
+                // Light ise Light'a, Dark ise Dark'a geri dön
                 if (originalTheme === 'light') {
                     body.classList.add('light-theme');
-                    setGiscusTheme('light'); // Giscus'u Light'a çek
+                    setGiscusTheme('light'); 
                 } else {
                     body.classList.remove('light-theme');
-                    setGiscusTheme('dark_dimmed'); // Giscus'u Dark'a çek
-                }
-                
-                // MÜZİĞİ DURDUR
-                if (discoMusic) {
-                    discoMusic.pause();
-                    discoMusic.currentTime = 0; // Başa sar
-                }
-
-                // Disko topunu kaldır ve profil resmini göster
-                profilePic.style.display = 'block';
-                const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-                if (existingDiscoBall) {
-                    existingDiscoBall.remove();
+                    setGiscusTheme('dark_dimmed');
                 }
             }
 
-            clickCount = 0; // 3. tıklamadan sonra sayacı sıfırla
+            clickCount = 0; // Sayacı sıfırla
 
         } else {
             discoTimeout = setTimeout(() => {
@@ -184,15 +140,10 @@ const discoHandler = () => {
         }
     });
 
-    // Sayfa yüklendiğinde disko temasını kontrol et ve disko topunu göster/gizle
+    // Sayfa yüklendiğinde disko temasını kontrol et
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'disco') {
         body.classList.add('disco-theme');
-        profilePic.style.display = 'none';
-        const discoBall = createDiscoBall();
-        aboutContainer.prepend(discoBall);
-        // Tıklama olayını buraya da eklemeyi unutma
-        discoBall.addEventListener('click', profilePic.click);
     }
 };
 
@@ -200,42 +151,25 @@ const discoHandler = () => {
 const themeHandler = () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
-    const profilePic = document.querySelector('.profile-pic');
-    const aboutContainer = document.querySelector('.about-container');
 
     // 1. Kayıtlı temayı yükle
     const savedTheme = localStorage.getItem('theme');
     let currentTheme = 'dark';
     
-    // Disko teması daha öncelikli
+    // Disko teması kontrolü
     if (savedTheme === 'disco') {
         body.classList.add('disco-theme');
-        currentTheme = 'dark_dimmed'; // Giscus için dark
-        // Disko teması açıldığında profil resmini gizle ve disko topunu ekle
-        if (profilePic && aboutContainer) {
-            profilePic.style.display = 'none';
-            // createDiscoBall() fonksiyonunu çağırıp prepend yap
-            const discoBall = document.getElementById('dynamic-disco-ball') || createDiscoBall();
-            aboutContainer.prepend(discoBall);
-        }
+        currentTheme = 'dark_dimmed'; 
     } 
     // Light teması kontrolü
     else if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
         body.classList.add('light-theme');
         currentTheme = 'light';
-        // Varsayılan tema (dark) veya disco modu yoksa profil resmini göster
-        if (profilePic) profilePic.style.display = 'block';
-        const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-        if (existingDiscoBall) existingDiscoBall.remove();
     } 
     // Dark tema (varsayılan)
     else {
         body.classList.remove('light-theme');
         currentTheme = 'dark_dimmed';
-        // Varsayılan tema (dark) veya disco modu yoksa profil resmini göster
-        if (profilePic) profilePic.style.display = 'block';
-        const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-        if (existingDiscoBall) existingDiscoBall.remove();
     }
 
     // İlk yüklemede Giscus temasını ayarla
@@ -248,8 +182,6 @@ const themeHandler = () => {
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
             const body = document.body;
-            const discoMusic = document.getElementById('disco-music');
-            const profilePic = document.querySelector('.profile-pic');
             
             // EĞER DISCO MODU AÇIKSA: Tema butonu ona basınca önceki moda döner
             if (body.classList.contains('disco-theme')) {
@@ -258,7 +190,7 @@ const themeHandler = () => {
                 
                 body.classList.remove('disco-theme');
                 localStorage.setItem('theme', originalTheme);
-                localStorage.removeItem('disco-previous-theme'); // Temizle
+                localStorage.removeItem('disco-previous-theme');
                 
                 // Önceki temaya geri dön (Light ise Light'a, Dark ise Dark'a)
                 if (originalTheme === 'light') {
@@ -268,12 +200,6 @@ const themeHandler = () => {
                     body.classList.remove('light-theme');
                     setGiscusTheme('dark_dimmed');
                 }
-                
-                // MÜZİĞİ DURDUR ve Topu Kaldır
-                if (discoMusic) { discoMusic.pause(); discoMusic.currentTime = 0; }
-                if (profilePic) profilePic.style.display = 'block';
-                const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-                if (existingDiscoBall) existingDiscoBall.remove();
                 
                 return; 
             }
@@ -286,11 +212,6 @@ const themeHandler = () => {
             
             // Tema değiştiğinde Giscus'a bildir
             setGiscusTheme(newTheme);
-
-            // Light/Dark moda geçildiğinde disko topunu kaldır, profil resmini görünür yap
-            if (profilePic) profilePic.style.display = 'block';
-            const existingDiscoBall = document.getElementById('dynamic-disco-ball');
-            if (existingDiscoBall) existingDiscoBall.remove();
         });
     }
 };
