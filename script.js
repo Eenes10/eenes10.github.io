@@ -7,19 +7,27 @@ const navSlide = () => {
     if (!burger || !nav) return;
     const navLinks = nav.querySelectorAll('li');
     burger.addEventListener('click', () => {
+        // Menü geçişini yap
         nav.classList.toggle('nav-active');
+        
+        // Link animasyonlarını uygula
         navLinks.forEach((link, index) => {
-            link.style.animation ? link.style.animation = '' : link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+            if (link.style.animation) {
+                link.style.animation = '';
+            } else {
+                link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+            }
         });
+        
+        // Burger ikonunu X şekline dönüştür
         burger.classList.toggle('toggle');
     });
 };
 
-// script.js dosyasındaki bu fonksiyonu GÜNCELLE
-
+// Sayfa geçiş animasyonu
 const pageTransition = () => {
     const body = document.querySelector('body');
-    const navLoader = document.querySelector('.nav-loader'); // Yüklenme çubuğunu seç
+    const navLoader = document.querySelector('.nav-loader'); 
 
     body.classList.remove('fade-out');
     const allLinks = document.querySelectorAll('a');
@@ -27,8 +35,11 @@ const pageTransition = () => {
     allLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const url = link.href;
+            
+            // Eğer link sayfa içi, yeni sekme veya Ctrl/Cmd ile açılıyorsa atla
             if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
             
+            // Eğer link aynı etki alanındaysa (internal link)
             if (url.startsWith(window.location.origin) && url !== window.location.href) {
                 e.preventDefault();
 
@@ -38,7 +49,7 @@ const pageTransition = () => {
                 }
                 body.classList.add('fade-out'); // Sayfayı karart
                 
-                // Animasyonlar bittikten sonra yeni sayfaya git (400ms)
+                // Animasyonlar bittikten sonra yeni sayfaya git (400ms CSS geçiş süresi)
                 setTimeout(() => {
                     window.location.href = url;
                 }, 400);
@@ -47,7 +58,7 @@ const pageTransition = () => {
     });
 };
 
-// Tema değiştirme fonksiyonu
+// Tema değiştirme fonksiyonu (Mevcut kodunuzdan alındı)
 const themeHandler = () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
@@ -60,7 +71,7 @@ const themeHandler = () => {
     });
 };
 
-// GitHub projelerini çekme fonksiyonu
+// GitHub projelerini çekme fonksiyonu (Mevcut kodunuzdan alındı)
 async function fetchGitHubProjects() {
     const projectGrid = document.querySelector('.project-grid');
     if (!projectGrid) return;
@@ -130,7 +141,7 @@ async function fetchGitHubProjects() {
     }
 }
 
-// --- EKSİK OLAN VE EKLENEN KISIM BURASI ---
+// Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
     navSlide();
     pageTransition();
