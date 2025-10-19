@@ -57,60 +57,60 @@ const pageTransition = () => {
     });
 };
 
-// Tema değiştirme fonksiyonu (SON GÜNCELLEME: AMPUL İLE GEÇİŞ)
+// Tema değiştirme fonksiyonu (GÜVENİLİRLİK İYİLEŞTİRMESİ)
 const themeHandler = () => {
-    const lightSwitchContainer = document.getElementById('light-pull-switch'); // İpe tıklama alanı
+    const lightSwitchContainer = document.getElementById('light-pull-switch'); 
     const lightBulb = document.getElementById('light-bulb');
     const body = document.body;
     if (!lightSwitchContainer || !lightBulb) return;
 
-    // 1. Kayıtlı temayı yükle ve ampul durumunu ayarla
+    // Başlangıç temasını yükle
     const savedTheme = localStorage.getItem('theme');
     let isLightTheme = false;
 
-    // Sistem tercihi veya kayıtlı tema 'light' ise açık tema ile başla
     if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
         body.classList.add('light-theme');
-        lightBulb.classList.add('on'); // Ampulün başta açık olması
+        lightBulb.classList.add('on'); 
         isLightTheme = true;
     } else {
         body.classList.remove('light-theme');
-        lightBulb.classList.remove('on'); // Ampulün başta kapalı olması
+        lightBulb.classList.remove('on'); 
         isLightTheme = false;
     }
     
     lightSwitchContainer.addEventListener('click', () => {
-        // Eğer zaten geçiş yapılıyorsa tekrar tıklamayı engelle
+        // Hızlı tıklamaları engellemek için kontrol
         if (body.classList.contains('theme-transitioning')) return; 
 
-        // 1. İp çekme animasyonunu tetikle
+        // 1. İp çekme animasyonunu tetikle (CSS ile 200ms)
         lightSwitchContainer.classList.add('pulled');
         setTimeout(() => {
             lightSwitchContainer.classList.remove('pulled');
-        }, 200); // Animasyon süresi (CSS ile uyumlu)
+        }, 200); 
 
-        // 2. Temanın değişeceği anı bekleyen flaş animasyonunu başlat
+        // 2. Flaş animasyonunu başlat ve engellemeyi etkinleştir
         body.classList.add('theme-transitioning');
         
-        const transitionDuration = 300; // CSS animasyon süresiyle aynı olmalı (0.3s)
+        // Tema değişimini flaşın tam ortasında (100ms) yap
+        const flashPoint = 100; 
         
         setTimeout(() => {
-            // Temayı değiştir
+            // Tema ve ampul değişimini yap
             body.classList.toggle('light-theme');
             isLightTheme = body.classList.contains('light-theme');
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
             
-            // Ampulün görünümünü güncelle
-            if (isLightTheme) {
-                lightBulb.classList.add('on');
-            } else {
-                lightBulb.classList.remove('on');
-            }
-            
-            // Geçiş sınıfını kaldır
+            lightBulb.classList.toggle('on');
+        }, flashPoint);
+        
+        // Flaş animasyonu ve hızlı tıklama engelleme süresi (400ms)
+        // Animasyon bittikten sonra bir süre daha engellemek, PC ve mobil güvenilirliğini artırır.
+        const blockDuration = 400; 
+        
+        // Engellemeyi kaldır
+        setTimeout(() => {
             body.classList.remove('theme-transitioning');
-            
-        }, transitionDuration); 
+        }, blockDuration); 
     });
 };
 
@@ -140,7 +140,7 @@ async function fetchGitHubProjects() {
     const projectGrid = document.querySelector('.project-grid');
     if (!projectGrid) return;
 
-    const githubUsername = "Tentex1"; // Kendi GitHub kullanıcı adınızla değiştirin
+    const githubUsername = "Tentex1"; 
     const apiUrl = `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`;
 
     const languageColors = {
@@ -212,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); 
     displayRandomTip(); 
 
-    // Sadece Projeler sayfasındaysak fetchGitHubProjects'i çağır
     if (window.location.pathname.includes('projeler.html')) {
         fetchGitHubProjects();
     }
