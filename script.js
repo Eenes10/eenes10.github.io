@@ -63,7 +63,7 @@ const pageTransition = () => {
                 
                 setTimeout(() => {
                     window.location.href = url;
-                }, 300); 
+                }, 600); // <-- Süre 600ms (0.6s) olarak güncellendi
             }
         });
     });
@@ -71,7 +71,8 @@ const pageTransition = () => {
 
 // Giscus'a Tema Değişikliğin Bildirme
 const setGiscusTheme = (theme) => {
-    const giscusTheme = theme === 'light' ? 'light' : 'dark';
+    // Soft temaya uygun olarak Giscus temaları güncellendi
+    const giscusTheme = theme === 'light' ? 'light' : 'dark_dimmed'; 
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
 
