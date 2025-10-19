@@ -61,12 +61,12 @@ body {
 /* --- TEMA GEÇİŞ ANİMASYONU (FLAŞ) --- */
 @keyframes theme-flash {
     0% { opacity: 1; }
-    50% { opacity: 0.1; } 
+    50% { opacity: 0; } /* Temanın değiştiği an */
     100% { opacity: 1; }
 }
 
 body.theme-transitioning {
-    animation: theme-flash 0.3s ease-in-out; 
+    animation: theme-flash 0.2s ease-in-out; /* 200ms'lik daha keskin bir flaş */
     transition: none !important; 
 }
 
@@ -128,14 +128,20 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     position: relative;
     top: -2px; 
     z-index: 3;
-    transition: background-color 0.3s ease, transform 0.1s ease-out; 
+    transition: background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease; 
 }
 
-/* İpi çekme animasyonu */
+/* YENİ: Çekme düğmesine hover efekti (Daha iyi etkileşim için) */
+.light-pull-switch:hover {
+    box-shadow: 0 0 5px var(--pull-switch-color);
+    transform: scale(1.1);
+}
+
+/* İpi çekme animasyonu (Daha belirgin hale getirildi) */
 @keyframes pull-cord {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(8px); } 
-    100% { transform: translateY(0); }
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(15px) scale(0.9); } 
+    100% { transform: translateY(0) scale(1); }
 }
 
 .light-pull-switch.pulled {
@@ -246,11 +252,14 @@ nav { position: fixed; }
     .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
     .nav-loader { display: block; }
 
-    /* Mobil görünümde ampulü daha küçük yap */
-    .light-switch-container { width: 25px; height: 40px; }
-    .light-bulb { font-size: 1.4rem; }
-    .light-cord { height: 12px; }
-    .light-pull-switch { width: 10px; height: 10px; }
+    /* Mobil görünümde ampul ve ipi daha kolay tıklanabilir ve görünür yap */
+    .light-switch-container {
+        width: 30px; 
+        height: 50px; /* Toplam boyutu artırıldı */
+    }
+    .light-bulb { font-size: 1.6rem; }
+    .light-cord { height: 20px; } 
+    .light-pull-switch { width: 15px; height: 15px; top: -5px; } /* Düğme büyütüldü */
 }
 
 @media screen and (min-width: 769px) {
