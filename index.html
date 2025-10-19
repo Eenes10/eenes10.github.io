@@ -1,33 +1,73 @@
-<nav>
-    <div class="nav-left">
-        <a href="index.html" class="logo">Enes</a>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">Ana Sayfa</a></li> 
-            <li><a href="hakkimda.html">Hakkımda</a></li>
-            <li><a href="projeler.html">Projeler</a></li>
-            <li><a href="yorumlar.html">Yorumlar</a></li>
-            <li><a href="iletisim.html">İletişim</a></li>
-        </ul>
-    </div>
-    
-    <div class="nav-actions">
-        <a href="https://github.com/Eenes10" target="_blank" class="github-link">
-            <i class="fab fa-github"></i>
-        </a>
-        
-        <div class="light-switch-container">
-            <div class="light-bulb" id="light-bulb">
-                <i class="fas fa-lightbulb"></i>
-            </div>
-            <div class="light-cord" id="light-cord"></div>
-            <div class="light-pull-switch" id="light-pull-switch"></div>
-        </div>
-        </div>
+<!DOCTYPE html>
+<html lang="tr">
 
-    <div class="burger">
-        <div class="line1"></div>
-        <div class="line2"></div>
-        <div class="line3"></div>
-    </div>
-    <div class="nav-loader"></div>
-</nav>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ana Sayfa | Enes</title>
+    <link rel="icon" href="./pp.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="fade-out">
+
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="index.html" class="logo">Enes</a>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="projeler.html">Projeler</a></li>
+                    <li><a href="yorumlar.html">Yorumlar</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="https://github.com/Eenes10" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                
+                <div class="light-switch-container">
+                    <div class="light-bulb" id="light-bulb">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="light-cord" id="light-cord"></div>
+                    <div class="light-pull-switch" id="light-pull-switch"></div>
+                </div>
+            </div>
+
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+            <div class="nav-loader"></div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="hero-text">
+                <h1>Merhaba, ben <span class="highlight">Enes</span></h1>
+                <p>15 yaşındayım ve hobi olarak kod yazıyorum.</p>
+                <p id="tip-of-the-day" style="font-size: 0.9em; margin-top: 15px; color: var(--neon-glow-color);"></p>
+                <a href="iletisim.html" class="btn">İletişime Geç</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Enes. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+
+</html>
