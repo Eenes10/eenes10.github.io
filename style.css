@@ -8,21 +8,21 @@
 }
 
 :root {
-    /* DARK TEMA (YUMUŞAK) */
-    --bg-color: #1a1a2e; /* Koyu Mavi/Mor */
-    --card-color: rgba(30, 30, 48, 0.8); /* Kart Arka Planı */
-    --text-color: #e4e6eb; /* Açık Gri Metin */
-    --text-muted: #a0a7b8; /* Soft Gri Metin */
-    --accent-color: #ff6a6a; /* Yumuşak Kırmızı/Mercan */
-    --nav-bg: rgba(26, 26, 46, 0.95);
+    /* DARK TEMA (YENİ: KOYU VE SAKİN MAVİ TONLARI) */
+    --bg-color: #0d1117; /* GitHub Dark Mavi/Gri Arka Plan */
+    --card-color: rgba(22, 27, 34, 0.8); /* Kart Arka Planı */
+    --text-color: #c9d1d9; /* Açık Gri Metin */
+    --text-muted: #8b949e; /* Soft Gri Metin */
+    --accent-color: #58a6ff; /* Soft Mavi Vurgu */
+    --nav-bg: rgba(13, 17, 23, 0.95);
     --border-color: rgba(255, 255, 255, 0.08);
-    --soft-glow: rgba(255, 106, 106, 0.6); /* Yumuşak Kırmızımsı Parlama */
+    --soft-glow: rgba(88, 166, 255, 0.4); /* Soft Mavi Parlama */
 
-    /* Sabit Accent Gradient (Soft) */
-    --accent-gradient: linear-gradient(60deg, #ff9966, #ff5e62); 
+    /* Sabit Accent Gradient (Soft Mavi) */
+    --accent-gradient: linear-gradient(60deg, #58a6ff, #2f81f7); 
 }
 
-/* LIGHT TEMA (YUMUŞAK) */
+/* LIGHT TEMA (KORUNDU) */
 body.light-theme {
     --bg-color: #f0f2f5; /* Çok Açık Gri Arka Plan */
     --card-color: rgba(255, 255, 255, 0.95);
@@ -33,7 +33,7 @@ body.light-theme {
     --border-color: rgba(0, 0, 0, 0.1);
     --soft-glow: rgba(0, 132, 255, 0.4); /* Yumuşak Mavi Parlama */
 
-    /* Sabit Accent Gradient (Soft) */
+    /* Sabit Accent Gradient (Soft Mavi) */
     --accent-gradient: linear-gradient(60deg, #00c6ff, #0072ff);
 }
 
@@ -136,6 +136,8 @@ body { transition: opacity 0.6s ease-in-out, background-color 0.5s ease, color 0
 
 
 section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: center; }
+/* Yorumlar sayfasına özel genişlik */
+#yorumlar { max-width: 800px; }
 
 
 /* BAŞLIKLAR VE VURGULAR (Softlaştırıldı) */
