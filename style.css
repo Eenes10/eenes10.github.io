@@ -1,4 +1,4 @@
-﻿/* --- HAREKETLİ ALTIN TEMA v3 (TÜM ELEMENTLER NEON) --- */
+/* --- HAREKETLİ ALTIN TEMA v3 (TÜM ELEMENTLER NEON) --- */
 
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
@@ -80,11 +80,11 @@ p { color: var(--text-muted); }
 }
 
 #hero p {
-    margin-bottom: 60px; /* Bu değeri artırarak butonu daha da aşağı alabilirsin */
+    margin-bottom: 60px; 
 }
 
 #hero .btn {
-    margin-top: 40px; /* Bu değeri artırarak daha da aşağı alabilirsin */
+    margin-top: 40px; 
 }
 
 .btn:hover {
@@ -101,7 +101,7 @@ p { color: var(--text-muted); }
     box-shadow: 0 0 25px rgba(247, 201, 110, 0.5);
 }
 
-/* --- PROJE BÖLÜMÜ --- */
+/* --- PROJE BÖLÜMÜ (Mevcut, değiştirilmedi) --- */
 .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
 .loading-message { width: 100%; text-align: center; color: var(--text-muted); }
 .project-card { background: var(--card-color); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; text-align: left; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
@@ -136,36 +136,129 @@ p { color: var(--text-muted); }
 .social-links a:hover { color: var(--neon-glow-color); text-shadow: 0 0 10px var(--neon-glow-color); transform: translateY(-5px); }
 footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
-/* --- MOBİL UYUMLULUK --- */
-.burger { display: none; cursor: pointer; }
-@media screen and (max-width: 768px) {
-    .nav-links { display: none; } .nav-left { gap: 0; } .burger { display: block; z-index: 101; }
-}
-/* style.css dosyasının en altına ekle */
-
 /* --- NAVBAR GEÇİŞ ANİMASYONU --- */
 .nav-loader {
-    position: absolute; /* Navigasyon çubuğuna göre konumlandır */
+    position: absolute; 
     bottom: 0;
     left: 0;
-    width: 0%; /* Başlangıçta genişliği sıfır */
-    height: 3px; /* Kalınlığı */
-    background: var(--accent-gradient); /* Temamızın güzel gradyanı */
+    width: 0%; 
+    height: 3px; 
+    background: var(--accent-gradient); 
     background-size: 200% 200%;
     animation: gradient-animation 4s ease infinite;
-    box-shadow: 0 0 15px var(--neon-main-color); /* Neon parlama efekti */
-    
-    /* Genişlik değişimini 400ms'de yumuşakça yap */
+    box-shadow: 0 0 15px var(--neon-main-color);
     transition: width 0.4s ease-in-out;
 }
 
 /* JavaScript bu sınıfı eklediğinde animasyon başlayacak */
 .nav-loader.loading {
-    width: 100%; /* Genişliği %100'e çıkar */
+    width: 100%; 
 }
 
-/* Navigasyonun kendisi için position:relative eklemeyi unutmayalım */
-nav {
-    position: fixed; /* 'fixed' zaten 'relative' gibi davranır, ama garanti olsun */
-    /* ... (mevcut diğer nav stilleri) ... */
+/* --- MOBİL UYUMLULUK VE NAVİGASYON EKLEMELERİ (Responsive Tasarım) --- */
+
+/* Masaüstü görünümde burger gizli */
+.burger { display: none; cursor: pointer; }
+
+@media screen and (max-width: 768px) {
+    /* Genel Responsive Ayarlar */
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+    /* Hakkımda bölümü için: Dikey yığılma ve ortalama */
+    .about-container { flex-direction: column; text-align: center; }
+    .profile-pic { margin-bottom: 20px; }
+    
+    /* Mobil Menü (nav-links) Ayarları */
+    .nav-links {
+        position: absolute;
+        right: 0;
+        top: 8vh; /* Navigasyon yüksekliği kadar aşağı */
+        height: 92vh; /* Kalan ekranı kapla */
+        background-color: var(--nav-bg); 
+        backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%; 
+        transform: translateX(100%); /* Başlangıçta ekran dışına taşı */
+        transition: transform 0.5s ease-in;
+        padding-top: 50px;
+    }
+    
+    .nav-links li {
+        opacity: 0; /* Animasyon için başlangıçta gizle */
+    }
+    
+    .nav-links a {
+        font-size: 1.5rem; /* Menü linklerini büyüt */
+        padding: 15px 30px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Menü Açıkken */
+    .nav-active {
+        transform: translateX(0%); /* Menüyü ekrana getir */
+    }
+
+    /* Burger Menü İkonunu Göster */
+    .burger {
+        display: block;
+        z-index: 101;
+        cursor: pointer;
+    }
+
+    .burger div {
+        width: 25px;
+        height: 3px;
+        background-color: var(--text-color);
+        margin: 5px;
+        transition: all 0.3s ease;
+    }
+
+    /* Burger Menü Animasyonu (X şekli) */
+    .toggle .line1 {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .toggle .line2 {
+        opacity: 0;
+    }
+
+    .toggle .line3 {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
+    
+    /* Nav Loader'ı mobil görünümde göster */
+    .nav-loader {
+        display: block;
+    }
+}
+
+/* Linkler için animasyon (JavaScript'te kullanılacak) */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+
+/* Sayfa Karartma Animasyonu */
+body.fade-out {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+body:not(.fade-out) {
+    opacity: 1;
+}
+
+/* Masaüstünde nav loader'ı gizle */
+@media screen and (min-width: 769px) {
+    .nav-loader {
+        display: none !important; 
+    }
 }
