@@ -63,7 +63,7 @@ const pageTransition = () => {
                 
                 setTimeout(() => {
                     window.location.href = url;
-                }, 600); // <-- Süre 600ms (0.6s) olarak güncellendi
+                }, 600); // Süre 600ms (0.6s)
             }
         });
     });
