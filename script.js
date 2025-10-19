@@ -82,129 +82,29 @@ const setGiscusTheme = (theme) => {
     );
 }
 
-// --- GÜNCEL: DISCO THEME HİLE KODU (Müzik ve Disko Topu Kaldırıldı) ---
-const discoHandler = () => {
-    const profilePic = document.querySelector('.profile-pic');
-    const body = document.body;
-    let clickCount = 0;
-    let discoTimeout;
-    
-    if (!profilePic) return;
-
-    profilePic.addEventListener('click', () => {
-        clickCount++;
-        clearTimeout(discoTimeout);
-
-        if (clickCount === 3) {
-            
-            // Disko modu açılmadan önceki temayı kaydet
-            const previousTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
-
-            body.classList.toggle('disco-theme');
-            
-            if (body.classList.contains('disco-theme')) {
-                // Disco modu AÇILDI
-                
-                // Önceki temayı kaydet (Light/Dark)
-                localStorage.setItem('disco-previous-theme', previousTheme); 
-                
-                body.classList.remove('light-theme'); // Disco tema siyah tabanlıdır
-                localStorage.setItem('theme', 'disco');
-                setGiscusTheme('dark_dimmed'); // Giscus'u Dark'a çek
-
-            } else {
-                // Disco modu KAPANDI
-                
-                // Kayıtlı önceki temayı al ve geri yükle
-                const originalTheme = localStorage.getItem('disco-previous-theme') || 'dark';
-                
-                localStorage.setItem('theme', originalTheme);
-                localStorage.removeItem('disco-previous-theme');
-                
-                // Light ise Light'a, Dark ise Dark'a geri dön
-                if (originalTheme === 'light') {
-                    body.classList.add('light-theme');
-                    setGiscusTheme('light'); 
-                } else {
-                    body.classList.remove('light-theme');
-                    setGiscusTheme('dark_dimmed');
-                }
-            }
-
-            clickCount = 0; // Sayacı sıfırla
-
-        } else {
-            discoTimeout = setTimeout(() => {
-                clickCount = 0; // Süre dolarsa sayacı sıfırla
-            }, 1000); // 1 saniye içinde 3 kez tıklanmalı
-        }
-    });
-
-    // Sayfa yüklendiğinde disko temasını kontrol et
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'disco') {
-        body.classList.add('disco-theme');
-    }
-};
-
 // Tema değiştirme fonksiyonu
 const themeHandler = () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
-
+    
     // 1. Kayıtlı temayı yükle
     const savedTheme = localStorage.getItem('theme');
     let currentTheme = 'dark';
     
-    // Disko teması kontrolü
-    if (savedTheme === 'disco') {
-        body.classList.add('disco-theme');
-        currentTheme = 'dark_dimmed'; 
-    } 
-    // Light teması kontrolü
-    else if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+    if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
         body.classList.add('light-theme');
         currentTheme = 'light';
-    } 
-    // Dark tema (varsayılan)
-    else {
+    } else {
         body.classList.remove('light-theme');
-        currentTheme = 'dark_dimmed';
     }
 
     // İlk yüklemede Giscus temasını ayarla
-    setTimeout(() => {
-        setGiscusTheme(body.classList.contains('light-theme') ? 'light' : 'dark_dimmed');
-    }, 500); 
+    setTimeout(() => setGiscusTheme(currentTheme), 500); 
 
 
     // 2. Buton tıklama olayını dinle
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
-            const body = document.body;
-            
-            // EĞER DISCO MODU AÇIKSA: Tema butonu ona basınca önceki moda döner
-            if (body.classList.contains('disco-theme')) {
-                // Kayıtlı önceki temayı al
-                const originalTheme = localStorage.getItem('disco-previous-theme') || 'dark';
-                
-                body.classList.remove('disco-theme');
-                localStorage.setItem('theme', originalTheme);
-                localStorage.removeItem('disco-previous-theme');
-                
-                // Önceki temaya geri dön (Light ise Light'a, Dark ise Dark'a)
-                if (originalTheme === 'light') {
-                    body.classList.add('light-theme');
-                    setGiscusTheme('light');
-                } else {
-                    body.classList.remove('light-theme');
-                    setGiscusTheme('dark_dimmed');
-                }
-                
-                return; 
-            }
-
-            // Diğer tema değişimleri (Dark/Light)
             body.classList.toggle('light-theme');
             
             const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
@@ -216,10 +116,10 @@ const themeHandler = () => {
     }
 };
 
+
 // Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
-    themeHandler(); 
-    discoHandler(); 
+    themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
 });
