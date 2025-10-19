@@ -17,6 +17,12 @@
     --border-color: rgba(255, 255, 255, 0.1);
     --neon-main-color: #ffffff; /* Altın */
     --neon-glow-color: #fffc7f;  /* Parlak Sarı */
+
+    /* AMPUL RENKLERİ */
+    --bulb-off-color: #6e7681;
+    --bulb-on-color: #fffc7f; /* Ampul yandığında neon sarı */
+    --cord-color: #555;
+    --pull-switch-color: #888;
 }
 
 /* LIGHT TEMA */
@@ -30,6 +36,12 @@ body.light-theme {
     --border-color: rgba(0, 0, 0, 0.1);
     --neon-main-color: #ff9900; 
     --neon-glow-color: #ffcc00; 
+
+    /* AMPUL RENKLERİ */
+    --bulb-off-color: #94a3b8;
+    --bulb-on-color: #ffcc00; /* Ampul yandığında parlak turuncu */
+    --cord-color: #777;
+    --pull-switch-color: #aaa;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,6 +58,19 @@ body {
     flex-direction: column;
 }
 
+/* --- TEMA GEÇİŞ ANİMASYONU (FLAŞ) --- */
+@keyframes theme-flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.1; } 
+    100% { opacity: 1; }
+}
+
+body.theme-transitioning {
+    animation: theme-flash 0.3s ease-in-out; 
+    transition: none !important; 
+}
+
+
 /* --- NAVİGASYON --- */
 nav { display: flex; justify-content: space-between; align-items: center; padding: 0 5%; min-height: 8vh; background-color: var(--nav-bg); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: fixed; width: 100%; z-index: 10; }
 .nav-left { display: flex; align-items: center; gap: 60px; }
@@ -54,40 +79,75 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 700; padding: 0.5em 1.2em; border-radius: 999px; transition: all 0.4s ease; }
 .nav-links a:not(.active):hover { color: var(--text-color); background-color: var(--border-color); }
 .nav-links a.active { color: var(--bg-color); background: var(--accent-gradient); background-size: 300% 300%; animation: gradient-animation 5s ease infinite; }
-
-
-/* YENİ: NAV ACTIONS (TEMA BUTONU VE GITHUB) */
 .nav-actions { display: flex; align-items: center; gap: 20px; }
-
-/* GitHub Linki */
 .github-link { color: var(--text-muted); font-size: 1.5rem; transition: color 0.3s ease, text-shadow 0.3s ease; display: flex; align-items: center; }
 .github-link:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
 
-/* Tema Değiştirme Butonu */
-#theme-toggle { 
-    background: none; border: none; color: var(--text-muted); 
-    font-size: 1.4rem; cursor: pointer; padding: 0; position: relative; 
-    width: 24px; height: 24px; display: flex; align-items: center; 
-    justify-content: center; transition: all 0.3s ease; 
+
+/* --- YENİ EKLENTİ: AMPUL VE İP TEMA DEĞİŞTİRİCİ STİLLERİ --- */
+.light-switch-container {
+    position: relative;
+    width: 30px; 
+    height: 45px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1; 
 }
-#theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
-#theme-toggle i { position: absolute; transition: opacity 0.3s ease, transform 0.3s ease; }
 
-/* Tema İkon Yönetimi */
-#icon-moon { opacity: 1; transform: scale(1); }
-#icon-sun { opacity: 0; transform: scale(0); }
+.light-bulb {
+    color: var(--bulb-off-color);
+    font-size: 1.6rem; 
+    transition: color 0.3s ease;
+    text-shadow: none;
+    position: relative;
+    z-index: 2; 
+}
 
-/* LIGHT TEMA AKTİFKEN İkonlar */
-body.light-theme #icon-moon { opacity: 0; transform: scale(0); }
-body.light-theme #icon-sun { opacity: 1; transform: scale(1); }
-body.light-theme #theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
+/* Ampul yandığında parlama efekti */
+.light-bulb.on {
+    color: var(--bulb-on-color);
+    text-shadow: 0 0 8px var(--bulb-on-color), 0 0 15px var(--bulb-on-color); 
+}
+
+.light-cord {
+    width: 2px;
+    height: 15px; 
+    background-color: var(--cord-color);
+    position: relative;
+    z-index: 1;
+    transition: background-color 0.3s ease;
+}
+
+.light-pull-switch {
+    width: 12px;
+    height: 12px;
+    background-color: var(--pull-switch-color);
+    border-radius: 50%;
+    position: relative;
+    top: -2px; 
+    z-index: 3;
+    transition: background-color 0.3s ease, transform 0.1s ease-out; 
+}
+
+/* İpi çekme animasyonu */
+@keyframes pull-cord {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(8px); } 
+    100% { transform: translateY(0); }
+}
+
+.light-pull-switch.pulled {
+    animation: pull-cord 0.2s ease-out;
+}
+/* --- AMPUL VE İP BİTTİ --- */
 
 
 /* --- ANA İÇERİK BÖLÜMÜ --- */
 main { transition: opacity 0.4s ease-in-out; flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; padding-top: 8vh; }
 body.fade-out main { opacity: 0; }
 section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: center; }
-/* Yorumlar sayfasına özel genişlik */
 #yorumlar { max-width: 800px; }
 
 
@@ -109,12 +169,11 @@ p { color: var(--text-muted); }
     border-radius: 8px; font-weight: bold; transition: all 0.3s ease;
 }
 
-/* Anasayfa İletişim Butonu Hover Efekti */
 .btn:hover {
-    color: var(--bg-color); /* Hover'da arka plan rengini alır */
+    color: var(--bg-color); 
     background-color: var(--neon-main-color);
-    box-shadow: 0 0 25px var(--neon-main-color), 0 0 50px var(--neon-glow-color); /* Daha güçlü parlama */
-    text-shadow: none; /* Metin gölgesini kaldır */
+    box-shadow: 0 0 25px var(--neon-main-color), 0 0 50px var(--neon-glow-color); 
+    text-shadow: none; 
 }
 
 #hero p { margin-bottom: 60px; }
@@ -126,7 +185,7 @@ p { color: var(--text-muted); }
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
 }
 
-/* --- PROJE BÖLÜMÜ (Örnek Proje Kartı Stilleri) --- */
+/* --- PROJE BÖLÜMÜ --- */
 .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
 .loading-message { width: 100%; text-align: center; color: var(--text-muted); }
 .project-card { background: var(--card-color); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; text-align: left; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
@@ -145,7 +204,7 @@ p { color: var(--text-muted); }
 .project-links a { color: var(--text-muted); text-decoration: none; font-weight: bold; transition: all 0.3s ease; }
 .project-links a:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
 
-/* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
+/* --- İLETİŞİM VE DİĞER KISIMLAR --- */
 .social-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; }
 .social-links a { color: var(--text-muted); font-size: 2.5rem; transition: all 0.3s ease; }
 .social-links a:hover { color: var(--neon-glow-color); text-shadow: 0 0 10px var(--neon-glow-color); transform: translateY(-5px); }
@@ -159,84 +218,49 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
     transition: width 0.4s ease-in-out; 
 }
 .nav-loader.loading { width: 100%; }
+nav { position: fixed; }
 
-/* --- MOBİL UYUMLULUK VE NAVİGASYON EKLEMELERİ (Responsive Tasarım) --- */
-.burger { 
-    display: none; 
-    cursor: pointer; 
-    z-index: 20; 
-}
+/* --- MOBİL UYUMLULUK --- */
+.burger { display: none; cursor: pointer; z-index: 20; }
 .burger div {
-    width: 25px;
-    height: 3px;
-    background-color: var(--text-color);
-    margin: 5px;
-    transition: all 0.3s ease;
+    width: 25px; height: 3px; background-color: var(--text-color); margin: 5px; transition: all 0.3s ease;
 }
 
 @media screen and (max-width: 768px) {
-    /* Genel Responsive Ayarlar */
     h1 { font-size: 2.5rem; }
     h2 { font-size: 2rem; }
     .about-container { flex-direction: column; text-align: center; }
     .profile-pic { margin-bottom: 20px; }
-    
-    /* BURGER İKONUNU GÖRÜNÜR YAP */
     .burger { display: block; } 
-
-    /* Mobil Menü Konumlandırma ve Görünüm */
     .nav-links {
-        display: flex; /* Görünürlüğü açmak için */
-        position: absolute; 
-        right: 0; 
-        top: 8vh; 
-        height: 92vh; 
-        background-color: var(--nav-bg); 
-        backdrop-filter: blur(20px); 
-        flex-direction: column; 
-        align-items: center;
-        width: 100%; 
-        transform: translateX(100%); /* Başlangıçta ekranın dışına kaydır */
-        transition: transform 0.5s ease-in;
-        padding-top: 50px;
+        display: flex; position: absolute; right: 0; top: 8vh; height: 92vh; 
+        background-color: var(--nav-bg); backdrop-filter: blur(20px); flex-direction: column; 
+        align-items: center; width: 100%; transform: translateX(100%); 
+        transition: transform 0.5s ease-in; padding-top: 50px;
     }
-    
-    .nav-links li { 
-        opacity: 0; 
-    }
-    
-    .nav-links a { 
-        font-size: 1.5rem; 
-        padding: 15px 30px; 
-        width: 100%; 
-        text-align: center; 
-    }
-
-    /* Menü Aktif (Açık) İken */
-    .nav-active { 
-        transform: translateX(0%); /* Menüyü içeri kaydır */
-    }
-
-    /* Burger Menü Animasyonu (X şekli) */
+    .nav-links li { opacity: 0; }
+    .nav-links a { font-size: 1.5rem; padding: 15px 30px; width: 100%; text-align: center; }
+    .nav-active { transform: translateX(0%); }
     .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
     .toggle .line2 { opacity: 0; }
     .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
-    
-    /* Nav Loader'ı mobil görünümde göster */
     .nav-loader { display: block; }
+
+    /* Mobil görünümde ampulü daha küçük yap */
+    .light-switch-container { width: 25px; height: 40px; }
+    .light-bulb { font-size: 1.4rem; }
+    .light-cord { height: 12px; }
+    .light-pull-switch { width: 10px; height: 10px; }
 }
 
-/* Masaüstünde nav loader'ı gizle */
 @media screen and (min-width: 769px) {
     .nav-loader { display: none !important; } 
 }
 
-/* Linkler için animasyon (JavaScript'te kullanılacak) */
 @keyframes navLinkFade {
     from { opacity: 0; transform: translateX(50px); }
     to { opacity: 1; transform: translateX(0px); }
 }
 
-/* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
