@@ -1,4 +1,4 @@
-// --- YENİ VE TAMAMEN GÜNCELLENMİŞ SCRIPT.JS (Giscus Tema Desteği Eklendi) ---
+// --- YENİ VE TAMAMEN GÜNCELLENMİŞ SCRIPT.JS (Giscus Tema Desteği ve İkonlar Eklendi) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -7,18 +7,14 @@ const navSlide = () => {
     if (!burger || !nav) return;
     const navLinks = nav.querySelectorAll('li');
 
-    // Menü açma/kapama ve animasyonlar
     burger.addEventListener('click', () => {
         nav.classList.toggle('nav-active');
         burger.classList.toggle('toggle');
         
-        // Link animasyonlarını uygula
         navLinks.forEach((link, index) => {
             if (nav.classList.contains('nav-active')) {
-                // Menü açılırken
                 link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
             } else {
-                // Menü kapanırken
                 link.style.animation = '';
             }
         });
@@ -28,10 +24,8 @@ const navSlide = () => {
     navLinks.forEach(li => {
         li.querySelector('a').addEventListener('click', () => {
             if (nav.classList.contains('nav-active')) {
-                // Menüyü kapat
                 nav.classList.remove('nav-active');
                 burger.classList.remove('toggle');
-                // Animasyonları sıfırla
                 navLinks.forEach(link => link.style.animation = '');
             }
         });
@@ -43,7 +37,6 @@ const pageTransition = () => {
     const body = document.querySelector('body');
     const navLoader = document.querySelector('.nav-loader'); 
 
-    // Sayfa yüklendiğinde fade-out sınıfını kaldır
     body.classList.remove('fade-out');
     const allLinks = document.querySelectorAll('a');
 
@@ -51,23 +44,19 @@ const pageTransition = () => {
         link.addEventListener('click', (e) => {
             const url = link.href;
             
-            // Eğer link sayfa içi, yeni sekme veya Ctrl/Cmd ile açılıyorsa atla
             if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
             
-            // Eğer link aynı etki alanındaysa (internal link)
             if (url.startsWith(window.location.origin) && url !== window.location.href) {
                 e.preventDefault();
 
-                // --- ANİMASYONU BAŞLAT ---
                 if (navLoader) {
-                    navLoader.classList.add('loading'); // Yüklenme çubuğu animasyonunu başlat
+                    navLoader.classList.add('loading');
                 }
-                body.classList.add('fade-out'); // Sayfayı karart
+                body.classList.add('fade-out');
                 
-                // Animasyonlar bittikten sonra yeni sayfaya git (0.3s CSS geçiş süresi)
                 setTimeout(() => {
                     window.location.href = url;
-                }, 300);
+                }, 300); 
             }
         });
     });
@@ -75,13 +64,11 @@ const pageTransition = () => {
 
 // YENİ FONKSİYON: Giscus'a Tema Değişikliğini Bildirme
 const setGiscusTheme = (theme) => {
-    // Giscus için temaları Dark temada 'dark', Light temada 'light' olarak kullanacağız.
     const giscusTheme = theme === 'light' ? 'light' : 'dark';
     
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
 
-    // iframe'e tema değişikliğini bildir
     iframe.contentWindow.postMessage(
         { giscus: { setConfig: { theme: giscusTheme } } },
         'https://giscus.app'
@@ -113,7 +100,6 @@ const themeHandler = () => {
         toggleButton.addEventListener('click', () => {
             body.classList.toggle('light-theme');
             
-            // Temayı localStorage'a kaydet
             const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
             localStorage.setItem('theme', newTheme);
             
@@ -124,9 +110,80 @@ const themeHandler = () => {
 };
 
 
+// Proje çekme fonksiyonu (Mevcut kodunuz - eğer kullanıyorsanız)
+async function fetchGitHubProjects() {
+    const projectGrid = document.querySelector('.project-grid');
+    if (!projectGrid) return;
+
+    const githubUsername = "Tentex1"; // Kendi kullanıcı adınız
+    const apiUrl = `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`;
+
+    const languageColors = {
+        "C#": "#178600", "Python": "#3572A5", "JavaScript": "#f1e05a", "HTML": "#e34c26",
+        "CSS": "#563d7c", "TypeScript": "#2b7489", "Java": "#b07219", "Shell": "#89e051",
+        "default": "#6e7681"
+    };
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`GitHub API hatası: ${response.status}`);
+        const repos = await response.json();
+
+        const portfolioRepos = repos.filter(repo => repo.topics.includes('portfolio-project'));
+        projectGrid.innerHTML = '';
+
+        if (portfolioRepos.length === 0) {
+            projectGrid.innerHTML = '<p>Gösterilecek proje bulunamadı. Projelerinize "portfolio-project" etiketini eklediğinizden emin olun.</p>';
+            return;
+        }
+
+        portfolioRepos.forEach(repo => {
+            const repoName = repo.name.replaceAll('-', ' ');
+            const repoDescription = repo.description || "Açıklama eklenmemiş.";
+            const repoUrl = repo.html_url;
+            const liveSiteUrl = repo.homepage;
+            const language = repo.language;
+
+            let languageHTML = '';
+            if (language) {
+                const color = languageColors[language] || languageColors.default;
+                languageHTML = `
+                    <div class="project-language">
+                        <span class="language-color-dot" style="background-color: ${color};"></span>
+                        <span>${language}</span>
+                    </div>
+                `;
+            }
+
+            let projectCard = `
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>${repoName}</h3>
+                        <p>${repoDescription}</p>
+                    </div>
+                    <div class="card-footer">
+                        ${languageHTML} 
+                        <div class="project-links">
+                            <a href="${repoUrl}" target="_blank"><i class="fab fa-github"></i> Kodlar</a>`;
+            
+            if (liveSiteUrl) {
+                projectCard += `<a href="${liveSiteUrl}" target="_blank"><i class="fas fa-external-link-alt"></i> Siteyi Gör</a>`;
+            }
+
+            projectCard += `</div></div></div>`;
+            projectGrid.innerHTML += projectCard;
+        });
+
+    } catch (error) {
+        console.error("Projeler çekilirken bir hata oluştu:", error);
+        projectGrid.innerHTML = `<p>Projeler yüklenirken bir hata oluştu. Lütfen Geliştirici Konsolu'nu (F12) kontrol edin.</p>`;
+    }
+}
+
 // Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
+    // fetchGitHubProjects(); // Projeler sayfanız yoksa bu yorumda kalabilir.
 });
