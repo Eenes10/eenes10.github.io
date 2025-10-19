@@ -8,35 +8,35 @@
 }
 
 :root {
-    /* DARK TEMA (BEYAZ/GÜMÜŞ SOFT GLOW) */
+    /* DARK TEMA (MAVİ YAZILAR + BEYAZ IŞIK GEÇİŞİ) */
     --bg-color: #0d1117; 
     --card-color: rgba(22, 27, 34, 0.8); 
     --text-color: #c9d1d9; 
     --text-muted: #8b949e; 
     
-    --accent-color: #ffffff; /* Beyaz Vurgu */
+    --accent-color: #58a6ff; /* Temel Mavi Vurgu Rengi (Yazı Rengi) */
     --nav-bg: rgba(13, 17, 23, 0.95);
     --border-color: rgba(255, 255, 255, 0.08);
-    --soft-glow: rgba(255, 255, 255, 0.5); /* Yumuşak Beyaz Parlama */
+    --soft-glow: rgba(88, 166, 255, 0.4); /* Soft Mavi Parlama Gölgesi */
 
-    /* Sabit Accent Gradient (Beyaz/Gümüş) */
-    --accent-gradient: linear-gradient(60deg, #f0f0f0, #ffffff, #e0e0e0); 
+    /* Sabit Accent Gradient (BEYAZ/GÜMÜŞ IŞIK GEÇİŞİ) */
+    --accent-gradient: linear-gradient(60deg, #58a6ff, #ffffff, #58a6ff); 
 }
 
-/* LIGHT TEMA (BEYAZ/GRİ SOFT GLOW) */
+/* LIGHT TEMA (MAVİ YAZILAR + AÇIK GRİ IŞIK GEÇİŞİ) */
 body.light-theme {
     --bg-color: #f0f2f5; 
     --card-color: rgba(255, 255, 255, 0.95);
     --text-color: #18191a;
     --text-muted: #606770;
     
-    --accent-color: #1f2937; /* Koyu Gri Vurgu */
+    --accent-color: #0084ff; /* Temel Mavi Vurgu Rengi (Yazı Rengi) */
     --nav-bg: rgba(255, 255, 255, 0.95);
     --border-color: rgba(0, 0, 0, 0.1);
-    --soft-glow: rgba(0, 0, 0, 0.15); /* Çok Hafif Gri Parlama */
+    --soft-glow: rgba(0, 132, 255, 0.4); /* Yumuşak Mavi Parlama Gölgesi */
 
-    /* Sabit Accent Gradient (Açık Gri/Beyaz) */
-    --accent-gradient: linear-gradient(60deg, #9ca3af, #ffffff, #d1d5db);
+    /* Sabit Accent Gradient (AÇIK MAVİ/GRİ IŞIK GEÇİŞİ) */
+    --accent-gradient: linear-gradient(60deg, #0084ff, #e0f0ff, #0084ff);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,11 +65,12 @@ nav {
 }
 .nav-left { display: flex; align-items: center; gap: 60px; }
 .logo { 
+    /* Yazı rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     background-clip: text; -webkit-background-clip: text; 
     color: transparent; 
     font-size: 20px; font-weight: 700; text-decoration: none; 
-    /* Animasyonu Kaldırıp, Soft Gölge Ekledik */
+    /* Soft Gölge Ekledik */
     filter: drop-shadow(0 0 4px var(--soft-glow));
 }
 .nav-links { display: flex; list-style: none; gap: 20px; }
@@ -144,10 +145,11 @@ section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: cen
 
 /* BAŞLIKLAR VE VURGULAR (Softlaştırıldı) */
 h1, h2, .highlight { 
+    /* Yazı rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     background-clip: text; -webkit-background-clip: text; 
     color: transparent; 
-    /* Neon gölgesini soft drop-shadow ile değiştirdik */
+    /* Neon gölgesini soft drop-shadow ile değiştirdik (Mavi kaldı) */
     filter: drop-shadow(0 0 5px var(--soft-glow));
     font-weight: 700;
 }
@@ -163,13 +165,14 @@ p { color: var(--text-muted); }
 
 /* Soft Buton Tasarımı */
 .btn {
+    /* Buton rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     color: var(--text-color); 
     border: none; /* Kenarlığı kaldırdık */
     padding: 14px 28px; margin-top: 20px; text-decoration: none;
     border-radius: 8px; font-weight: bold; 
     transition: all 0.3s ease;
-    /* Soft Gölge */
+    /* Soft Gölge (Mavi kaldı) */
     box-shadow: 0 4px 15px var(--soft-glow); 
 }
 
@@ -185,8 +188,8 @@ p { color: var(--text-muted); }
 
 .profile-pic {
     width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
-    border: 3px solid var(--accent-color); /* Neon yerine soft border */
-    box-shadow: 0 0 20px var(--soft-glow); /* Soft gölge */
+    border: 3px solid var(--accent-color); /* Mavi çerçeve */
+    box-shadow: 0 0 20px var(--soft-glow); /* Soft mavi gölge */
 }
 
 /* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
@@ -287,4 +290,4 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
 /* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; } /* Süre 0.6s */
-body:not(.fade-out) { opacity: 1
+body:not(.fade-out) { opacity: 1; }
