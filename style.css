@@ -1,6 +1,5 @@
-/* --- YUMUŞAK & MODERN TEMA (SOFT GLOW) --- */
+/* --- YUMUŞAK & MODERN TEMA (SOFT-TECH AMETIST) --- */
 
-/* Gradient Animasyonunu Kapatıyoruz */
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -8,35 +7,35 @@
 }
 
 :root {
-    /* DARK TEMA (MAVİ YAZILAR + BEYAZ IŞIK GEÇİŞİ) */
-    --bg-color: #0d1117; 
-    --card-color: rgba(22, 27, 34, 0.8); 
-    --text-color: #c9d1d9; 
-    --text-muted: #8b949e; 
+    /* DARK TEMA (AMETIST MORU VE SOĞUK BEYAZ) */
+    --bg-color: #0f0a1e; /* Koyu Ametist Moru */
+    --card-color: rgba(30, 25, 45, 0.85); /* Kart Arka Planı */
+    --text-color: #e4e6f4; /* Soğuk Beyaz Metin */
+    --text-muted: #a0a0c0; /* Açık Lavanta Metin */
     
-    --accent-color: #58a6ff; /* Temel Mavi Vurgu Rengi (Yazı Rengi) */
-    --nav-bg: rgba(13, 17, 23, 0.95);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --soft-glow: rgba(88, 166, 255, 0.4); /* Soft Mavi Parlama Gölgesi */
+    --accent-color: #bb86fc; /* Ametist/Lavanta Vurgu */
+    --nav-bg: rgba(15, 10, 30, 0.95);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --soft-glow: rgba(187, 134, 252, 0.4); /* Mor Parlama */
 
-    /* Sabit Accent Gradient (BEYAZ/GÜMÜŞ IŞIK GEÇİŞİ) */
-    --accent-gradient: linear-gradient(60deg, #58a6ff, #ffffff, #58a6ff); 
+    /* Sabit Accent Gradient (Mor-Beyaz-Mor Işık Geçişi) */
+    --accent-gradient: linear-gradient(60deg, var(--accent-color), #ffffff, var(--accent-color)); 
 }
 
-/* LIGHT TEMA (MAVİ YAZILAR + AÇIK GRİ IŞIK GEÇİŞİ) */
+/* LIGHT TEMA (YUMUŞAK GRİ VE CANLI MOR) */
 body.light-theme {
-    --bg-color: #f0f2f5; 
+    --bg-color: #f9f9fb; /* Çok Açık Kirli Beyaz Arka Plan */
     --card-color: rgba(255, 255, 255, 0.95);
-    --text-color: #18191a;
-    --text-muted: #606770;
+    --text-color: #1f2937; /* Koyu Gri Metin */
+    --text-muted: #6b7280; /* Orta Gri Metin */
     
-    --accent-color: #0084ff; /* Temel Mavi Vurgu Rengi (Yazı Rengi) */
+    --accent-color: #7c3aed; /* Canlı Mor Vurgu */
     --nav-bg: rgba(255, 255, 255, 0.95);
-    --border-color: rgba(0, 0, 0, 0.1);
-    --soft-glow: rgba(0, 132, 255, 0.4); /* Yumuşak Mavi Parlama Gölgesi */
+    --border-color: rgba(0, 0, 0, 0.08);
+    --soft-glow: rgba(124, 58, 237, 0.2); /* Hafif Mor Gölge */
 
-    /* Sabit Accent Gradient (AÇIK MAVİ/GRİ IŞIK GEÇİŞİ) */
-    --accent-gradient: linear-gradient(60deg, #0084ff, #e0f0ff, #0084ff);
+    /* Sabit Accent Gradient (Mor-Açık Gri-Mor Işık Geçişi) */
+    --accent-gradient: linear-gradient(60deg, var(--accent-color), #f0f0f5, var(--accent-color));
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -59,18 +58,15 @@ nav {
     padding: 0 5%; min-height: 8vh; 
     background-color: var(--nav-bg); 
     backdrop-filter: blur(10px); 
-    /* Soft Gölge */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
     position: fixed; width: 100%; z-index: 10; 
 }
 .nav-left { display: flex; align-items: center; gap: 60px; }
 .logo { 
-    /* Yazı rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     background-clip: text; -webkit-background-clip: text; 
     color: transparent; 
     font-size: 20px; font-weight: 700; text-decoration: none; 
-    /* Soft Gölge Ekledik */
     filter: drop-shadow(0 0 4px var(--soft-glow));
 }
 .nav-links { display: flex; list-style: none; gap: 20px; }
@@ -129,11 +125,11 @@ body.light-theme #theme-toggle:hover { color: var(--accent-color); filter: drop-
 
 /* --- ANA İÇERİK BÖLÜMÜ --- */
 main { 
-    transition: opacity 0.6s ease-in-out; /* Süre 0.6s'ye çıkarıldı */
+    transition: opacity 0.6s ease-in-out; 
     flex: 1; display: flex; justify-content: center; align-items: center; 
     width: 100%; padding-top: 8vh; 
 }
-/* Sayfa geçiş efekti süresi 0.6s'ye uzatıldı */
+/* Sayfa geçiş efekti */
 body.fade-out main { opacity: 0; }
 body { transition: opacity 0.6s ease-in-out, background-color 0.5s ease, color 0.5s ease; }
 
@@ -143,13 +139,11 @@ section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: cen
 #yorumlar { max-width: 800px; }
 
 
-/* BAŞLIKLAR VE VURGULAR (Softlaştırıldı) */
+/* BAŞLIKLAR VE VURGULAR (Holografik Efekt) */
 h1, h2, .highlight { 
-    /* Yazı rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     background-clip: text; -webkit-background-clip: text; 
     color: transparent; 
-    /* Neon gölgesini soft drop-shadow ile değiştirdik (Mavi kaldı) */
     filter: drop-shadow(0 0 5px var(--soft-glow));
     font-weight: 700;
 }
@@ -165,21 +159,19 @@ p { color: var(--text-muted); }
 
 /* Soft Buton Tasarımı */
 .btn {
-    /* Buton rengi Mavi, Işık geçişi Beyaz/Mavi tonlarında */
     background: var(--accent-gradient); 
     color: var(--text-color); 
-    border: none; /* Kenarlığı kaldırdık */
+    border: none; 
     padding: 14px 28px; margin-top: 20px; text-decoration: none;
     border-radius: 8px; font-weight: bold; 
     transition: all 0.3s ease;
-    /* Soft Gölge (Mavi kaldı) */
     box-shadow: 0 4px 15px var(--soft-glow); 
 }
 
 /* Anasayfa İletişim Butonu Hover Efekti */
 .btn:hover {
-    transform: translateY(-3px); /* Hafif yukarı kalkma */
-    box-shadow: 0 8px 20px var(--soft-glow); /* Daha güçlü soft gölge */
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 20px var(--soft-glow); 
     opacity: 0.9;
 }
 
@@ -188,8 +180,8 @@ p { color: var(--text-muted); }
 
 .profile-pic {
     width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
-    border: 3px solid var(--accent-color); /* Mavi çerçeve */
-    box-shadow: 0 0 20px var(--soft-glow); /* Soft mavi gölge */
+    border: 3px solid var(--accent-color); 
+    box-shadow: 0 0 20px var(--soft-glow); 
 }
 
 /* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
@@ -207,7 +199,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
     position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; 
     background: var(--accent-gradient); 
     box-shadow: 0 0 10px var(--soft-glow);
-    transition: width 0.6s ease-in-out; /* Süre 0.6s'ye çıkarıldı */
+    transition: width 0.6s ease-in-out; 
 }
 .nav-loader.loading { width: 100%; }
 
@@ -237,7 +229,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
     /* Mobil Menü Konumlandırma ve Görünüm */
     .nav-links {
-        display: flex; /* Görünürlüğü açmak için */
+        display: flex; 
         position: absolute; 
         right: 0; 
         top: 8vh; 
@@ -247,7 +239,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
         flex-direction: column; 
         align-items: center;
         width: 100%; 
-        transform: translateX(100%); /* Başlangıçta ekranın dışına kaydır */
+        transform: translateX(100%); 
         transition: transform 0.5s ease-in;
         padding-top: 50px;
     }
@@ -265,7 +257,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
     /* Menü Aktif (Açık) İken */
     .nav-active { 
-        transform: translateX(0%); /* Menüyü içeri kaydır */
+        transform: translateX(0%); 
     }
 
     /* Burger Menü Animasyonu (X şekli) */
@@ -289,5 +281,5 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 }
 
 /* Sayfa Karartma Animasyonu */
-body.fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; } /* Süre 0.6s */
+body.fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; } 
 body:not(.fade-out) { opacity: 1; }
