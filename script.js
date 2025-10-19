@@ -1,4 +1,4 @@
-// --- SCRIPT.JS (SON VE TAM HALİ - Tüm Özellikler Dahil, AMPUL İLE TEMA GEÇİŞİ) ---
+// --- SCRIPT.JS (SON VE TAM HALİ - İpucu Kaldırıldı, Ampul Fixlendi) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -18,7 +18,7 @@ const navSlide = () => {
         burger.classList.toggle('toggle');
     });
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma 
+    // Mobil Menü Linkine Tıklayınca Kapatma 
     navLinks.forEach(li => {
         li.querySelector('a').addEventListener('click', () => {
             if (nav.classList.contains('nav-active')) {
@@ -57,35 +57,41 @@ const pageTransition = () => {
     });
 };
 
-// Tema değiştirme fonksiyonu (GÜVENİLİRLİK İYİLEŞTİRMESİ)
+// Tema değiştirme fonksiyonu (GÜVENİLİRLİK İYİLEŞTİRMESİ v2)
 const themeHandler = () => {
-    const lightSwitchContainer = document.getElementById('light-pull-switch'); 
+    const lightSwitch = document.getElementById('light-pull-switch'); 
     const lightBulb = document.getElementById('light-bulb');
     const body = document.body;
-    if (!lightSwitchContainer || !lightBulb) return;
+    if (!lightSwitch || !lightBulb) return;
 
-    // Başlangıç temasını yükle
-    const savedTheme = localStorage.getItem('theme');
-    let isLightTheme = false;
+    // 1. Başlangıç temasını yükle ve ampul durumunu ayarla
+    const initializeTheme = () => {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Kayıtlı tema varsa onu kullan, yoksa sistem tercihini kullan
+        let isLightTheme = savedTheme === 'light' || (savedTheme === null && !prefersDark);
 
-    if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-        body.classList.add('light-theme');
-        lightBulb.classList.add('on'); 
-        isLightTheme = true;
-    } else {
-        body.classList.remove('light-theme');
-        lightBulb.classList.remove('on'); 
-        isLightTheme = false;
-    }
+        if (isLightTheme) {
+            body.classList.add('light-theme');
+            lightBulb.classList.add('on'); 
+        } else {
+            body.classList.remove('light-theme');
+            lightBulb.classList.remove('on'); 
+        }
+    };
     
-    lightSwitchContainer.addEventListener('click', () => {
+    // Sayfa yüklenince temayı ayarla
+    initializeTheme();
+
+    lightSwitch.addEventListener('click', () => {
         // Hızlı tıklamaları engellemek için kontrol
         if (body.classList.contains('theme-transitioning')) return; 
 
         // 1. İp çekme animasyonunu tetikle (CSS ile 200ms)
-        lightSwitchContainer.classList.add('pulled');
+        lightSwitch.classList.add('pulled');
         setTimeout(() => {
-            lightSwitchContainer.classList.remove('pulled');
+            lightSwitch.classList.remove('pulled');
         }, 200); 
 
         // 2. Flaş animasyonunu başlat ve engellemeyi etkinleştir
@@ -95,44 +101,20 @@ const themeHandler = () => {
         const flashPoint = 100; 
         
         setTimeout(() => {
-            // Tema ve ampul değişimini yap
-            body.classList.toggle('light-theme');
-            isLightTheme = body.classList.contains('light-theme');
-            localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+            // Temayı değiştir
+            const isCurrentlyLight = body.classList.toggle('light-theme');
+            localStorage.setItem('theme', isCurrentlyLight ? 'light' : 'dark');
             
-            lightBulb.classList.toggle('on');
+            // Ampulün görünümünü güncelle
+            lightBulb.classList.toggle('on', isCurrentlyLight); 
         }, flashPoint);
         
-        // Flaş animasyonu ve hızlı tıklama engelleme süresi (400ms)
-        // Animasyon bittikten sonra bir süre daha engellemek, PC ve mobil güvenilirliğini artırır.
-        const blockDuration = 400; 
-        
         // Engellemeyi kaldır
+        const blockDuration = 400; 
         setTimeout(() => {
             body.classList.remove('theme-transitioning');
         }, blockDuration); 
     });
-};
-
-// Dinamik "Günün İpucu" fonksiyonu
-const displayRandomTip = () => {
-    const tips = [
-        "⚽ Kod yazmak, futbol oynamak gibidir; ne kadar pratik yaparsan o kadar iyi olursun!",
-        "💡 Git'te bir hata mı yaptın? `git reset --hard HEAD` ile geri alabilirsin (Dikkatli kullan!)",
-        "💻 JavaScript'te `const` kullanmak, değişkeni yeniden atamanı engeller ve kodunu daha güvenli yapar.",
-        "✨ Siteyi mobil görünümde test etmeyi unutma! Mobil entegrasyon önemlidir.",
-        "🥅 Python'da listeleri ters çevirmenin en kısa yolu `list[::-1]` kullanmaktır.",
-        "🌕 Tema değiştirme butonu için CSS'te :root değişkenlerini kullanmak hayat kurtarır.",
-        "⚽ Favori takımın kim? Yorumlarda paylaşabilirsin!",
-        "🚀 Bir sonraki projen, öğrendiğin yeni bir teknolojiyi içermeli."
-    ];
-
-    const tipElement = document.getElementById('tip-of-the-day');
-
-    if (tipElement) {
-        const randomIndex = Math.floor(Math.random() * tips.length);
-        tipElement.textContent = tips[randomIndex];
-    }
 };
 
 // GitHub projelerini çekme fonksiyonu
@@ -210,8 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
     navSlide();
     pageTransition();
     themeHandler(); 
-    displayRandomTip(); 
 
+    // Projeler sayfası kontrolü
     if (window.location.pathname.includes('projeler.html')) {
         fetchGitHubProjects();
     }
