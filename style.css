@@ -237,57 +237,137 @@ body:not(.fade-out) { opacity: 1; }
     --disco-glow-1: #ff00ff; /* Mavi */
     --disco-glow-2: #00ffff; /* Yeşil */
     --disco-glow-3: #ff0000; /* Kırmızı */
+
+    /* Daha fazla ışıklandırma için ekstra renkler */
+    --disco-light-blue: #00aaff;
+    --disco-light-yellow: #ffee00;
+    --disco-light-green: #00ee00;
+    --disco-light-purple: #bb00ff;
 }
 
-/* Tüm Vücutta Parlayan Disco Efekti */
+/* Genel Vücut (Body) için Disko Tema Efektleri */
 .disco-theme body {
-    /* Hareketli Arkaplan (Parçacık Efekti) */
-    background: repeating-linear-gradient(-45deg, #ff0000 0%, #ff00ff 25%, #00ffff 50%, #00ff00 75%, #ff0000 100%);
-    background-size: 600% 600%;
-    animation: gradient-animation 10s ease-in-out infinite, disco-flash 0.5s infinite; /* İki Animasyonu birden uygula */
+    /* Arkaplanı daha dinamik hale getir */
+    background: repeating-linear-gradient(45deg, #000000 0%, #1a001a 5%, #000000 10%), 
+                radial-gradient(ellipse at center, rgba(255,0,255,0.2) 0%, rgba(0,255,255,0.2) 50%, rgba(255,255,0,0.2) 100%);
+    background-size: 200% 200%, cover;
+    animation: gradient-animation 15s ease-in-out infinite, disco-flash 0.3s infinite;
+    position: relative;
+    overflow: hidden; /* Taşmaları önler */
 }
 
-/* Disco Başlık Animasyonu (RGB Hızlı Geçiş) */
+/* Disco Ortam Işıkları (Pseudo Elementler ile) */
+.disco-theme body::before,
+.disco-theme body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: overlay; /* Işıkların daha iyi karışmasını sağlar */
+    opacity: 0.5;
+    animation: disco-light-spread 10s infinite alternate;
+}
+
+.disco-theme body::before {
+    background: radial-gradient(circle at top left, var(--disco-light-blue) 0%, transparent 50%),
+                radial-gradient(circle at bottom right, var(--disco-light-yellow) 0%, transparent 50%);
+    animation-delay: 0s;
+}
+
+.disco-theme body::after {
+    background: radial-gradient(circle at top right, var(--disco-light-green) 0%, transparent 50%),
+                radial-gradient(circle at bottom left, var(--disco-light-purple) 0%, transparent 50%);
+    animation-delay: 5s;
+}
+
+
+/* Başlıklar ve diğer önemli metinler için daha belirgin disko parlama */
 .disco-theme h1, .disco-theme h2, .disco-theme .highlight, .disco-theme .logo {
-    animation: disco-glow 0.5s infinite alternate; /* Başlıklar için özel hızlı parlama */
-    background: none;
+    animation: disco-text-glow 0.8s infinite alternate; /* Başlıklar için özel hızlı parlama */
     -webkit-text-fill-color: var(--text-color);
+    text-shadow: 0 0 15px var(--disco-glow-1), 0 0 25px var(--disco-glow-2); /* Daha güçlü gölge */
+    background: none; /* Gradient metin arka planını kaldırır */
 }
 
-/* Profil Resmi için Disko Topu Efekti */
+/* Profil Resmini Gizle */
 .disco-theme .profile-pic {
-    border-radius: 50%;
-    transition: transform 0.5s ease-in-out, box-shadow 0.1s ease;
-    animation: disco-spin 2s linear infinite; /* Dönme Animasyonu */
-    box-shadow: 0 0 40px var(--disco-glow-1), 0 0 80px var(--disco-glow-2), 0 0 120px var(--disco-glow-3); /* Güçlü Parlama */
+    display: none; /* Disko topu geldiğinde profil resmini gizle */
 }
+
+/* YENİ: Disko Topu Stili ve Animasyonu */
+.disco-ball {
+    width: 200px; /* Profil resmiyle aynı boyut */
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #aaaaaa 10%, #666666 40%, #222222 80%, #000000 100%);
+    position: relative; /* Yansımalar için */
+    overflow: hidden; /* İçindeki yansımaların dışarı taşmasını engeller */
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.5); /* İç ve dış parlama */
+    animation: disco-ball-spin 5s linear infinite; /* Dönme animasyonu */
+    cursor: pointer; /* Tıklanabilir olduğunu belli eder */
+    margin: 0 auto; /* Ortalamak için */
+    z-index: 2; /* Işıkların üzerinde olması için */
+}
+
+/* Disko Topu Yansıma Efektleri (Küçük Kareler) */
+.disco-ball::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 1%,
+        transparent 1%, transparent 2%
+    ),
+    repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 1%,
+        transparent 1%, transparent 2%
+    );
+    background-size: 10px 10px; /* Karelerin boyutu */
+    animation: disco-reflections 10s linear infinite; /* Yansımaların hareketi */
+    mix-blend-mode: overlay; /* Arkaplanla daha iyi karışır */
+}
+
 
 /* Linkler ve Butonlar için Neon Efekti */
 .disco-theme .nav-links a:not(.active), .disco-theme .github-link, .disco-theme #theme-toggle {
     color: var(--text-color) !important;
-    text-shadow: 0 0 10px var(--disco-glow-1);
+    text-shadow: 0 0 15px var(--disco-glow-1), 0 0 25px var(--disco-glow-2); /* Daha güçlü parlama */
     transition: all 0.2s ease;
 }
 .disco-theme .nav-links a:hover, .disco-theme .github-link:hover, .disco-theme #theme-toggle:hover {
     color: var(--disco-glow-3) !important;
-    text-shadow: 0 0 20px var(--disco-glow-3), 0 0 40px var(--disco-glow-2);
+    text-shadow: 0 0 25px var(--disco-glow-3), 0 0 50px var(--disco-glow-2), 0 0 75px var(--disco-light-blue);
 }
 
 /* --- DISCO ÖZEL KEYFRAMES --- */
 @keyframes disco-flash {
     0% { filter: brightness(1); }
-    50% { filter: brightness(1.1); } /* Hafif bir parlama */
+    50% { filter: brightness(1.2); } /* Daha güçlü parlama */
     100% { filter: brightness(1); }
 }
 
-@keyframes disco-spin {
-    from { transform: rotate(0deg) scale(1.0); }
-    to { transform: rotate(360deg) scale(1.0); }
+@keyframes disco-ball-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-@keyframes disco-glow {
-    0% { text-shadow: 0 0 10px #ff00ff; color: #ff00ff; }
-    33% { text-shadow: 0 0 10px #00ffff; color: #00ffff; }
-    66% { text-shadow: 0 0 10px #ff0000; color: #ff0000; }
-    100% { text-shadow: 0 0 10px #ff00ff; color: #ff00ff; }
+@keyframes disco-reflections {
+    from { background-position: 0 0; }
+    to { background-position: 100% 100%; }
 }
+
+@keyframes disco-text-glow {
+    0% { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; color: #ff00ff; }
+    33% { text-shadow: 0 0 15px #00ffff, 0 0 25px #ff0000; color: #00ffff; }
+    66% { text-shadow: 0 0 15px #ff0000, 0 0 25px #ff00ff; color: #ff0000; }
+    100% { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; color: #ff00ff; }
+}
+
+@keyframes disco-light-spread {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.7; }
+    100% { transform: scale(1) rotate(360deg
