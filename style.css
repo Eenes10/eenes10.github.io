@@ -1,288 +1,125 @@
-/* --- YUMUŞAK & MODERN TEMA (SOFT GLOW) --- */
+// --- SCRIPT.JS (SON VE TAM HALİ) ---
 
-/* Gradient Animasyonunu Kapatıyoruz */
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+// Mobil menü fonksiyonu
+const navSlide = () => {
+    const burger = document.querySelector('.burger');
+    const nav = document.querySelector('.nav-links');
+    if (!burger || !nav) return;
+    const navLinks = nav.querySelectorAll('li');
+
+    burger.addEventListener('click', () => {
+        nav.classList.toggle('nav-active');
+        burger.classList.toggle('toggle');
+        
+        // Linklerin tek tek kayma animasyonu
+        navLinks.forEach((link, index) => {
+            if (nav.classList.contains('nav-active')) {
+                link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+            } else {
+                // Menü kapanırken animasyonu sıfırla
+                link.style.animation = '';
+            }
+        });
+    });
+
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
+    navLinks.forEach(li => {
+        li.querySelector('a').addEventListener('click', () => {
+            if (nav.classList.contains('nav-active')) {
+                // Menüyü kapat
+                nav.classList.remove('nav-active');
+                // Burger ikonunu düzelt
+                burger.classList.remove('toggle');
+                // Animasyonları sıfırla
+                navLinks.forEach(link => link.style.animation = '');
+            }
+        });
+    });
+};
+
+// Sayfa geçiş animasyonu
+const pageTransition = () => {
+    const body = document.querySelector('body');
+    const navLoader = document.querySelector('.nav-loader'); 
+
+    body.classList.remove('fade-out');
+    const allLinks = document.querySelectorAll('a');
+
+    allLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const url = link.href;
+            
+            // # (sayfa içi link) veya _blank (yeni sekme) veya Ctrl/Meta tuşlarıyla açılmasını engelleme
+            if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
+            
+            // Aynı domain içindeki farklı bir sayfaya yönlendirme kontrolü
+            if (url.startsWith(window.location.origin) && url !== window.location.href) {
+                e.preventDefault();
+
+                if (navLoader) {
+                    navLoader.classList.add('loading');
+                }
+                body.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 600); // Süre 600ms (0.6s)
+            }
+        });
+    });
+};
+
+// Giscus'a Tema Değişikliğin Bildirme
+const setGiscusTheme = (theme) => {
+    // Soft temaya uygun olarak Giscus temaları güncellendi
+    const giscusTheme = theme === 'light' ? 'light' : 'dark_dimmed'; 
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+
+    iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: giscusTheme } } },
+        'https://giscus.app'
+    );
 }
 
-:root {
-    /* DARK TEMA (YENİ: KOYU VE SAKİN MAVİ TONLARI) */
-    --bg-color: #0d1117; /* GitHub Dark Mavi/Gri Arka Plan */
-    --card-color: rgba(22, 27, 34, 0.8); /* Kart Arka Planı */
-    --text-color: #c9d1d9; /* Açık Gri Metin */
-    --text-muted: #8b949e; /* Soft Gri Metin */
-    --accent-color: #58a6ff; /* Soft Mavi Vurgu */
-    --nav-bg: rgba(13, 17, 23, 0.95);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --soft-glow: rgba(88, 166, 255, 0.4); /* Soft Mavi Parlama */
-
-    /* Sabit Accent Gradient (Soft Mavi) */
-    --accent-gradient: linear-gradient(60deg, #58a6ff, #2f81f7); 
-}
-
-/* LIGHT TEMA (KORUNDU) */
-body.light-theme {
-    --bg-color: #f0f2f5; /* Çok Açık Gri Arka Plan */
-    --card-color: rgba(255, 255, 255, 0.95);
-    --text-color: #18191a;
-    --text-muted: #606770;
-    --accent-color: #0084ff; /* Yumuşak Mavi */
-    --nav-bg: rgba(255, 255, 255, 0.95);
-    --border-color: rgba(0, 0, 0, 0.1);
-    --soft-glow: rgba(0, 132, 255, 0.4); /* Yumuşak Mavi Parlama */
-
-    /* Sabit Accent Gradient (Soft Mavi) */
-    --accent-gradient: linear-gradient(60deg, #00c6ff, #0072ff);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-    font-family: 'Fira Code', monospace;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    transition: background-color 0.5s ease, color 0.5s ease;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* --- NAVİGASYON --- */
-nav { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 0 5%; min-height: 8vh; 
-    background-color: var(--nav-bg); 
-    backdrop-filter: blur(10px); 
-    /* Soft Gölge */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
-    position: fixed; width: 100%; z-index: 10; 
-}
-.nav-left { display: flex; align-items: center; gap: 60px; }
-.logo { 
-    background: var(--accent-gradient); 
-    background-clip: text; -webkit-background-clip: text; 
-    color: transparent; 
-    font-size: 20px; font-weight: 700; text-decoration: none; 
-    /* Animasyonu Kaldırıp, Soft Gölge Ekledik */
-    filter: drop-shadow(0 0 4px var(--soft-glow));
-}
-.nav-links { display: flex; list-style: none; gap: 20px; }
-.nav-links a { 
-    color: var(--text-muted); text-decoration: none; font-size: 14px; 
-    font-weight: 700; padding: 0.5em 1.2em; border-radius: 999px; 
-    transition: all 0.4s ease; 
-}
-.nav-links a:not(.active):hover { 
-    color: var(--text-color); 
-    background-color: var(--border-color); 
-}
-.nav-links a.active { 
-    color: var(--text-color); 
-    background: var(--accent-gradient); 
-    box-shadow: 0 0 10px var(--soft-glow);
-}
-
-
-/* YENİ: NAV ACTIONS (TEMA BUTONU VE GITHUB) */
-.nav-actions { display: flex; align-items: center; gap: 20px; }
-
-/* GitHub Linki */
-.github-link { 
-    color: var(--text-muted); font-size: 1.5rem; 
-    transition: color 0.3s ease, filter 0.3s ease; 
-    display: flex; align-items: center; 
-}
-.github-link:hover { 
-    color: var(--accent-color); 
-    filter: drop-shadow(0 0 5px var(--soft-glow)); 
-}
-
-/* Tema Değiştirme Butonu */
-#theme-toggle { 
-    background: none; border: none; color: var(--text-muted); 
-    font-size: 1.4rem; cursor: pointer; padding: 0; position: relative; 
-    width: 24px; height: 24px; display: flex; align-items: center; 
-    justify-content: center; transition: all 0.3s ease; 
-}
-#theme-toggle:hover { 
-    color: var(--accent-color); 
-    filter: drop-shadow(0 0 5px var(--soft-glow)); 
-}
-#theme-toggle i { position: absolute; transition: opacity 0.3s ease, transform 0.3s ease; }
-
-/* Tema İkon Yönetimi */
-#icon-moon { opacity: 1; transform: scale(1); }
-#icon-sun { opacity: 0; transform: scale(0); }
-
-/* LIGHT TEMA AKTİFKEN İkonlar */
-body.light-theme #icon-moon { opacity: 0; transform: scale(0); }
-body.light-theme #icon-sun { opacity: 1; transform: scale(1); }
-body.light-theme #theme-toggle:hover { color: var(--accent-color); filter: drop-shadow(0 0 5px var(--soft-glow)); }
-
-
-/* --- ANA İÇERİK BÖLÜMÜ --- */
-main { 
-    transition: opacity 0.6s ease-in-out; /* Süre 0.6s'ye çıkarıldı */
-    flex: 1; display: flex; justify-content: center; align-items: center; 
-    width: 100%; padding-top: 8vh; 
-}
-/* Sayfa geçiş efekti süresi 0.6s'ye uzatıldı */
-body.fade-out main { opacity: 0; }
-body { transition: opacity 0.6s ease-in-out, background-color 0.5s ease, color 0.5s ease; }
-
-
-section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: center; }
-/* Yorumlar sayfasına özel genişlik */
-#yorumlar { max-width: 800px; }
-
-
-/* BAŞLIKLAR VE VURGULAR (Softlaştırıldı) */
-h1, h2, .highlight { 
-    background: var(--accent-gradient); 
-    background-clip: text; -webkit-background-clip: text; 
-    color: transparent; 
-    /* Neon gölgesini soft drop-shadow ile değiştirdik */
-    filter: drop-shadow(0 0 5px var(--soft-glow));
-    font-weight: 700;
-}
-body.light-theme h1, body.light-theme h2, body.light-theme .highlight { 
-    filter: drop-shadow(0 0 3px var(--soft-glow)); 
-} 
-
-h1 { font-size: 3rem; color: var(--text-color); }
-h1 .highlight { display: inline-block; }
-h2 { font-size: 2.5rem; margin-bottom: 40px; }
-p { color: var(--text-muted); }
-.about-container { display: flex; align-items: center; justify-content: center; gap: 40px; text-align: left; }
-
-/* Soft Buton Tasarımı */
-.btn {
-    background: var(--accent-gradient); 
-    color: var(--text-color); 
-    border: none; /* Kenarlığı kaldırdık */
-    padding: 14px 28px; margin-top: 20px; text-decoration: none;
-    border-radius: 8px; font-weight: bold; 
-    transition: all 0.3s ease;
-    /* Soft Gölge */
-    box-shadow: 0 4px 15px var(--soft-glow); 
-}
-
-/* Anasayfa İletişim Butonu Hover Efekti */
-.btn:hover {
-    transform: translateY(-3px); /* Hafif yukarı kalkma */
-    box-shadow: 0 8px 20px var(--soft-glow); /* Daha güçlü soft gölge */
-    opacity: 0.9;
-}
-
-#hero p { margin-bottom: 60px; }
-#hero .btn { margin-top: 40px; }
-
-.profile-pic {
-    width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
-    border: 3px solid var(--accent-color); /* Neon yerine soft border */
-    box-shadow: 0 0 20px var(--soft-glow); /* Soft gölge */
-}
-
-/* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
-.social-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; }
-.social-links a { color: var(--text-muted); font-size: 2.5rem; transition: all 0.3s ease; }
-.social-links a:hover { 
-    color: var(--accent-color); 
-    filter: drop-shadow(0 0 10px var(--soft-glow)); 
-    transform: translateY(-5px); 
-}
-footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
-
-/* --- NAVBAR GEÇİŞ ANİMASYONU --- */
-.nav-loader {
-    position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; 
-    background: var(--accent-gradient); 
-    box-shadow: 0 0 10px var(--soft-glow);
-    transition: width 0.6s ease-in-out; /* Süre 0.6s'ye çıkarıldı */
-}
-.nav-loader.loading { width: 100%; }
-
-/* --- MOBİL UYUMLULUK VE NAVİGASYON EKLEMELERİ (Responsive Tasarım) --- */
-.burger { 
-    display: none; 
-    cursor: pointer; 
-    z-index: 20; 
-}
-.burger div {
-    width: 25px;
-    height: 3px;
-    background-color: var(--text-color);
-    margin: 5px;
-    transition: all 0.3s ease;
-}
-
-@media screen and (max-width: 768px) {
-    /* Genel Responsive Ayarlar */
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 2rem; }
-    .about-container { flex-direction: column; text-align: center; }
-    .profile-pic { margin-bottom: 20px; }
+// Tema değiştirme fonksiyonu
+const themeHandler = () => {
+    const toggleButton = document.getElementById('theme-toggle');
+    const body = document.body;
     
-    /* BURGER İKONUNU GÖRÜNÜR YAP */
-    .burger { display: block; } 
-
-    /* Mobil Menü Konumlandırma ve Görünüm */
-    .nav-links {
-        display: flex; /* Görünürlüğü açmak için */
-        position: absolute; 
-        right: 0; 
-        top: 8vh; 
-        height: 92vh; 
-        background-color: var(--nav-bg); 
-        backdrop-filter: blur(20px); 
-        flex-direction: column; 
-        align-items: center;
-        width: 100%; 
-        transform: translateX(100%); /* Başlangıçta ekranın dışına kaydır */
-        transition: transform 0.5s ease-in;
-        padding-top: 50px;
-    }
+    // 1. Kayıtlı temayı yükle
+    const savedTheme = localStorage.getItem('theme');
+    let currentTheme = 'dark';
     
-    .nav-links li { 
-        opacity: 0; 
-    }
-    
-    .nav-links a { 
-        font-size: 1.5rem; 
-        padding: 15px 30px; 
-        width: 100%; 
-        text-align: center; 
+    if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        body.classList.add('light-theme');
+        currentTheme = 'light';
+    } else {
+        body.classList.remove('light-theme');
     }
 
-    /* Menü Aktif (Açık) İken */
-    .nav-active { 
-        transform: translateX(0%); /* Menüyü içeri kaydır */
+    // İlk yüklemede Giscus temasını ayarla
+    setTimeout(() => setGiscusTheme(currentTheme), 500); 
+
+
+    // 2. Buton tıklama olayını dinle
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            
+            const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            
+            // Tema değiştiğinde Giscus'a bildir
+            setGiscusTheme(newTheme);
+        });
     }
+};
 
-    /* Burger Menü Animasyonu (X şekli) */
-    .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
-    .toggle .line2 { opacity: 0; }
-    .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
-    
-    /* Nav Loader'ı mobil görünümde göster */
-    .nav-loader { display: block; }
-}
 
-/* Masaüstünde nav loader'ı gizle */
-@media screen and (min-width: 769px) {
-    .nav-loader { display: none !important; } 
-}
-
-/* Linkler için animasyon (JavaScript'te kullanılacak) */
-@keyframes navLinkFade {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0px); }
-}
-
-/* Sayfa Karartma Animasyonu */
-body.fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; } /* Süre 0.6s */
-body:not(.fade-out) { opacity: 1; }
+// Tüm fonksiyonları DOM yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', () => {
+    themeHandler(); // En başta tema ayarını yükle
+    navSlide();
+    pageTransition();
+});
