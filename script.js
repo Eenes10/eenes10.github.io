@@ -1,4 +1,4 @@
-// --- SCRIPT.JS (SON HALİ) ---
+// --- SCRIPT.JS (SON VE TAM HALİ) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -30,7 +30,7 @@ const navSlide = () => {
                 nav.classList.remove('nav-active');
                 // Burger ikonunu düzelt
                 burger.classList.remove('toggle');
-                // Animasyonları sıfırla (sayfa geçişi ile birlikte)
+                // Animasyonları sıfırla
                 navLinks.forEach(link => link.style.animation = '');
             }
         });
@@ -71,14 +71,10 @@ const pageTransition = () => {
 
 // Giscus'a Tema Değişikliğini Bildirme
 const setGiscusTheme = (theme) => {
-    // Giscus için temaları Dark temada 'dark', Light temada 'light' olarak kullanacağız.
     const giscusTheme = theme === 'light' ? 'light' : 'dark';
-    
-    // Giscus iframe'ini bul
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
 
-    // iframe'e tema değişikliğini bildir
     iframe.contentWindow.postMessage(
         { giscus: { setConfig: { theme: giscusTheme } } },
         'https://giscus.app'
@@ -101,8 +97,7 @@ const themeHandler = () => {
         body.classList.remove('light-theme');
     }
 
-    // İlk yüklemede Giscus temasını ayarla (Yorumlar sayfası varsa)
-    // Küçük bir gecikme eklemek, Giscus iframe'inin yüklenmesine izin verir
+    // İlk yüklemede Giscus temasını ayarla
     setTimeout(() => setGiscusTheme(currentTheme), 500); 
 
 
@@ -111,7 +106,6 @@ const themeHandler = () => {
         toggleButton.addEventListener('click', () => {
             body.classList.toggle('light-theme');
             
-            // Temayı localStorage'a kaydet
             const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
             localStorage.setItem('theme', newTheme);
             
