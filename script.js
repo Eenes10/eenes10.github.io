@@ -1,4 +1,4 @@
-// --- SCRIPT.JS (SON VE TAM HALİ - Tüm Özellikler Dahil) ---
+// --- SCRIPT.JS (SON VE TAM HALİ) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -6,25 +6,31 @@ const navSlide = () => {
     const nav = document.querySelector('.nav-links');
     if (!burger || !nav) return;
     const navLinks = nav.querySelectorAll('li');
+
     burger.addEventListener('click', () => {
         nav.classList.toggle('nav-active');
-        // Nav links animation logic
+        burger.classList.toggle('toggle');
+        
+        // Linklerin tek tek kayma animasyonu
         navLinks.forEach((link, index) => {
             if (nav.classList.contains('nav-active')) {
                 link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
             } else {
+                // Menü kapanırken animasyonu sıfırla
                 link.style.animation = '';
             }
         });
-        burger.classList.toggle('toggle');
     });
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma 
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
     navLinks.forEach(li => {
         li.querySelector('a').addEventListener('click', () => {
             if (nav.classList.contains('nav-active')) {
+                // Menüyü kapat
                 nav.classList.remove('nav-active');
+                // Burger ikonunu düzelt
                 burger.classList.remove('toggle');
+                // Animasyonları sıfırla
                 navLinks.forEach(link => link.style.animation = '');
             }
         });
@@ -34,17 +40,22 @@ const navSlide = () => {
 // Sayfa geçiş animasyonu
 const pageTransition = () => {
     const body = document.querySelector('body');
-    const navLoader = document.querySelector('.nav-loader');
+    const navLoader = document.querySelector('.nav-loader'); 
+
     body.classList.remove('fade-out');
     const allLinks = document.querySelectorAll('a');
 
     allLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const url = link.href;
+            
+            // # (sayfa içi link) veya _blank (yeni sekme) veya Ctrl/Meta tuşlarıyla açılmasını engelleme
             if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
             
+            // Aynı domain içindeki farklı bir sayfaya yönlendirme kontrolü
             if (url.startsWith(window.location.origin) && url !== window.location.href) {
                 e.preventDefault();
+
                 if (navLoader) {
                     navLoader.classList.add('loading');
                 }
@@ -52,71 +63,65 @@ const pageTransition = () => {
                 
                 setTimeout(() => {
                     window.location.href = url;
-                }, 400); 
+                }, 300); 
             }
         });
     });
 };
 
-// Tema değiştirme fonksiyonu (SON GÜNCELLEME: Flaşlı Geçiş Animasyonu)
+// Giscus'a Tema Değişikliğini Bildirme
+const setGiscusTheme = (theme) => {
+    const giscusTheme = theme === 'light' ? 'light' : 'dark';
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+
+    iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: giscusTheme } } },
+        'https://giscus.app'
+    );
+}
+
+// Tema değiştirme fonksiyonu
 const themeHandler = () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
-    if (!toggleButton) return;
     
     // 1. Kayıtlı temayı yükle
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') body.classList.add('light-theme');
+    let currentTheme = 'dark';
     
-    toggleButton.addEventListener('click', () => {
-        // Eğer zaten geçiş yapılıyorsa tekrar tıklamayı engelle
-        if (body.classList.contains('theme-transitioning')) return; 
+    if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        body.classList.add('light-theme');
+        currentTheme = 'light';
+    } else {
+        body.classList.remove('light-theme');
+    }
 
-        // 1. Geçiş sınıfını ekle (Animasyonu başlat)
-        body.classList.add('theme-transitioning');
-        
-        const transitionDuration = 300; // CSS animasyon süresiyle aynı olmalı (0.3s)
-        
-        setTimeout(() => {
-            // Temayı değiştir
+    // İlk yüklemede Giscus temasını ayarla
+    setTimeout(() => setGiscusTheme(currentTheme), 500); 
+
+
+    // 2. Buton tıklama olayını dinle
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
             body.classList.toggle('light-theme');
-            localStorage.setItem('theme', body.classList.contains('light-theme') ? 'light' : 'dark');
             
-            // Geçiş sınıfını kaldır
-            body.classList.remove('theme-transitioning');
+            const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
             
-        }, transitionDuration); 
-    });
-};
-
-// Dinamik "Günün İpucu" fonksiyonu
-const displayRandomTip = () => {
-    const tips = [
-        "⚽ Kod yazmak, futbol oynamak gibidir; ne kadar pratik yaparsan o kadar iyi olursun!",
-        "💡 Git'te bir hata mı yaptın? `git reset --hard HEAD` ile geri alabilirsin (Dikkatli kullan!)",
-        "💻 JavaScript'te `const` kullanmak, değişkeni yeniden atamanı engeller ve kodunu daha güvenli yapar.",
-        "✨ Siteyi mobil görünümde test etmeyi unutma! Mobil entegrasyon önemlidir.",
-        "🥅 Python'da listeleri ters çevirmenin en kısa yolu `list[::-1]` kullanmaktır.",
-        "🌕 Tema değiştirme butonu için CSS'te :root değişkenlerini kullanmak hayat kurtarır.",
-        "⚽ Favori takımın kim? Yorumlarda paylaşabilirsin!",
-        "🚀 Bir sonraki projen, öğrendiğin yeni bir teknolojiyi içermeli."
-    ];
-
-    const tipElement = document.getElementById('tip-of-the-day');
-
-    if (tipElement) {
-        const randomIndex = Math.floor(Math.random() * tips.length);
-        tipElement.textContent = tips[randomIndex];
+            // Tema değiştiğinde Giscus'a bildir
+            setGiscusTheme(newTheme);
+        });
     }
 };
 
 
-// GitHub projelerini çekme fonksiyonu
+// Proje çekme fonksiyonu (Eğer kullanılıyorsa)
 async function fetchGitHubProjects() {
     const projectGrid = document.querySelector('.project-grid');
     if (!projectGrid) return;
 
-    const githubUsername = "Tentex1";
+    const githubUsername = "Tentex1"; // Kendi kullanıcı adınız
     const apiUrl = `https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`;
 
     const languageColors = {
@@ -134,7 +139,7 @@ async function fetchGitHubProjects() {
         projectGrid.innerHTML = '';
 
         if (portfolioRepos.length === 0) {
-            projectGrid.innerHTML = '<p>Gösterilecek proje bulunamadı. Projelerinize "portfolio" etiketini eklediğinizden emin olun.</p>';
+            projectGrid.innerHTML = '<p>Gösterilecek proje bulunamadı. Projelerinize "portfolio-project" etiketini eklediğinizden emin olun.</p>';
             return;
         }
 
@@ -181,16 +186,10 @@ async function fetchGitHubProjects() {
     }
 }
 
-
 // Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
-    themeHandler(); 
+    themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
-    displayRandomTip(); 
-
-    // Sadece Projeler sayfasındaysak fetchGitHubProjects'i çağır
-    if (window.location.pathname.includes('projeler.html')) {
-        fetchGitHubProjects();
-    }
+    // fetchGitHubProjects(); // Eğer projeler sayfanız yoksa bu yorumda kalabilir.
 });
