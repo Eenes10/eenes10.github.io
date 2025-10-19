@@ -1,4 +1,4 @@
-/* --- YENİ TEMA: MAVİ TONLARI PALETİ (GÖRSELDEKİ RENKLER) --- */
+/* --- HAREKETLİ ALTIN TEMA v3 (TÜM ELEMENTLER NEON) --- */
 
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
@@ -7,29 +7,29 @@
 }
 
 :root {
-    /* DARK TEMA (VARSAYILAN): Görseldeki Alt Palet (Derin Mavi/Turkuaz) */
-    --bg-color: #0E4D64; /* Koyu Mavi/Turkuaz (Alt paletin en koyu tonu) */
-    --card-color: rgba(14, 77, 100, 0.7); /* Card için biraz daha transparan koyu */
-    --text-color: #CAF0F8; /* Açık Mavi (Alt palet ortasından daha açık) */
-    --text-muted: #80CED7; /* Orta Mavi/Turkuaz */
-    --accent-gradient: linear-gradient(60deg, #00B4D8, #00E4F8, #00B4D8, #00B4D8); /* Canlı Turkuaz Vurgu */
-    --nav-bg: rgba(14, 77, 100, 0.9); /* Arka planın hafif transparan hali */
-    --border-color: rgba(255, 255, 255, 0.15); /* Hafif beyaz border */
-    --neon-main-color: #00B4D8;  /* Canlı Turkuaz */
-    --neon-glow-color: #00E4F8;  /* Daha açık turkuaz parlama rengi */
+    /* DARK TEMA (VARSAYILAN) */
+    --bg-color: #111111;
+    --card-color: rgba(24, 24, 27, 0.7);
+    --text-color: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent-gradient: linear-gradient(60deg, #fffc7f, #ffffff, #fffc7f, #fffc7f); /* Altın Gradient */
+    --nav-bg: rgba(17, 17, 17, 0.9);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --neon-main-color: #ffffff; /* Altın */
+    --neon-glow-color: #fffc7f;  /* Parlak Sarı */
 }
 
-/* LIGHT TEMA: Görseldeki Üst Palet (Açık Mavi Tonları) */
+/* LIGHT TEMA */
 body.light-theme {
-    --bg-color: #E0F2F7; /* Çok Açık Mavi (Üst paletin en açık tonu) */
-    --card-color: rgba(235, 245, 249, 0.8); /* Card için biraz daha transparan açık */
-    --text-color: #2F6D8A; /* Koyu Mavi (Üst paletten bir ton) */
-    --text-muted: #6FB0CE; /* Orta Mavi */
-    --accent-gradient: linear-gradient(60deg, #48B7FF, #78D4FF, #48B7FF, #48B7FF); /* Açık Mavi Vurgu */
-    --nav-bg: rgba(224, 242, 247, 0.9); /* Arka planın hafif transparan hali */
-    --border-color: rgba(0, 0, 0, 0.1); /* Hafif siyah border */
-    --neon-main-color: #48B7FF; 
-    --neon-glow-color: #78D4FF; 
+    --bg-color: #f3f4f6;
+    --card-color: rgba(255, 255, 255, 0.8);
+    --text-color: #1f2937;
+    --text-muted: #4b5563;
+    --accent-gradient: linear-gradient(60deg, #ff9900, #ffcc00, #ff9900, #ff9900); /* Parlak Turuncu Gradient */
+    --nav-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --neon-main-color: #ff9900; 
+    --neon-glow-color: #ffcc00; 
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -220,4 +220,4 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
 /* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
-body:not(.fade-out) { opacity: 1; }
+body:not(.fade-out) { opacity: 1; }
