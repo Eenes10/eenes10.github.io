@@ -71,7 +71,6 @@ const pageTransition = () => {
 
 // Giscus'a Tema Değişikliğin Bildirme
 const setGiscusTheme = (theme) => {
-    // Soft temaya uygun olarak Giscus temaları güncellendi
     const giscusTheme = theme === 'light' ? 'light' : 'dark_dimmed'; 
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
@@ -82,30 +81,45 @@ const setGiscusTheme = (theme) => {
     );
 }
 
-// --- GÜNCEL: DISCO THEME HİLE KODU (Müzik Eklendi) ---
+// Disko topu elementini oluşturan yardımcı fonksiyon
+const createDiscoBall = () => {
+    const existingDiscoBall = document.getElementById('dynamic-disco-ball');
+    if (existingDiscoBall) return existingDiscoBall;
+
+    const discoBall = document.createElement('div');
+    discoBall.id = 'dynamic-disco-ball';
+    discoBall.classList.add('disco-ball');
+    // Disko topuna tıklama olayını ekle (kapatmak için)
+    discoBall.addEventListener('click', () => {
+        // Disko topuna tıklanınca, profil resmine tıklanmış gibi simüle et
+        const profilePic = document.querySelector('.profile-pic');
+        if (profilePic) {
+            profilePic.click();
+        }
+    });
+    return discoBall;
+};
+
+
+// --- GÜNCEL: DISCO THEME HİLE KODU (Disko Topu ve Müzik) ---
 const discoHandler = () => {
     const profilePic = document.querySelector('.profile-pic');
+    const aboutContainer = document.querySelector('.about-container');
     const body = document.body;
     let clickCount = 0;
     let discoTimeout;
     
-    // YENİ: Audio elementini seç
     const discoMusic = document.getElementById('disco-music');
 
-    if (!profilePic) return;
+    if (!profilePic || !aboutContainer) return;
 
     profilePic.addEventListener('click', () => {
-        // Tıklama sayısını artır
         clickCount++;
-
-        // Her tıklamada zamanlayıcıyı sıfırla
         clearTimeout(discoTimeout);
 
-        // 3 tıklama kontrolü
         if (clickCount === 3) {
             body.classList.toggle('disco-theme');
             
-            // TEMA VE MÜZİK YÖNETİMİ
             if (body.classList.contains('disco-theme')) {
                 // Disco modu AÇILDI
                 body.classList.remove('light-theme');
@@ -118,6 +132,12 @@ const discoHandler = () => {
                         console.error("Müzik otomatik oynatılırken hata oluştu. Kullanıcı etkileşimi gerekebilir:", error);
                     });
                 }
+
+                // Profil resmini gizle ve disko topunu ekle
+                profilePic.style.display = 'none';
+                const discoBall = createDiscoBall();
+                aboutContainer.prepend(discoBall);
+                
             } else {
                 // Disco modu KAPANDI
                 localStorage.setItem('theme', 'dark');
@@ -128,24 +148,31 @@ const discoHandler = () => {
                     discoMusic.pause();
                     discoMusic.currentTime = 0; // Başa sar
                 }
+
+                // Disko topunu kaldır ve profil resmini göster
+                profilePic.style.display = 'block';
+                const existingDiscoBall = document.getElementById('dynamic-disco-ball');
+                if (existingDiscoBall) {
+                    existingDiscoBall.remove();
+                }
             }
 
-            // 3. tıklamadan sonra sayacı sıfırla
-            clickCount = 0;
+            clickCount = 0; // 3. tıklamadan sonra sayacı sıfırla
 
         } else {
-            // Bir sonraki tıklamayı beklemek için zamanlayıcı başlat (1 saniye içinde 3 kez tıklanmalı)
             discoTimeout = setTimeout(() => {
                 clickCount = 0; // Süre dolarsa sayacı sıfırla
-            }, 1000);
+            }, 1000); // 1 saniye içinde 3 kez tıklanmalı
         }
     });
 
-    // Sayfa yüklendiğinde disko temasını kontrol et
+    // Sayfa yüklendiğinde disko temasını kontrol et ve disko topunu göster/gizle
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'disco') {
         body.classList.add('disco-theme');
-        // NOT: Sayfa ilk yüklendiğinde otomatik müzik çalmaz, sadece tıklamayla başlar.
+        profilePic.style.display = 'none';
+        const discoBall = createDiscoBall();
+        aboutContainer.prepend(discoBall);
     }
 };
 
@@ -153,7 +180,9 @@ const discoHandler = () => {
 const themeHandler = () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
-    
+    const profilePic = document.querySelector('.profile-pic');
+    const aboutContainer = document.querySelector('.about-container');
+
     // 1. Kayıtlı temayı yükle
     const savedTheme = localStorage.getItem('theme');
     let currentTheme = 'dark';
@@ -164,8 +193,19 @@ const themeHandler = () => {
     } else if (savedTheme === 'disco') {
         body.classList.add('disco-theme');
         currentTheme = 'dark_dimmed'; 
+        // Disko teması açıldığında profil resmini gizle ve disko topunu ekle
+        if (profilePic && aboutContainer) {
+            profilePic.style.display = 'none';
+            // Sayfa yüklendiğinde disko topunu oluştur. createDiscoBall fonksiyonu zaten var olanı geri döndürecektir.
+            const discoBall = createDiscoBall(); 
+            aboutContainer.prepend(discoBall);
+        }
     } else {
         body.classList.remove('light-theme');
+        // Varsayılan tema (dark) veya disco modu yoksa profil resmini göster
+        if (profilePic) profilePic.style.display = 'block';
+        const existingDiscoBall = document.getElementById('dynamic-disco-ball');
+        if (existingDiscoBall) existingDiscoBall.remove();
     }
 
     // İlk yüklemede Giscus temasını ayarla
@@ -183,6 +223,7 @@ const themeHandler = () => {
         toggleButton.addEventListener('click', () => {
             const body = document.body;
             const discoMusic = document.getElementById('disco-music');
+            const profilePic = document.querySelector('.profile-pic');
 
             // Eğer disco modu açıksa, tema butonu onu kapatıp Dark moda döner
             if (body.classList.contains('disco-theme')) {
@@ -195,6 +236,11 @@ const themeHandler = () => {
                     discoMusic.pause();
                     discoMusic.currentTime = 0;
                 }
+                // Disko topunu kaldır ve profil resmini göster
+                if (profilePic) profilePic.style.display = 'block';
+                const existingDiscoBall = document.getElementById('dynamic-disco-ball');
+                if (existingDiscoBall) existingDiscoBall.remove();
+                
                 return;
             }
 
@@ -206,14 +252,19 @@ const themeHandler = () => {
             
             // Tema değiştiğinde Giscus'a bildir
             setGiscusTheme(newTheme);
+
+            // Light/Dark moda geçildiğinde profil resmini tekrar görünür yap
+            if (profilePic) profilePic.style.display = 'block';
+            const existingDiscoBall = document.getElementById('dynamic-disco-ball');
+            if (existingDiscoBall) existingDiscoBall.remove();
         });
     }
 };
 
-// Tüm fonksiyonları DOM yüklendiğinde çalıştır (discoHandler'ı ekle)
+// Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); 
-    discoHandler(); // Yeni fonksiyonu ekledik
+    discoHandler(); 
     navSlide();
     pageTransition();
 });
