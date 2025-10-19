@@ -84,7 +84,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .github-link:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
 
 
-/* --- YENİ EKLENTİ: AMPUL VE İP TEMA DEĞİŞTİRİCİ STİLLERİ --- */
+/* --- AMPUL VE İP TEMA DEĞİŞTİRİCİ STİLLERİ --- */
 .light-switch-container {
     position: relative;
     width: 30px; 
@@ -131,13 +131,13 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     transition: background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease; 
 }
 
-/* YENİ: Çekme düğmesine hover efekti (Daha iyi etkileşim için) */
+/* Çekme düğmesine hover efekti */
 .light-pull-switch:hover {
     box-shadow: 0 0 5px var(--pull-switch-color);
     transform: scale(1.1);
 }
 
-/* İpi çekme animasyonu (Daha belirgin hale getirildi) */
+/* İpi çekme animasyonu */
 @keyframes pull-cord {
     0% { transform: translateY(0) scale(1); }
     50% { transform: translateY(15px) scale(0.9); } 
