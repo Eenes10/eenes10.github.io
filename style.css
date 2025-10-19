@@ -1,4 +1,4 @@
-/* --- YENİ TEMA: DOĞAL & SAKİN (TOPRAK TONLARI VE TURUNCU VURGU) --- */
+/* --- YENİ TEMA: GELENEKSEL & GÜVENİLİR (MAVİ TONLARI VE ALTIN VURGU) --- */
 
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
@@ -7,29 +7,29 @@
 }
 
 :root {
-    /* DARK TEMA (VARSAYILAN): Koyu Kahve/Gri ve Canlı Turuncu Vurgu */
-    --bg-color: #2B2824; /* Koyu Kahverengi/Gri */
-    --card-color: rgba(58, 54, 49, 0.7); /* Kart/Bölüm rengi: #3A3631'in transparan hali */
-    --text-color: #F0EFEA; /* Hafif Açık Bej */
-    --text-muted: #D3CACA; /* Daha koyu bej/gri tonu */
-    --accent-gradient: linear-gradient(60deg, #FF8C42, #FFC142, #FF8C42, #FF8C42); /* Canlı Turuncu Gradient */
-    --nav-bg: rgba(43, 40, 36, 0.9); /* Arka planın hafif transparan hali */
+    /* DARK TEMA (VARSAYILAN): Koyu Lacivert ve Altın Sarısı Vurgu */
+    --bg-color: #0A192F; /* Koyu Lacivert */
+    --card-color: rgba(23, 42, 69, 0.7); /* Kart/Bölüm rengi: #172A45'in transparan hali */
+    --text-color: #CCD6F6; /* Açık Gri-Mavi */
+    --text-muted: #8892B0; /* Orta Gri-Mavi tonu */
+    --accent-gradient: linear-gradient(60deg, #FFD700, #FFE66D, #FFD700, #FFD700); /* Altın Sarısı Gradient */
+    --nav-bg: rgba(10, 25, 47, 0.9); /* Arka planın hafif transparan hali */
     --border-color: rgba(255, 255, 255, 0.1);
-    --neon-main-color: #FF8C42;  /* Canlı Turuncu */
-    --neon-glow-color: #FFC142;  /* Daha açık turuncu parlama rengi */
+    --neon-main-color: #FFD700;  /* Altın Sarısı */
+    --neon-glow-color: #FFE66D;  /* Daha açık altın parlama rengi */
 }
 
-/* LIGHT TEMA: Krem ve Yanık Turuncu Vurgu */
+/* LIGHT TEMA: Açık Mavi/Beyaz ve Koyu Altın Vurgu */
 body.light-theme {
-    --bg-color: #FFF8F3; /* Kirli Beyaz/Krem */
-    --card-color: rgba(245, 239, 234, 0.8); /* Kart/Bölüm rengi: #F5EFEA'nın transparan hali */
-    --text-color: #4A4540; /* Koyu Kahve */
-    --text-muted: #7A7066; /* Orta Kahve/Gri tonu */
-    --accent-gradient: linear-gradient(60deg, #D95300, #FF7B3B, #D95300, #D95300); /* Yanık Turuncu Gradient */
-    --nav-bg: rgba(255, 248, 243, 0.9); /* Arka planın hafif transparan hali */
+    --bg-color: #F0F8FF; /* Açık Mavi/Beyaz */
+    --card-color: rgba(230, 243, 255, 0.8); /* Kart/Bölüm rengi: #E6F3FF'in transparan hali */
+    --text-color: #172A45; /* Koyu Lacivert */
+    --text-muted: #4F668A; /* Orta Mavi tonu */
+    --accent-gradient: linear-gradient(60deg, #CCAA00, #FFD700, #CCAA00, #CCAA00); /* Koyu Altın Gradient */
+    --nav-bg: rgba(240, 248, 255, 0.9); /* Arka planın hafif transparan hali */
     --border-color: rgba(0, 0, 0, 0.1);
-    --neon-main-color: #D95300; 
-    --neon-glow-color: #FF7B3B; 
+    --neon-main-color: #CCAA00; 
+    --neon-glow-color: #FFD700; 
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
