@@ -161,7 +161,18 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 .nav-loader.loading { width: 100%; }
 
 /* --- MOBİL UYUMLULUK VE NAVİGASYON EKLEMELERİ (Responsive Tasarım) --- */
-.burger { display: none; cursor: pointer; }
+.burger { 
+    display: none; 
+    cursor: pointer; 
+    z-index: 20; 
+}
+.burger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 5px;
+    transition: all 0.3s ease;
+}
 
 @media screen and (max-width: 768px) {
     /* Genel Responsive Ayarlar */
@@ -170,28 +181,41 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
     .about-container { flex-direction: column; text-align: center; }
     .profile-pic { margin-bottom: 20px; }
     
-    /* Navigasyon: Logo, Burger, Actions hizalaması */
-    nav { justify-content: space-between; padding: 0 5%; } 
-    .nav-left { gap: 0; }
-    .nav-actions { margin-left: auto; margin-right: 20px; } 
+    /* BURGER İKONUNU GÖRÜNÜR YAP */
+    .burger { display: block; } 
 
-    /* Mobil Menü (nav-links) Ayarları */
+    /* Mobil Menü Konumlandırma ve Görünüm */
     .nav-links {
-        position: absolute; right: 0; top: 8vh; 
-        height: 92vh; background-color: var(--nav-bg); 
-        backdrop-filter: blur(20px); display: flex;
-        flex-direction: column; align-items: center;
-        width: 100%; transform: translateX(100%); 
+        display: flex; /* Görünürlüğü açmak için */
+        position: absolute; 
+        right: 0; 
+        top: 8vh; 
+        height: 92vh; 
+        background-color: var(--nav-bg); 
+        backdrop-filter: blur(20px); 
+        flex-direction: column; 
+        align-items: center;
+        width: 100%; 
+        transform: translateX(100%); /* Başlangıçta ekranın dışına kaydır */
         transition: transform 0.5s ease-in;
         padding-top: 50px;
     }
     
-    .nav-links li { opacity: 0; }
+    .nav-links li { 
+        opacity: 0; 
+    }
     
-    .nav-links a { font-size: 1.5rem; padding: 15px 30px; width: 100%; text-align: center; }
+    .nav-links a { 
+        font-size: 1.5rem; 
+        padding: 15px 30px; 
+        width: 100%; 
+        text-align: center; 
+    }
 
-    /* Menü Açıkken */
-    .nav-active { transform: translateX(0%); }
+    /* Menü Aktif (Açık) İken */
+    .nav-active { 
+        transform: translateX(0%); /* Menüyü içeri kaydır */
+    }
 
     /* Burger Menü Animasyonu (X şekli) */
     .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
