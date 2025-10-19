@@ -82,12 +82,15 @@ const setGiscusTheme = (theme) => {
     );
 }
 
-// --- YENİ: DISCO THEME HİLE KODU ---
+// --- GÜNCEL: DISCO THEME HİLE KODU (Müzik Eklendi) ---
 const discoHandler = () => {
     const profilePic = document.querySelector('.profile-pic');
     const body = document.body;
     let clickCount = 0;
     let discoTimeout;
+    
+    // YENİ: Audio elementini seç
+    const discoMusic = document.getElementById('disco-music');
 
     if (!profilePic) return;
 
@@ -102,18 +105,29 @@ const discoHandler = () => {
         if (clickCount === 3) {
             body.classList.toggle('disco-theme');
             
-            // Eğer light-theme açıksa kapat ve disko temasına geç
-            if (body.classList.contains('light-theme') && body.classList.contains('disco-theme')) {
+            // TEMA VE MÜZİK YÖNETİMİ
+            if (body.classList.contains('disco-theme')) {
+                // Disco modu AÇILDI
                 body.classList.remove('light-theme');
-                localStorage.setItem('theme', 'disco'); // Yerel depolamaya kaydet
-                setGiscusTheme('dark_dimmed'); // Giscus'u uyumlu bir moda ayarla
-            } else if (!body.classList.contains('disco-theme')) {
-                // Disco modu kapandığında, varsayılan temaya geri dön (dark)
-                localStorage.setItem('theme', 'dark');
-                setGiscusTheme('dark_dimmed');
-            } else {
                 localStorage.setItem('theme', 'disco');
                 setGiscusTheme('dark_dimmed');
+                
+                // MÜZİĞİ BAŞLAT
+                if (discoMusic) {
+                    discoMusic.play().catch(error => {
+                        console.error("Müzik otomatik oynatılırken hata oluştu. Kullanıcı etkileşimi gerekebilir:", error);
+                    });
+                }
+            } else {
+                // Disco modu KAPANDI
+                localStorage.setItem('theme', 'dark');
+                setGiscusTheme('dark_dimmed');
+                
+                // MÜZİĞİ DURDUR
+                if (discoMusic) {
+                    discoMusic.pause();
+                    discoMusic.currentTime = 0; // Başa sar
+                }
             }
 
             // 3. tıklamadan sonra sayacı sıfırla
@@ -131,6 +145,7 @@ const discoHandler = () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'disco') {
         body.classList.add('disco-theme');
+        // NOT: Sayfa ilk yüklendiğinde otomatik müzik çalmaz, sadece tıklamayla başlar.
     }
 };
 
@@ -147,9 +162,8 @@ const themeHandler = () => {
         body.classList.add('light-theme');
         currentTheme = 'light';
     } else if (savedTheme === 'disco') {
-        // Disko teması zaten discoHandler tarafından kontrol edilecek
         body.classList.add('disco-theme');
-        currentTheme = 'dark_dimmed'; // Giscus için
+        currentTheme = 'dark_dimmed'; 
     } else {
         body.classList.remove('light-theme');
     }
@@ -167,14 +181,24 @@ const themeHandler = () => {
     // 2. Buton tıklama olayını dinle
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
-            // Disco modundaysa, tema değiştirme butonu sadece onu kapatıp Dark'a döner.
+            const body = document.body;
+            const discoMusic = document.getElementById('disco-music');
+
+            // Eğer disco modu açıksa, tema butonu onu kapatıp Dark moda döner
             if (body.classList.contains('disco-theme')) {
                 body.classList.remove('disco-theme');
                 localStorage.setItem('theme', 'dark');
                 setGiscusTheme('dark_dimmed');
+                
+                // MÜZİĞİ DURDUR
+                if (discoMusic) {
+                    discoMusic.pause();
+                    discoMusic.currentTime = 0;
+                }
                 return;
             }
 
+            // Diğer tema değişimleri (Dark/Light)
             body.classList.toggle('light-theme');
             
             const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
