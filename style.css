@@ -222,7 +222,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
 
-/* --- NEON RACER OYUN STİLLERİ --- */
+/* --- NEON RACER OYUN STİLLERİ (BU KISIM OYUN İÇİN KRİTİKTİR) --- */
 
 #game-container {
     display: flex;
