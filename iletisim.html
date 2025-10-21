@@ -23,7 +23,6 @@
                     <li><a href="hakkimda.html">Hakkımda</a></li>
                     <li><a href="yorumlar.html">Yorumlar</a></li>
                     <li><a href="iletisim.html" class="active">İletişim</a></li>
-                    <li><a href="oyun.html">Oyun</a></li>
                 </ul>
             </div>
             
@@ -48,7 +47,7 @@
     <main>
         <section id="iletisim">
             <h2>İletişime Geçin</h2>
-            <p>Projeler hakkında konuşmak veya tanışmak için bana aşağıdaki platformlardan ulaşabilirsiniz.</p>
+            <p id="iletisim-slogan-text">Projeler hakkında konuşmak veya tanışmak için bana aşağıdaki platformlardan ulaşabilirsiniz.</p>
             <div class="social-links">
                 <a href="https://github.com/Eenes10" target="_blank"><i class="fab fa-github"></i></a>
                 <a href="https://instagram.com/enesyavuz07" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -62,6 +61,19 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // İletişim Metnini Yerel Depodan Yükleme
+        document.addEventListener('DOMContentLoaded', () => {
+            const sloganParagraph = document.getElementById('iletisim-slogan-text');
+            const storageKey = 'admin_text_iletisimSlogan';
+            
+            const savedText = localStorage.getItem(storageKey);
+            
+            if (savedText && sloganParagraph) {
+                sloganParagraph.textContent = savedText;
+            }
+        });
+    </script>
 </body>
 
 </html>
