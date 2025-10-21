@@ -1,4 +1,4 @@
-// --- OYUN.JS (Neon Racer: Engellerden Kaçış) ---
+// --- OYUN.JS (Cyber Racer: Engellerden Kaçış) ---
 
 document.addEventListener('DOMContentLoaded', () => {
     const gameArea = document.getElementById('game-area');
@@ -9,12 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageDisplay = document.getElementById('game-message');
     const scoresList = document.getElementById('scores-list');
 
+    // YENİ: Mobil kontrol butonları
+    const leftButton = document.getElementById('left-btn');
+    const rightButton = document.getElementById('right-btn');
+
     // Oyun Alanı Boyutları
     const gameAreaWidth = 300;
     const gameAreaHeight = 450;
     const playerWidth = 30;
-    const playerHeight = 50;
-
+    
     // Oyun Değişkenleri
     let gameInterval;
     let obstacleInterval;
@@ -145,7 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Oyuncu pozisyonunu sıfırla
         playerX = (gameAreaWidth - playerWidth) / 2;
         player.style.left = `${playerX}px`;
-        player.style.boxShadow = '0 0 10px var(--neon-main-color), 0 0 20px var(--neon-glow-color)';
+        // Yeni temaya uygun parlama rengi
+        player.style.boxShadow = '0 0 8px var(--main-accent-color), 0 0 16px var(--glow-color)';
 
 
         // Yeni engelleri başlat
@@ -175,7 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hata görseli (Araba yanıp söner)
         player.style.boxShadow = '0 0 30px 10px red';
         setTimeout(() => {
-             player.style.boxShadow = '0 0 10px var(--neon-main-color), 0 0 20px var(--neon-glow-color)';
+             // Oyun bitince tekrar normal görünüm
+             player.style.boxShadow = '0 0 8px var(--main-accent-color), 0 0 16px var(--glow-color)';
         }, 500);
     };
 
@@ -189,6 +194,30 @@ document.addEventListener('DOMContentLoaded', () => {
             movePlayer('right');
         }
     });
+
+    // YENİ: Mobil buton dinleyicileri
+    if(leftButton && rightButton) {
+        // Sol tuş basıldığında/tıklandığında
+        leftButton.addEventListener('mousedown', (e) => { 
+            e.preventDefault(); 
+            if (isGameRunning) movePlayer('left'); 
+        });
+        leftButton.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if (isGameRunning) movePlayer('left'); 
+        });
+
+        // Sağ tuş basıldığında/tıklandığında
+        rightButton.addEventListener('mousedown', (e) => { 
+            e.preventDefault(); 
+            if (isGameRunning) movePlayer('right'); 
+        });
+        rightButton.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if (isGameRunning) movePlayer('right'); 
+        });
+    }
+
 
     // Başlangıçta skorları yükle ve butona olay dinleyicisini ekle
     loadScores();
