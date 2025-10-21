@@ -221,3 +221,27 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 /* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
+
+
+/* --- OYUN İÇİ EK GÖRSEL ELEMENTLER --- */
+
+#combo-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0) translateY(-20px);
+    font-size: 2.5rem; /* Daha büyük ve dikkat çekici */
+    font-weight: 900;
+    color: var(--neon-glow-color); 
+    text-shadow: 0 0 15px var(--neon-glow-color), 0 0 20px rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Yumuşak giriş/çıkış */
+    pointer-events: none; /* Tıklama olaylarını engelle */
+    z-index: 100;
+}
+
+@media screen and (max-width: 400px) {
+    #combo-display {
+        font-size: 1.8rem; /* Mobilde çok büyük olmasın */
+    }
+}
