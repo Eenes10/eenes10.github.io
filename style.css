@@ -45,12 +45,11 @@ body {
     display: flex;
     flex-direction: column;
     
-    /* GÜNCEL/DÜZELTME: Sayfa geçiş animasyonu için opacity */
+    /* KRİTİK DÜZELTME */
     opacity: 1; 
     transition: opacity 0.3s ease-in-out;
 }
 
-/* GÜNCEL/DÜZELTME: Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; }
 
 /* --- NAVİGASYON --- */
