@@ -21,35 +21,95 @@
             align-items: center;
         }
 
+        #game-container {
+            position: relative; /* Canvas ve menüyü üst üste bindirmek için */
+            width: 350px;
+            height: 550px;
+            margin-top: 20px;
+        }
+        
         #gameCanvas {
             border: 4px solid var(--neon-main-color);
             box-shadow: 0 0 25px var(--neon-glow-color); /* Neon çerçeve efekti */
-            /* background-color: #34495e; ARTIK GAME_SCRIPT'TE YOL ÇİZİMİ YAPILDIĞINDAN BURADAN KALDIRILDI */
-            margin-top: 20px;
-            cursor: none; /* Arabayı gizlemek için */
+            background-color: transparent; 
+            cursor: none; 
+            display: block;
         }
         
+        /* OYUN MENÜ STİLİ */
+        #game-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 17, 17, 0.95); /* Koyu Arka Plan */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            text-align: center;
+            padding: 20px;
+            z-index: 5; /* Canvas'ın üzerinde kalması için */
+            border: 4px solid var(--neon-main-color);
+            box-shadow: 0 0 25px var(--neon-glow-color);
+        }
+        
+        .menu-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--neon-glow-color);
+            text-shadow: 0 0 10px var(--neon-main-color);
+        }
+        
+        .menu-score, .menu-instructions {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+        
+        .start-btn, .restart-btn {
+            background: var(--accent-gradient);
+            background-size: 300% 300%; 
+            animation: gradient-animation 5s ease infinite;
+            border: none;
+            color: var(--bg-color); 
+            padding: 12px 30px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-glow-color);
+            transition: all 0.2s ease;
+        }
+        
+        .start-btn:hover, .restart-btn:hover {
+            opacity: 0.8;
+            box-shadow: 0 0 25px var(--neon-main-color);
+        }
+
+        /* LIGHT TEMA */
+        body.light-theme #gameCanvas {
+            box-shadow: 0 0 15px var(--neon-glow-color); 
+        }
+
+        /* OYUN BİLGİLERİ */
         .game-info {
             color: var(--text-muted);
             margin-top: 10px;
             font-size: 14px;
         }
-        
-        /* Tema değiştirme butonunun görünürlüğünü koru */
-        body.light-theme #gameCanvas {
-            box-shadow: 0 0 15px var(--neon-glow-color); 
-        }
-
         #game-section h2 { margin-bottom: 20px; }
         
         /* MOBİL KONTROL BUTONLARI STİLİ */
         #mobile-controls {
-            display: none; /* Varsayılan olarak gizli */
-            width: 350px; /* Canvas genişliğiyle aynı olsun */
+            display: none; 
+            width: 350px; 
             margin-top: 20px;
             justify-content: space-between;
         }
-
         .control-btn {
             background-color: var(--card-color);
             color: var(--neon-glow-color);
@@ -57,14 +117,13 @@
             padding: 15px 30px;
             font-size: 1.5rem;
             cursor: pointer;
-            user-select: none; /* Seçimi engelle */
+            user-select: none; 
             border-radius: 8px;
             box-shadow: 0 0 10px var(--neon-glow-color);
             transition: all 0.2s;
-            width: 48%; /* Genişlik ayarı */
+            width: 48%; 
             text-align: center;
         }
-        
         .control-btn:active {
             background-color: var(--neon-main-color);
             color: var(--bg-color);
@@ -76,7 +135,7 @@
             #mobile-controls {
                 display: flex;
             }
-            .game-info:first-of-type { /* Klavye kontrol bilgisi */
+            .game-info:first-of-type { 
                 display: none;
             }
         }
@@ -123,7 +182,18 @@
             <h2 class="highlight">Araba Oyunu</h2>
             <p class="game-info">Klavye Kontrolleri: Sol/Sağ Ok Tuşları veya A/D</p>
             
-            <canvas id="gameCanvas" width="350" height="550"></canvas>
+            <div id="game-container">
+                <canvas id="gameCanvas" width="350" height="550"></canvas>
+                
+                <div id="game-menu">
+                    <h3 class="menu-title" id="menu-headline">ARABA OYUNU</h3>
+                    <p class="menu-instructions" id="menu-instruction-text">
+                        Engellerden kaçın, puan toplayın!
+                    </p>
+                    <p class="menu-score" id="final-score" style="display: none;"></p>
+                    <button class="start-btn" id="start-restart-btn">OYUNA BAŞLA</button>
+                </div>
+            </div>
             
             <div id="mobile-controls">
                 <button id="left-btn" class="control-btn"><i class="fas fa-arrow-left"></i> SOL</button>
