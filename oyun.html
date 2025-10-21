@@ -40,8 +40,46 @@
             box-shadow: 0 0 15px var(--neon-glow-color); 
         }
 
-        /* Başlıklar sitenin temasıyla uyumlu kalır. */
         #game-section h2 { margin-bottom: 20px; }
+        
+        /* MOBİL KONTROL BUTONLARI STİLİ */
+        #mobile-controls {
+            display: none; /* Varsayılan olarak gizli */
+            width: 350px;
+            margin-top: 20px;
+            justify-content: space-between;
+        }
+
+        .control-btn {
+            background-color: var(--card-color);
+            color: var(--neon-glow-color);
+            border: 2px solid var(--neon-main-color);
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            user-select: none; /* Seçimi engelle */
+            border-radius: 8px;
+            box-shadow: 0 0 10px var(--neon-glow-color);
+            transition: all 0.2s;
+            width: 48%; /* Genişlik ayarı */
+            text-align: center;
+        }
+        
+        .control-btn:active {
+            background-color: var(--neon-main-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--neon-main-color);
+        }
+
+        /* Mobil cihazlarda butonları göster */
+        @media (max-width: 600px) {
+            #mobile-controls {
+                display: flex;
+            }
+            .game-info:first-of-type { /* Klavye kontrol bilgisi */
+                display: none;
+            }
+        }
         
     </style>
 </head>
@@ -87,6 +125,11 @@
             
             <canvas id="gameCanvas" width="350" height="550"></canvas>
             
+            <div id="mobile-controls">
+                <button id="left-btn" class="control-btn"><i class="fas fa-arrow-left"></i> SOL</button>
+                <button id="right-btn" class="control-btn">SAĞ <i class="fas fa-arrow-right"></i></button>
+            </div>
+
             <p id="score-display" class="game-info" style="font-size: 1.2em; font-weight: bold; margin-top: 10px; color: var(--neon-glow-color);">Puan: 0</p>
         </section>
     </main>
