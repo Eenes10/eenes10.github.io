@@ -1,4 +1,4 @@
-// --- SCRIPT.JS (SON VE TAM HALİ) ---
+// --- SCRIPT.JS (SON VE TAM HALİ - OYUN VE SİTE İŞLEVLERİ) ---
 
 // Mobil menü fonksiyonu
 const navSlide = () => {
@@ -26,9 +26,9 @@ const navSlide = () => {
     navLinks.forEach(li => {
         const link = li.querySelector('a'); 
         if (link) { 
-             link.addEventListener('click', () => {
+             link.addEventListener('click', (e) => {
                 // Sadece normal link tıklamalarında menüyü kapat
-                if (nav.classList.contains('nav-active') && link.href.includes('.html')) {
+                if (nav.classList.contains('nav-active') && link.href.includes('.html') && !(e.ctrlKey || e.metaKey || link.target === '_blank')) {
                     nav.classList.remove('nav-active');
                     burger.classList.remove('toggle');
                     navLinks.forEach(link => link.style.animation = '');
@@ -59,7 +59,7 @@ const pageTransition = () => {
             if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
             
             // Aynı domain içindeki farklı bir sayfaya yönlendirme kontrolü
-            if (url.startsWith(window.location.origin) && url !== window.location.href) {
+            if (url.startsWith(window.location.origin) && url.includes('.html')) {
                 e.preventDefault();
 
                 if (navLoader) {
@@ -121,61 +121,225 @@ const themeHandler = () => {
     }
 };
 
-// YENİ GÜNCELLEME: Gizli Admin Panel Erişimi (Hakkımda sayfasındaki PP'ye 3 tıklama)
-let adminClickCount = 0;
-let clickTimeout;
+// --- ARABA OYUNU MANTIĞI (SADECE INDEX.HTML İÇİN) ---
 
-const setupSecretAdminAccess = () => {
-    // Yeni hedef: Hakkımda sayfasındaki profil fotoğrafı (.profile-pic)
-    const profilePic = document.querySelector('.profile-pic');
+const setupCarGame = () => {
+    const gameSection = document.getElementById('oyun');
+    const heroSection = document.getElementById('hero-original');
     
-    // Eğer element yoksa (başka bir sayfadaysak), fonksiyonu bitir.
-    if (!profilePic) return; 
+    // Yalnızca index.html'de çalıştır
+    if (!gameSection || !heroSection) return; 
 
-    // Kullanıcı deneyimi için imleci 'tıklanabilir' olarak ayarla
-    profilePic.style.cursor = 'pointer';
+    const gameContainer = document.getElementById('game-container');
+    const startScreen = document.getElementById('start-screen');
+    const startButton = document.getElementById('start-button');
+    const gameArea = document.getElementById('game-area');
+    const scoreDisplay = document.getElementById('score');
+    const endScreen = document.getElementById('end-screen');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const restartButton = document.getElementById('restart-button');
+    const navAnasayfa = document.getElementById('nav-anasayfa');
+    const navOyun = document.getElementById('nav-oyun');
 
-    profilePic.addEventListener('click', (e) => {
-        // Görüntünün varsayılan tıklama davranışını (olmasa bile) ve gezintiyi engelle
-        e.preventDefault(); 
+
+    let isGameRunning = false;
+    let car;
+    let score = 0;
+    let speed = 5;
+    let obstacleInterval;
+    let scoreInterval;
+    let gameLoopInterval;
+
+    const carSize = 80;
+    const roadWidth = 300;
+
+
+    // Sayfa Yüklenince veya Navigasyon Tıklanınca Oyun/Anasayfa görünümünü ayarlar
+    const toggleView = () => {
+        const isGameView = window.location.hash === '#oyun';
         
-        // Yönlendirme zaten admin.html'e doğruysa bir şey yapma
-        if (window.location.pathname.endsWith('admin.html')) return; 
-
-        adminClickCount++;
-        
-        // 1.5 saniye içinde 3 tıklama olmazsa sayacı sıfırla
-        clearTimeout(clickTimeout);
-        clickTimeout = setTimeout(() => {
-            adminClickCount = 0;
-            console.log('Gizli Giriş Sayacı Sıfırlandı.');
-        }, 1500); // 1.5 saniye içinde 3 tıklama bekleniyor
-
-        if (adminClickCount < 3) {
-            console.log(`Admin Panel Gizli Giriş Denemesi: ${adminClickCount}/3`);
+        if (isGameView) {
+            heroSection.style.display = 'none';
+            gameSection.style.display = 'flex';
+            // Navigasyon Aktifliği
+            navAnasayfa.classList.remove('active');
+            if (navOyun) navOyun.classList.add('active'); 
+            // Oyun görünümü aktifse, hemen oyun ayarlarını kur (ama başlatma)
+            gameArea.style.display = 'none';
+            endScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
         } else {
-            // 3. tıklamada yönlendir
+            heroSection.style.display = 'flex'; 
+            gameSection.style.display = 'none';
+            // Navigasyon Aktifliği
+            navAnasayfa.classList.add('active');
+            if (navOyun) navOyun.classList.remove('active'); 
             
-            // Animasyonları başlat
-            const body = document.querySelector('body');
-            const navLoader = document.querySelector('nav .nav-loader'); // Nav loader'ı doğru seç
-            
-            if (navLoader) {
-                navLoader.classList.add('loading');
+            // Oyun görünümünden çıkıldığında oyun döngülerini durdur
+            if(isGameRunning) {
+                gameOver(true); // Parametre true ise sadece durdurma işlemi yapılır
             }
-            body.classList.add('fade-out');
-
-            // Yönlendirme (Admin paneline)
-            setTimeout(() => {
-                // Şifre giriş ekranı için session'ı temizle (admin.html'de de var ama emin olalım)
-                sessionStorage.removeItem('admin_logged_in'); 
-                window.location.href = 'admin.html';
-            }, 600); 
-            
-            // Sayacı sıfırla
-            adminClickCount = 0;
         }
-    });
+    };
+    
+    // Tarayıcı geri/ileri tuşlarını ve link tıklamalarını dinle
+    window.addEventListener('hashchange', toggleView);
+    
+    // Oyun linkine tıklanma olayını da dinle
+    if (navOyun) {
+        navOyun.addEventListener('click', () => {
+            if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
+                // Eğer zaten index sayfasındaysak, hash değişimi yeterli
+                toggleView(); 
+            }
+        });
+    }
+
+    // Oyunu başlat
+    const startGame = () => {
+        if (isGameRunning) return;
+
+        // Ekranları ayarla
+        startScreen.style.display = 'none';
+        endScreen.style.display = 'none';
+        gameArea.innerHTML = '';
+        gameArea.style.display = 'block';
+
+        score = 0;
+        speed = 5;
+        isGameRunning = true;
+        scoreDisplay.textContent = score;
+
+        // Oyuncu arabasını oluştur
+        car = document.createElement('div');
+        car.classList.add('car');
+        car.style.width = carSize + 'px';
+        car.style.height = carSize * 2 + 'px';
+        car.style.backgroundImage = 'url(./car_blue.png)'; // Araba görseli (Mevcut olmalı)
+        car.style.backgroundSize = 'contain';
+        car.style.backgroundRepeat = 'no-repeat';
+        car.style.bottom = '10px';
+        car.style.left = (roadWidth / 2) - (carSize / 2) + 'px'; // Ortaya yerleştir
+        gameArea.appendChild(car);
+
+        // Klavye olayları
+        document.addEventListener('keydown', handleKeydown);
+
+        // Oyun döngülerini başlat
+        obstacleInterval = setInterval(createObstacle, 1500 - (speed * 100)); // Engel yaratma sıklığı
+        gameLoopInterval = setInterval(gameLoop, 20); // 50 FPS
+
+        // Skor artışı için hızlı interval (Her saniye 1 puan)
+        scoreInterval = setInterval(() => {
+             if(isGameRunning) {
+                score += 1;
+                scoreDisplay.textContent = score;
+                // Skora göre hızı artır
+                if (score % 100 === 0 && speed < 15) {
+                    speed += 1;
+                    clearInterval(obstacleInterval);
+                    // Hızlandıkça engel sıklığını artır
+                    obstacleInterval = setInterval(createObstacle, 1500 - (speed * 100)); 
+                }
+             }
+        }, 1000); 
+    };
+
+    // Engelleri oluştur
+    const createObstacle = () => {
+        if (!isGameRunning) return;
+
+        const obstacle = document.createElement('div');
+        obstacle.classList.add('obstacle');
+        obstacle.style.width = '60px'; // Engel genişliği
+        obstacle.style.height = '60px'; // Engel yüksekliği
+        obstacle.style.backgroundImage = 'url(./barrier.png)'; // Engel görseli (Mevcut olmalı)
+        obstacle.style.backgroundSize = 'contain';
+        obstacle.style.backgroundRepeat = 'no-repeat';
+        
+        // Rastgele yatay konum
+        const randomLeft = Math.floor(Math.random() * (roadWidth - 60)); 
+        obstacle.style.left = randomLeft + 'px';
+        obstacle.style.top = -60 + 'px'; // Yolun hemen dışından başla
+        
+        gameArea.appendChild(obstacle);
+    };
+
+    // Klavye kontrolleri
+    const handleKeydown = (e) => {
+        if (!isGameRunning) return;
+
+        const currentLeft = parseInt(car.style.left);
+        const moveAmount = 25; 
+        const roadLimit = roadWidth - carSize; // Sağ kenar limiti
+
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            const newLeft = Math.max(0, currentLeft - moveAmount);
+            car.style.left = newLeft + 'px';
+        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            const newLeft = Math.min(roadLimit, currentLeft + moveAmount);
+            car.style.left = newLeft + 'px';
+        }
+    };
+
+    // Oyun döngüsü (Engelleri hareket ettir ve çarpışmayı kontrol et)
+    const gameLoop = () => {
+        if (!isGameRunning) return;
+
+        const obstacles = document.querySelectorAll('.obstacle');
+        const carRect = car.getBoundingClientRect();
+        const gameAreaRect = gameArea.getBoundingClientRect();
+
+        obstacles.forEach(obstacle => {
+            let currentTop = parseInt(obstacle.style.top);
+            currentTop += speed;
+            obstacle.style.top = currentTop + 'px';
+
+            // Engelin alt sınırı oyun alanını geçtiyse kaldır
+            if (currentTop > gameAreaRect.height) {
+                obstacle.remove();
+            }
+
+            // Çarpışma kontrolü
+            const obstacleRect = obstacle.getBoundingClientRect();
+            // Basitleştirilmiş çarpışma kontrolü (daha sağlam)
+            if (
+                // Yatay çakışma
+                obstacleRect.left < carRect.right &&
+                obstacleRect.right > carRect.left &&
+                // Dikey çakışma
+                obstacleRect.top < carRect.bottom &&
+                obstacleRect.bottom > carRect.top
+            ) {
+                gameOver();
+            }
+        });
+    };
+
+    // Oyun bitti
+    const gameOver = (silent = false) => {
+        isGameRunning = false;
+        clearInterval(obstacleInterval);
+        clearInterval(gameLoopInterval);
+        clearInterval(scoreInterval);
+        document.removeEventListener('keydown', handleKeydown);
+        
+        // Eğer sessiz durdurma değilse (yani çarpışma olduysa) bitiş ekranını göster
+        if (!silent) {
+            gameArea.style.display = 'none';
+            finalScoreDisplay.textContent = score;
+            endScreen.style.display = 'flex'; 
+        }
+        // Oyun alanını temizle (Sadece görsel olarak)
+        gameArea.innerHTML = '';
+    };
+
+    // Olay dinleyicilerini kur
+    if (startButton) startButton.addEventListener('click', startGame);
+    if(restartButton) restartButton.addEventListener('click', startGame);
+
+    // Başlangıçta görünümü ayarla
+    toggleView();
 };
 
 
@@ -184,5 +348,5 @@ document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
-    setupSecretAdminAccess(); // Gizli Girişi Kur
+    setupCarGame(); // Oyun mantığını kur (index.html'de çalışacak)
 });
