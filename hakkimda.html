@@ -71,11 +71,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             const aboutParagraph = document.getElementById('about-content-text');
             const storageKey = 'admin_text_aboutContent';
+            const defaultText = `Selam! Benim adım Enes. 15 yaşındayım ve şu anda lise öğrencisiyim. 22 Şubat doğumluyum.
+                    Hayatımda en çok sevdiğim şey ne diye sorarsan, kesinlikle futbol oynamak derim. Fırsat buldukça
+                    sahada olmayı ve top peşinde koşmayı çok seviyorum. Hem derslerimi takip eden hem de spor
+                    tutkusundan vazgeçmeyen bir gencim.`;
             
             const savedText = localStorage.getItem(storageKey);
             
-            if (savedText !== null && aboutParagraph) {
-                aboutParagraph.textContent = savedText;
+            if (aboutParagraph) {
+                aboutParagraph.textContent = savedText !== null ? savedText : defaultText;
             }
         });
     </script>
