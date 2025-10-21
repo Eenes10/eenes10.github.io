@@ -22,7 +22,7 @@ const navSlide = () => {
         });
     });
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma (GÜVENLİ KONTROL EKLENDİ)
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
     navLinks.forEach(li => {
         const link = li.querySelector('a'); // Linki seç
         if (link) { // Linkin varlığını kontrol et
