@@ -69,7 +69,7 @@
             
             const savedText = localStorage.getItem(storageKey);
             
-            if (savedText && sloganParagraph) {
+            if (savedText !== null && sloganParagraph) {
                 sloganParagraph.textContent = savedText;
             }
         });
