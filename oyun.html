@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyun | Hız Şeridi</title>
+    <link rel="icon" href="./pp.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        #game-section {
+            padding: 20px 20px 50px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            border: 4px solid var(--neon-main-color);
+            box-shadow: 0 0 25px var(--neon-glow-color); /* Neon çerçeve efekti */
+            background-color: #34495e; /* Yol rengi */
+            margin-top: 20px;
+            cursor: none; /* Arabayı gizlemek için */
+        }
+        
+        .game-info {
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        /* Tema değiştirme butonunun görünürlüğünü koru */
+        body.light-theme #gameCanvas {
+            box-shadow: 0 0 15px var(--neon-glow-color); 
+        }
+
+        /* Başlıklar sitenin temasıyla uyumlu kalır. */
+        #game-section h2 { margin-bottom: 20px; }
+        
+    </style>
+</head>
+
+<body class="fade-out">
+
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="index.html" class="logo">Enes</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="yorumlar.html">Yorumlar</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                    <li><a href="oyun.html" class="active">Oyun</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="https://github.com/Eenes10" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <button id="theme-toggle" aria-label="Tema Değiştir">
+                    <i id="icon-moon" class="fas fa-moon"></i>
+                    <i id="icon-sun" class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+            <div class="nav-loader"></div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="game-section">
+            <h2 class="highlight">Hız Şeridi: Levhalardan Kaçış</h2>
+            <p class="game-info">Klavye Kontrolleri: Sol/Sağ Ok Tuşları veya A/D</p>
+            
+            <canvas id="gameCanvas" width="350" height="550"></canvas>
+            
+            <p id="score-display" class="game-info" style="font-size: 1.2em; font-weight: bold; margin-top: 10px; color: var(--neon-glow-color);">Puan: 0</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Enes</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="game_script.js"></script> 
+    
+</body>
+
+</html>
