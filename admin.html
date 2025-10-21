@@ -201,7 +201,7 @@
     </main>
 
     <script>
-        const CORRECT_PASSWORD = '3169'; // şifre
+        const CORRECT_PASSWORD = '3169'; // sifre
         const ADMIN_STATUS_KEY = 'admin_logged_in';
         const storagePrefix = 'admin_text_';
         
@@ -223,13 +223,12 @@
             document.getElementById('aboutContent'),
             document.getElementById('yorumlarSlogan'),
             document.getElementById('iletisimSlogan'),
-            document.getElementById('oyunTitle'),     // YENİ
-            document.getElementById('oyunDescription') // YENİ
+            document.getElementById('oyunTitle'),
+            document.getElementById('oyunDescription')
         ].filter(el => el != null); // Bulunmayanları filtrele
 
         // 1. Durum Kontrolü ve Yükleme
         const checkLoginStatus = () => {
-            // Sadece admin.html'de oturum kontrolü yap
             const isLoggedIn = sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true';
 
             if (isLoggedIn) {
@@ -264,7 +263,7 @@
             } else {
                 loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
                 passwordInput.value = '';
-                setTimeout(() => { loginError.textContent = ''; }, 3000);
+                setTimeout(() => { loginError.textContent = '', 3000 });
             }
         });
 
@@ -290,16 +289,11 @@
             }, 3000);
         });
         
-        // 5. Çıkış Yapma İşlevi
+        // 5. Çıkış Yapma İşlevi (GÜNCELLENMİŞ KISIM)
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem(ADMIN_STATUS_KEY);
-            // Sadece admin sayfasındaysak tekrar giriş ekranını gösterelim
-            if (document.getElementById('login-overlay')) {
-                window.location.reload();
-            } else {
-                // Diğer sayfalarda çıkış yapınca ana sayfaya dönsün
-                window.location.href = 'index.html'; 
-            }
+            // index.html'ye yönlendir
+            window.location.href = 'index.html'; 
         });
 
 
