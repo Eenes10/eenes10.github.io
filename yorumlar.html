@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yorumlar | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241026-v5">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -23,8 +23,7 @@
                     <li><a href="index.html">Ana Sayfa</a></li>
                     <li><a href="hakkimda.html">Hakkımda</a></li>
                     <li><a href="yorumlar.html" class="active">Yorumlar</a></li>
-                    <li><a href="oyun.html">Oyun</a></li>
-                    <li><a href="iletisim.html">İletişim</a></li>
+                    <li><a href="index.html#oyun">Oyun</a></li> <li><a href="iletisim.html">İletişim</a></li>
                 </ul>
             </div>
             
@@ -50,7 +49,7 @@
     <main>
         <section id="yorumlar">
             <h2>Ziyaretçi Yorumları</h2>
-            <p id="yorumlar-slogan-text">Sitem hakkında ne düşündüğünüzü merak ediyorum. Görüş ve önerilerinizi paylaşın!</p>
+            <p>Sitem hakkında ne düşündüğünüzü merak ediyorum. Görüş ve önerilerinizi paylaşın!</p>
 
             <script src="https://giscus.app/client.js"
                 data-repo="Eenes10/eenes10.github.io" 
@@ -75,20 +74,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Yorumlar Metnini Yerel Depodan Yükleme
-        document.addEventListener('DOMContentLoaded', () => {
-            const sloganParagraph = document.getElementById('yorumlar-slogan-text');
-            const storageKey = 'admin_text_yorumlarSlogan';
-            const defaultText = 'Sitem hakkında ne düşündüğünüzü merak ediyorum. Görüş ve önerilerinizi paylaşın!';
-            
-            const savedText = localStorage.getItem(storageKey);
-            
-            if (sloganParagraph) {
-                sloganParagraph.textContent = savedText !== null ? savedText : defaultText;
-            }
-        });
-    </script>
 </body>
 
 </html>
