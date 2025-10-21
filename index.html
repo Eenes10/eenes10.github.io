@@ -70,32 +70,22 @@
                 const savedText = localStorage.getItem(storagePrefix + key);
                 const targetEl = document.getElementById(targetElementId);
 
-                if (savedText && targetEl) {
-                    if (isHighlight) {
-                        targetEl.textContent = savedText;
-                        
-                        const titleBase = document.getElementById('hero-title-base');
-                        const defaultBaseText = 'Merhaba, ben ';
-                        const heroTitleBaseValue = localStorage.getItem(storagePrefix + 'heroTitleBase');
-
-                        if (heroTitleBaseValue !== null) {
-                            if (titleBase) titleBase.textContent = heroTitleBaseValue;
-                        } else {
-                            if (titleBase) titleBase.textContent = defaultBaseText;
-                        }
-
-                    } else {
-                        targetEl.textContent = savedText;
+                if (targetEl) {
+                    if (key === 'heroTitleBase') {
+                        // Ana Başlık metni (Merhaba, ben)
+                        targetEl.textContent = savedText !== null ? savedText : 'Merhaba, ben ';
+                    } else if (key === 'heroHighlight') {
+                        // Vurgulu metin (Enes)
+                        targetEl.textContent = savedText !== null ? savedText : 'Enes';
+                    } else if (key === 'heroSlogan') {
+                        // Slogan metni
+                        targetEl.textContent = savedText !== null ? savedText : '15 yaşındayım ve hobi olarak kod yazıyorum.';
                     }
                 }
             };
 
-            // Ana Başlık (Merhaba, ben)
             loadAndApply('heroTitleBase', 'hero-title-base');
-            // Ana Başlık Vurgusu (Enes)
             loadAndApply('heroHighlight', 'hero-highlight', true);
-            
-            // Ana Slogan
             loadAndApply('heroSlogan', 'hero-slogan');
         });
     </script>
