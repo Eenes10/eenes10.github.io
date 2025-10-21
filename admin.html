@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20241025">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -174,7 +174,7 @@
         // Admin Paneli Özel JavaScript
         const ADMIN_PASSWORD = 'kendi_guvenli_sifreniz_buraya'; // LÜTFEN BUNU DEĞİŞTİRİN!
         const storagePrefix = 'admin_text_'; 
-        const ADMIN_STATUS_KEY = 'admin_logged_in'; // Giriş durumu için yeni anahtar
+        const ADMIN_STATUS_KEY = 'admin_logged_in'; 
 
         const loginForm = document.getElementById('login-form');
         const adminPanel = document.getElementById('admin-panel');
@@ -186,9 +186,6 @@
 
         const editableElements = document.querySelectorAll('#admin-panel [data-key]');
 
-
-        // --- GÜVENLİK KATI (SADECE GÖRSEL) ---
-
         function checkLoginStatus() {
             if (sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true') {
                 loginForm.style.display = 'none';
@@ -199,13 +196,10 @@
 
         loginBtn.addEventListener('click', () => {
             if (passwordInput.value === ADMIN_PASSWORD) {
-                // Giriş başarılı: Durumu sessionStorage'a kaydet (tarayıcı kapatılana kadar geçerli)
                 sessionStorage.setItem(ADMIN_STATUS_KEY, 'true');
                 loginForm.style.display = 'none';
                 adminPanel.style.display = 'block';
                 loadSettings();
-                
-                // Ana sayfaya dönen kullanıcılar için navbar'ı güncelleyecek bir event fırlat
                 window.dispatchEvent(new CustomEvent('adminLoggedIn', { detail: true }));
             } else {
                 loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
@@ -213,15 +207,12 @@
             }
         });
 
-        // --- VERİ YÖNETİMİ ---
-
         // 1. Kayıtlı metinleri yükle
         function loadSettings() {
             editableElements.forEach(el => {
                 const key = el.getAttribute('data-key');
                 const savedValue = localStorage.getItem(storagePrefix + key);
                 
-                // Yerel depoda kayıtlı metin varsa yükle
                 if (savedValue !== null) {
                     el.value = savedValue;
                 }
@@ -235,7 +226,6 @@
                 const key = el.getAttribute('data-key');
                 const newValue = el.value;
 
-                // Değeri kaydet
                 localStorage.setItem(storagePrefix + key, newValue);
                 changesSaved = true;
             });
@@ -251,7 +241,6 @@
             }, 3000);
         });
 
-        // Sayfa yüklendiğinde şifre kontrolü ve ayar yükleme
         checkLoginStatus(); 
     </script>
     
