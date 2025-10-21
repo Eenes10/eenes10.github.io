@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241025">
+    <link rel="stylesheet" href="style.css?v=20241025-v2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Admin Paneli Özel CSS (admin.html için özel) */
+        /* Admin Paneli Özel CSS */
         #admin-section {
             padding-top: 15vh;
             text-align: left;
@@ -75,8 +75,9 @@
             color: var(--neon-glow-color);
             font-weight: bold;
         }
+        /* Başlangıçta panel gizli, form açık */
         #admin-panel { display: none; }
-        #login-form { text-align: center; padding: 50px; }
+        #login-form { text-align: center; padding: 50px; } 
         .error { color: #e74c3c; margin-top: 10px; }
     </style>
 </head>
@@ -132,30 +133,30 @@
                 
                 <div class="form-group">
                     <h4>Ana Sayfa (index.html)</h4>
-                    <label for="hero-title-base-input">Ana Başlık (Merhaba, ben...):</label>
-                    <input type="text" id="hero-title-base-input" data-key="heroTitleBase" value="Merhaba, ben ">
+                    <label for="hero-title-base">Ana Başlık (Merhaba, ben...):</label>
+                    <input type="text" id="hero-title-base" data-key="heroTitleBase">
                     <label for="hero-highlight">Vurgulu İsim (Enes):</label>
-                    <input type="text" id="hero-highlight" data-key="heroHighlight" value="Enes">
+                    <input type="text" id="hero-highlight" data-key="heroHighlight">
                     <label for="hero-slogan">Açıklama (p):</label>
-                    <input type="text" id="hero-slogan" data-key="heroSlogan" value="15 yaşındayım ve hobi olarak kod yazıyorum.">
+                    <input type="text" id="hero-slogan" data-key="heroSlogan">
                 </div>
                 
                 <div class="form-group">
                     <h4>Hakkımda Sayfası (hakkimda.html)</h4>
-                    <label for="about-content">Hakkımda Detaylı Metin:</label>
-                    <textarea id="about-content" data-key="aboutContent" placeholder="Yeni metni buraya girin..."></textarea>
+                    <label for="about-content-text">Hakkımda Detaylı Metin:</label>
+                    <textarea id="about-content-text" data-key="aboutContent">Selam! Benim adım Enes. 15 yaşındayım ve şu anda lise öğrencisiyim. 22 Şubat doğumluyum. Hayatımda en çok sevdiğim şey ne diye sorarsan, kesinlikle futbol oynamak derim. Fırsat buldukça sahada olmayı ve top peşinde koşmayı çok seviyorum. Hem derslerimi takip eden hem de spor tutkusundan vazgeçmeyen bir gencim.</textarea>
                 </div>
 
                 <div class="form-group">
                     <h4>İletişim Sayfası (iletisim.html)</h4>
-                    <label for="iletisim-slogan">Açıklama Metni (p):</label>
-                    <textarea id="iletisim-slogan" data-key="iletisimSlogan" placeholder="Projeler hakkında konuşmak..."></textarea>
+                    <label for="iletisim-slogan-text">Açıklama Metni (p):</label>
+                     <textarea id="iletisim-slogan-text" data-key="iletisimSlogan">Projeler hakkında konuşmak veya tanışmak için bana aşağıdaki platformlardan ulaşabilirsiniz.</textarea>
                 </div>
 
                 <div class="form-group">
                     <h4>Yorumlar Sayfası (yorumlar.html)</h4>
-                    <label for="yorumlar-slogan">Açıklama Metni (p):</label>
-                    <input type="text" id="yorumlar-slogan" data-key="yorumlarSlogan" value="Sitem hakkında ne düşündüğünüzü merak ediyorum. Görüş ve önerilerinizi paylaşın!">
+                    <label for="yorumlar-slogan-text">Açıklama Metni (p):</label>
+                    <input type="text" id="yorumlar-slogan-text" data-key="yorumlarSlogan">
                 </div>
                 
                 <button id="save-btn">Tüm Değişiklikleri Kaydet</button>
@@ -172,7 +173,7 @@
     <script src="script.js"></script>
     <script>
         // Admin Paneli Özel JavaScript
-        const ADMIN_PASSWORD = 'kendi_guvenli_sifreniz_buraya'; // LÜTFEN BUNU DEĞİŞTİRİN!
+        const ADMIN_PASSWORD = '3169'; // LÜTFEN BUNU DEĞİŞTİRMEYİ UNUTMAYIN!
         const storagePrefix = 'admin_text_'; 
         const ADMIN_STATUS_KEY = 'admin_logged_in'; 
 
@@ -186,27 +187,6 @@
 
         const editableElements = document.querySelectorAll('#admin-panel [data-key]');
 
-        function checkLoginStatus() {
-            if (sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true') {
-                loginForm.style.display = 'none';
-                adminPanel.style.display = 'block';
-                loadSettings();
-            }
-        }
-
-        loginBtn.addEventListener('click', () => {
-            if (passwordInput.value === ADMIN_PASSWORD) {
-                sessionStorage.setItem(ADMIN_STATUS_KEY, 'true');
-                loginForm.style.display = 'none';
-                adminPanel.style.display = 'block';
-                loadSettings();
-                window.dispatchEvent(new CustomEvent('adminLoggedIn', { detail: true }));
-            } else {
-                loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
-                setTimeout(() => { loginError.textContent = ''; }, 3000);
-            }
-        });
-
         // 1. Kayıtlı metinleri yükle
         function loadSettings() {
             editableElements.forEach(el => {
@@ -216,9 +196,37 @@
                 if (savedValue !== null) {
                     el.value = savedValue;
                 }
+                // Eğer kaydedilen bir değer yoksa, HTML'deki varsayılan değeri kullanır.
             });
         }
         
+        function checkLoginStatus() {
+            if (sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true') {
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+                loadSettings();
+            } else {
+                loginForm.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        }
+
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                sessionStorage.setItem(ADMIN_STATUS_KEY, 'true');
+                // Başarılı girişte paneli göster, formu gizle ve ayarları yükle
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+                loadSettings();
+                loginError.textContent = '';
+                // Navbar'daki Admin linkini görünür yapmak için event gönder
+                window.dispatchEvent(new CustomEvent('adminLoggedIn', { detail: true }));
+            } else {
+                loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
+                setTimeout(() => { loginError.textContent = ''; }, 3000);
+            }
+        });
+
         // 2. Kaydetme işlevi
         saveBtn.addEventListener('click', () => {
             let changesSaved = false;
@@ -231,7 +239,7 @@
             });
 
             if (changesSaved) {
-                statusMessage.textContent = 'Tüm değişiklikler başarıyla kaydedildi!';
+                statusMessage.textContent = 'Tüm değişiklikler başarıyla kaydedildi! (Sayfaları yenilemeniz gerekebilir)';
             } else {
                 statusMessage.textContent = 'Kaydedilecek bir değişiklik bulunamadı.';
             }
@@ -241,7 +249,8 @@
             }, 3000);
         });
 
-        checkLoginStatus(); 
+        // DOM yüklendiğinde oturum durumunu kontrol et
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
     </script>
     
 </body>
