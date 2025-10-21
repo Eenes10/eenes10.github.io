@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Sayfa | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="style.css?v=20241025">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -66,26 +68,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const storagePrefix = 'admin_text_';
             
-            const loadAndApply = (key, targetElementId, isHighlight = false) => {
+            const loadAndApply = (key, targetElementId) => {
                 const savedText = localStorage.getItem(storagePrefix + key);
                 const targetEl = document.getElementById(targetElementId);
+                const defaultTexts = {
+                    heroTitleBase: 'Merhaba, ben ',
+                    heroHighlight: 'Enes',
+                    heroSlogan: '15 yaşındayım ve hobi olarak kod yazıyorum.'
+                };
 
                 if (targetEl) {
-                    if (key === 'heroTitleBase') {
-                        // Ana Başlık metni (Merhaba, ben)
-                        targetEl.textContent = savedText !== null ? savedText : 'Merhaba, ben ';
-                    } else if (key === 'heroHighlight') {
-                        // Vurgulu metin (Enes)
-                        targetEl.textContent = savedText !== null ? savedText : 'Enes';
-                    } else if (key === 'heroSlogan') {
-                        // Slogan metni
-                        targetEl.textContent = savedText !== null ? savedText : '15 yaşındayım ve hobi olarak kod yazıyorum.';
-                    }
+                    targetEl.textContent = savedText !== null ? savedText : defaultTexts[key];
                 }
             };
 
             loadAndApply('heroTitleBase', 'hero-title-base');
-            loadAndApply('heroHighlight', 'hero-highlight', true);
+            loadAndApply('heroHighlight', 'hero-highlight');
             loadAndApply('heroSlogan', 'hero-slogan');
         });
     </script>
