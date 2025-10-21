@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Sayfa | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241025-v2">
+    <link rel="stylesheet" href="style.css?v=20241026-v3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -66,23 +66,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             const storagePrefix = 'admin_text_';
             
-            const loadAndApply = (key, targetElementId) => {
+            const loadAndApply = (key, targetElementId, defaultValue) => {
                 const savedText = localStorage.getItem(storagePrefix + key);
                 const targetEl = document.getElementById(targetElementId);
-                const defaultTexts = {
-                    heroTitleBase: 'Merhaba, ben ',
-                    heroHighlight: 'Enes',
-                    heroSlogan: '15 yaşındayım ve hobi olarak kod yazıyorum.'
-                };
 
                 if (targetEl) {
-                    targetEl.textContent = savedText !== null ? savedText : defaultTexts[key];
+                    targetEl.textContent = savedText !== null ? savedText : defaultValue;
                 }
             };
 
-            loadAndApply('heroTitleBase', 'hero-title-base');
-            loadAndApply('heroHighlight', 'hero-highlight');
-            loadAndApply('heroSlogan', 'hero-slogan');
+            loadAndApply('heroTitleBase', 'hero-title-base', 'Merhaba, ben ');
+            loadAndApply('heroHighlight', 'hero-highlight', 'Enes');
+            loadAndApply('heroSlogan', 'hero-slogan', '15 yaşındayım ve hobi olarak kod yazıyorum.');
         });
     </script>
 </body>
