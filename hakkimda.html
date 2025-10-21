@@ -24,7 +24,6 @@
                     <li><a href="hakkimda.html" class="active">Hakkımda</a></li>
                     <li><a href="yorumlar.html">Yorumlar</a></li>
                     <li><a href="iletisim.html">İletişim</a></li>
-                    <li><a href="oyun.html">Oyun</a></li>
                 </ul>
             </div>
             
@@ -52,7 +51,7 @@
             <h2>Hakkımda</h2>
             <div class="about-container">
                 <img src="./pp.png" alt="Profil Fotoğrafı" class="profile-pic">
-                <p>
+                <p id="about-content-text">
                     Selam! Benim adım Enes. 15 yaşındayım ve şu anda lise öğrencisiyim. 22 Şubat doğumluyum.
                     Hayatımda en çok sevdiğim şey ne diye sorarsan, kesinlikle futbol oynamak derim. Fırsat buldukça
                     sahada olmayı ve top peşinde koşmayı çok seviyorum. Hem derslerimi takip eden hem de spor
@@ -67,6 +66,19 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Hakkımda Metnini Yerel Depodan Yükleme
+        document.addEventListener('DOMContentLoaded', () => {
+            const aboutParagraph = document.getElementById('about-content-text');
+            const storageKey = 'admin_text_aboutContent';
+            
+            const savedText = localStorage.getItem(storageKey);
+            
+            if (savedText && aboutParagraph) {
+                aboutParagraph.textContent = savedText;
+            }
+        });
+    </script>
 </body>
 
 </html>
