@@ -221,3 +221,105 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 /* Sayfa Karartma Animasyonu */
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
+
+
+/* --- SIMON SAYS OYUN STİLLERİ --- */
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 30px 20px;
+    background-color: var(--card-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%; /* Dairesel bir oyun alanı */
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 30px var(--neon-glow-color) inset;
+}
+
+.simon-btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.1s;
+    position: relative;
+}
+
+.simon-btn:hover {
+    opacity: 0.85;
+}
+
+/* Renk Tanımlamaları */
+.red { background-color: #e74c3c; } /* Kırmızı */
+.green { background-color: #2ecc71; } /* Yeşil */
+.blue { background-color: #3498db; } /* Mavi */
+.yellow { background-color: #f1c40f; } /* Sarı */
+
+/* Aktif (Yanan) Buton Stili - Neon Etkisi */
+.simon-btn.active {
+    opacity: 1;
+    cursor: default;
+    /* Neon glow efekti */
+    box-shadow: 
+        0 0 10px 5px rgba(255, 255, 255, 0.8), /* Beyaz merkez parlama */
+        0 0 20px 10px var(--color-glow), 
+        0 0 40px 15px var(--color-glow);
+}
+
+/* Butonun Parlaklık Rengini Tanımlama (JS tarafından eklenecek) */
+.red.active { --color-glow: #e74c3c; }
+.green.active { --color-glow: #2ecc71; }
+.blue.active { --color-glow: #3498db; }
+.yellow.active { --color-glow: #f1c40f; }
+
+
+#status-board {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-color);
+}
+
+#level, #message {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--neon-glow-color);
+    text-shadow: 0 0 5px var(--neon-glow-color);
+    margin-bottom: 10px;
+}
+
+#start-btn {
+    background: none;
+    border: 2px solid var(--neon-main-color);
+    color: var(--neon-main-color);
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 3px var(--neon-glow-color);
+}
+
+#start-btn:hover {
+    background-color: var(--neon-main-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 15px var(--neon-main-color);
+    text-shadow: none;
+}
