@@ -78,7 +78,7 @@
                         const defaultBaseText = 'Merhaba, ben ';
                         const heroTitleBaseValue = localStorage.getItem(storagePrefix + 'heroTitleBase');
 
-                        if (heroTitleBaseValue) {
+                        if (heroTitleBaseValue !== null) {
                             if (titleBase) titleBase.textContent = heroTitleBaseValue;
                         } else {
                             if (titleBase) titleBase.textContent = defaultBaseText;
@@ -90,6 +90,8 @@
                 }
             };
 
+            // Ana Başlık (Merhaba, ben)
+            loadAndApply('heroTitleBase', 'hero-title-base');
             // Ana Başlık Vurgusu (Enes)
             loadAndApply('heroHighlight', 'hero-highlight', true);
             
