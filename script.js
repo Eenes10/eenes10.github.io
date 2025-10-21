@@ -24,16 +24,13 @@ const navSlide = () => {
 
     // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
     navLinks.forEach(li => {
-        const link = li.querySelector('a'); // Linki seç
-        if (link) { // Linkin varlığını kontrol et
+        const link = li.querySelector('a'); 
+        if (link) { 
              link.addEventListener('click', () => {
-                // Menü açıkken tıklandıysa
-                if (nav.classList.contains('nav-active')) {
-                    // Menüyü kapat
+                // Sadece normal link tıklamalarında menüyü kapat
+                if (nav.classList.contains('nav-active') && link.href.includes('.html')) {
                     nav.classList.remove('nav-active');
-                    // Burger ikonunu düzelt
                     burger.classList.remove('toggle');
-                    // Animasyonları sıfırla
                     navLinks.forEach(link => link.style.animation = '');
                 }
             });
@@ -80,7 +77,6 @@ const pageTransition = () => {
 
 // Giscus'a Tema Değişikliğin Bildirme
 const setGiscusTheme = (theme) => {
-    // Soft temaya uygun olarak Giscus temaları güncellendi
     const giscusTheme = theme === 'light' ? 'light' : 'dark_dimmed'; 
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
@@ -125,43 +121,53 @@ const themeHandler = () => {
     }
 };
 
-// Admin paneli linkini navbar'a dinamik olarak ekler (EK ÖZELLİK)
-const setupAdminLink = () => {
-    const navLinksList = document.querySelector('.nav-links');
-    if (!navLinksList) return;
+// YENİ: Gizli Admin Panel Erişimi (Hakkımda linkine 3 tıklama)
+let adminClickCount = 0;
+let clickTimeout;
 
-    // Link öğesini oluştur
-    const adminListItem = document.createElement('li');
-    const adminLink = document.createElement('a');
-    adminLink.href = 'admin.html';
-    adminLink.textContent = 'Admin Panel';
-    adminLink.id = 'admin-nav-link';
-    adminListItem.appendChild(adminLink);
-    
-    // Listeye ekle (eğer daha önce eklenmediyse)
-    if (!document.getElementById('admin-nav-link')) {
-        navLinksList.appendChild(adminListItem);
-    }
-    
-    const adminLinkEl = document.getElementById('admin-nav-link');
-    const ADMIN_STATUS_KEY = 'admin_logged_in';
+const setupSecretAdminAccess = () => {
+    const hakkimdaLink = document.querySelector('a[href="hakkimda.html"]');
+    if (!hakkimdaLink) return;
 
-    const checkAdminStatus = () => {
-        // Oturum durumunu kontrol et
-        const isLoggedIn = sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true';
-        if (isLoggedIn) {
-            adminLinkEl.style.display = 'block';
-            adminLinkEl.classList.add('admin-active');
+    hakkimdaLink.addEventListener('click', (e) => {
+        // Yönlendirme zaten admin.html'e doğruysa bir şey yapma
+        if (window.location.pathname.endsWith('admin.html')) return; 
+
+        adminClickCount++;
+        
+        // 2 saniye içinde 3 tıklama olmazsa sayacı sıfırla
+        clearTimeout(clickTimeout);
+        clickTimeout = setTimeout(() => {
+            adminClickCount = 0;
+            console.log('Gizli Giriş Sayacı Sıfırlandı.');
+        }, 1500); // 1.5 saniye içinde 3 tıklama bekleniyor
+
+        if (adminClickCount < 3) {
+            // 3. tıklamaya kadar normal yönlendirmeyi engelle
+            e.preventDefault();
+            console.log(`Admin Panel Gizli Giriş Denemesi: ${adminClickCount}/3`);
         } else {
-            adminLinkEl.style.display = 'none';
-            adminLinkEl.classList.remove('admin-active');
-        }
-    };
+            // 3. tıklamada yönlendir
+            e.preventDefault();
+            
+            // Animasyonları başlat
+            const body = document.querySelector('body');
+            const navLoader = document.querySelector('.nav-loader');
+            
+            if (navLoader) {
+                navLoader.classList.add('loading');
+            }
+            body.classList.add('fade-out');
 
-    // İlk yüklemede ve admin.html'den gelen başarılı girişte kontrol et
-    checkAdminStatus();
-    // admin.html'de giriş yapıldığında tetiklenen event'i dinle
-    window.addEventListener('adminLoggedIn', checkAdminStatus);
+            // Yönlendirme (Admin paneline)
+            setTimeout(() => {
+                window.location.href = 'admin.html';
+            }, 600); 
+            
+            // Sayacı sıfırla
+            adminClickCount = 0;
+        }
+    });
 };
 
 
@@ -170,5 +176,5 @@ document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
-    setupAdminLink(); // Admin Linkini Kur
+    setupSecretAdminAccess(); // Gizli Girişi Kur
 });
