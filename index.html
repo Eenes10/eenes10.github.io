@@ -24,7 +24,6 @@
                     <li><a href="hakkimda.html">Hakkımda</a></li>
                     <li><a href="yorumlar.html">Yorumlar</a></li>
                     <li><a href="iletisim.html">İletişim</a></li>
-                    <li><a href="oyun.html">Oyun</a></li>
                 </ul>
             </div>
             
@@ -50,8 +49,8 @@
     <main>
         <section id="hero">
             <div class="hero-text">
-                <h1>Merhaba, ben <span class="highlight">Enes</span></h1>
-                <p>15 yaşındayım ve hobi olarak kod yazıyorum.</p>
+                <h1><span id="hero-title-base">Merhaba, ben </span><span id="hero-highlight" class="highlight">Enes</span></h1>
+                <p id="hero-slogan">15 yaşındayım ve hobi olarak kod yazıyorum.</p>
                 <a href="iletisim.html" class="btn">İletişime Geç</a>
             </div>
         </section>
@@ -62,6 +61,48 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Metinleri Yerel Depodan Yükleme
+        document.addEventListener('DOMContentLoaded', () => {
+            const storagePrefix = 'admin_text_';
+            
+            const loadAndApply = (key, targetElementId, isHighlight = false) => {
+                const savedText = localStorage.getItem(storagePrefix + key);
+                const targetEl = document.getElementById(targetElementId);
+
+                if (savedText && targetEl) {
+                    if (isHighlight) {
+                        targetEl.textContent = savedText;
+                        // Ana başlık: "Merhaba, ben " + "Enes"
+                        const titleBase = document.getElementById('hero-title-base');
+                        
+                        // Bu kısım, admin panelinde sadece vurgu metni (örn: Enes) güncellense bile,
+                        // Ana metni (Merhaba, ben) koruyarak başlığın bütünlüğünü sağlar.
+                        const defaultBaseText = 'Merhaba, ben ';
+                        const heroTitleValue = localStorage.getItem(storagePrefix + 'heroTitle');
+
+                        if (heroTitleValue) {
+                            // Eğer heroTitle güncellendiyse (örn: "Selam, adım ")
+                            const basePart = heroTitleValue.replace(savedText, '');
+                            if (titleBase) titleBase.textContent = basePart;
+                        } else {
+                            // Eğer sadece vurgu metni güncellendiyse, varsayılan metni koru.
+                            if (titleBase) titleBase.textContent = defaultBaseText;
+                        }
+
+                    } else {
+                        targetEl.textContent = savedText;
+                    }
+                }
+            };
+
+            // Ana Başlık Vurgusu (Enes)
+            loadAndApply('heroHighlight', 'hero-highlight', true);
+            
+            // Ana Slogan
+            loadAndApply('heroSlogan', 'hero-slogan');
+        });
+    </script>
 </body>
 
 </html>
