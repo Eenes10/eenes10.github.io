@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taş-Kağıt-Makas Oyunu | Enes</title>
+    <link rel="icon" href="./pp.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        #choices {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .choice-btn {
+            background: none;
+            border: 3px solid var(--neon-main-color);
+            color: var(--neon-glow-color);
+            font-size: 1.2rem;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--neon-glow-color);
+            font-weight: 700;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--neon-glow-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--neon-glow-color);
+            text-shadow: none;
+        }
+        
+        #result, #scores {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-weight: bold;
+            color: var(--neon-glow-color);
+            text-shadow: 0 0 10px var(--neon-glow-color);
+            text-align: center;
+        }
+        
+        #result p, #scores p {
+            color: var(--text-color);
+            text-shadow: none;
+            margin-bottom: 15px;
+        }
+
+        #reset-btn {
+            background: none;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        #reset-btn:hover {
+            border-color: var(--neon-main-color);
+            color: var(--neon-main-color);
+        }
+    </style>
+
+</head>
+
+<body class="fade-out">
+
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="index.html" class="logo">Enes</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="yorumlar.html">Yorumlar</a></li>
+                    <li><a href="oyun.html" class="active">Oyun</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="https://github.com/Eenes10" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <button id="theme-toggle" aria-label="Tema Değiştir">
+                    <i id="icon-moon" class="fas fa-moon"></i>
+                    <i id="icon-sun" class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+            <div class="nav-loader"></div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="game-container">
+            <h2>Taş-Kağıt-Makas</h2>
+            <p>Seçiminizi yaparak yapay zekayı yenmeye çalışın!</p>
+
+            <div id="choices">
+                <button class="choice-btn" data-choice="tas">Taş</button>
+                <button class="choice-btn" data-choice="kagit">Kağıt</button>
+                <button class="choice-btn" data-choice="makas">Makas</button>
+            </div>
+
+            <div id="result">
+                <p>Başlamak için bir seçim yapın.</p>
+                <p id="computer-choice"></p>
+            </div>
+
+            <div id="scores">
+                <p>Skor: Sen - 0 | Bilgisayar - 0</p>
+            </div>
+
+            <button id="reset-btn">Skoru Sıfırla</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Enes</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="oyun.js"></script>
+</body>
+
+</html>
