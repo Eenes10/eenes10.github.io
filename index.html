@@ -73,20 +73,14 @@
                 if (savedText && targetEl) {
                     if (isHighlight) {
                         targetEl.textContent = savedText;
-                        // Ana başlık: "Merhaba, ben " + "Enes"
-                        const titleBase = document.getElementById('hero-title-base');
                         
-                        // Bu kısım, admin panelinde sadece vurgu metni (örn: Enes) güncellense bile,
-                        // Ana metni (Merhaba, ben) koruyarak başlığın bütünlüğünü sağlar.
+                        const titleBase = document.getElementById('hero-title-base');
                         const defaultBaseText = 'Merhaba, ben ';
-                        const heroTitleValue = localStorage.getItem(storagePrefix + 'heroTitle');
+                        const heroTitleBaseValue = localStorage.getItem(storagePrefix + 'heroTitleBase');
 
-                        if (heroTitleValue) {
-                            // Eğer heroTitle güncellendiyse (örn: "Selam, adım ")
-                            const basePart = heroTitleValue.replace(savedText, '');
-                            if (titleBase) titleBase.textContent = basePart;
+                        if (heroTitleBaseValue) {
+                            if (titleBase) titleBase.textContent = heroTitleBaseValue;
                         } else {
-                            // Eğer sadece vurgu metni güncellendiyse, varsayılan metni koru.
                             if (titleBase) titleBase.textContent = defaultBaseText;
                         }
 
