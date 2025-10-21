@@ -158,7 +158,7 @@ const setupSecretAdminAccess = () => {
             
             // Animasyonları başlat
             const body = document.querySelector('body');
-            const navLoader = document.querySelector('.nav-loader');
+            const navLoader = document.querySelector('nav .nav-loader'); // Nav loader'ı doğru seç
             
             if (navLoader) {
                 navLoader.classList.add('loading');
