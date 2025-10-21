@@ -222,86 +222,85 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
 
-
-/* --- SIMON SAYS OYUN STİLLERİ --- */
+/* --- NEON RACER OYUN STİLLERİ --- */
 
 #game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 450px;
+    max-width: 500px;
     margin: 40px auto;
-    padding: 30px 20px;
+    padding: 20px;
     background-color: var(--card-color);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
-}
-
-#game-board {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%; /* Dairesel bir oyun alanı */
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0 30px var(--neon-glow-color) inset;
-}
-
-.simon-btn {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.1s;
-    position: relative;
-}
-
-.simon-btn:hover {
-    opacity: 0.85;
-}
-
-/* Renk Tanımlamaları */
-.red { background-color: #e74c3c; } /* Kırmızı */
-.green { background-color: #2ecc71; } /* Yeşil */
-.blue { background-color: #3498db; } /* Mavi */
-.yellow { background-color: #f1c40f; } /* Sarı */
-
-/* Aktif (Yanan) Buton Stili - Neon Etkisi */
-.simon-btn.active {
-    opacity: 1;
-    cursor: default;
-    /* Neon glow efekti */
-    box-shadow: 
-        0 0 10px 5px rgba(255, 255, 255, 0.8), /* Beyaz merkez parlama */
-        0 0 20px 10px var(--color-glow), 
-        0 0 40px 15px var(--color-glow);
-}
-
-/* Butonun Parlaklık Rengini Tanımlama (JS tarafından eklenecek) */
-.red.active { --color-glow: #e74c3c; }
-.green.active { --color-glow: #2ecc71; }
-.blue.active { --color-glow: #3498db; }
-.yellow.active { --color-glow: #f1c40f; }
-
-
-#status-board {
     text-align: center;
-    margin-top: 20px;
-    color: var(--text-color);
 }
 
-#level, #message {
-    font-size: 1.4rem;
+#game-area {
+    width: 300px; /* Oyun Alanı Genişliği */
+    height: 450px; /* Oyun Alanı Yüksekliği */
+    background: #000000;
+    border: 3px solid var(--neon-glow-color);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5) inset, 0 0 10px var(--neon-glow-color);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* ------------------- OYUN OBJELERİ ------------------- */
+
+/* Arabamızın Şekli (Neon Çizgi Stili) */
+#player {
+    position: absolute;
+    bottom: 20px;
+    width: 30px;
+    height: 50px;
+    background-color: var(--bg-color); /* Arka plan rengini alır */
+    border: 2px solid var(--neon-main-color);
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--neon-main-color), 0 0 20px var(--neon-glow-color);
+    transition: left 0.1s linear; /* Yumuşak hareket */
+    left: 135px; /* Başlangıç pozisyonu (300/2 - 30/2 = 135) */
+    z-index: 10;
+}
+
+/* Araba Görünümünü Geliştirme (Işıklar ve Cam) */
+#player::before, #player::after {
+    content: '';
+    position: absolute;
+    height: 5px;
+    width: 10px;
+    background-color: var(--neon-glow-color);
+    box-shadow: 0 0 5px var(--neon-glow-color);
+    top: 5px; /* Ön cam/ışık pozisyonu */
+}
+#player::before { left: 3px; }
+#player::after { right: 3px; }
+
+
+/* Engeller (Bariyerler) */
+.obstacle {
+    position: absolute;
+    width: 40px;
+    height: 10px;
+    background-color: #e74c3c; /* Kırmızı/Hata Rengi */
+    border: 1px solid #c0392b;
+    box-shadow: 0 0 10px #e74c3c;
+    border-radius: 3px;
+    top: 0;
+    z-index: 5;
+}
+
+/* ------------------- BİLGİ ALANLARI ------------------- */
+
+#score-board {
+    font-size: 1.5rem;
     font-weight: bold;
-    color: var(--neon-glow-color);
+    color: var(--neon-main-color);
     text-shadow: 0 0 5px var(--neon-glow-color);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 #start-btn {
@@ -311,7 +310,7 @@ body:not(.fade-out) { opacity: 1; }
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
     font-size: 1.1rem;
     transition: all 0.3s ease;
     text-shadow: 0 0 3px var(--neon-glow-color);
@@ -322,4 +321,40 @@ body:not(.fade-out) { opacity: 1; }
     color: var(--bg-color);
     box-shadow: 0 0 15px var(--neon-main-color);
     text-shadow: none;
+}
+
+/* YÜKSEK SKOR TABLOSU */
+#high-scores {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.4);
+    text-align: left;
+}
+#high-scores h3 {
+    text-align: center;
+    color: var(--neon-glow-color);
+    text-shadow: 0 0 5px var(--neon-glow-color);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+#scores-list {
+    list-style: none;
+    padding: 0;
+}
+#scores-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+#scores-list li:last-child {
+    border-bottom: none;
+}
+#scores-list li strong {
+    color: var(--text-color);
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.1);
 }
