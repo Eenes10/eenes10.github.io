@@ -33,7 +33,8 @@ let baseObstacleSpeed = 2;
 let currentObstacleSpeed;
 const obstacleSpawnRate = 120; // Daha seyrek çıkış
 let frameCounter = 0;
-let difficultyIncreaseRate = 0.003; 
+// ZORLUK ARTIŞI ÇOK YAVAŞLATILDI (0.003 -> 0.001)
+let difficultyIncreaseRate = 0.001; 
 
 // Kontrol Durumu
 let leftPressed = false;
@@ -249,7 +250,7 @@ function initGame() {
     score = 0;
     obstacles = [];
     isGameOver = false;
-    isGameRunning = false; // BAŞLANGIÇTA ÇALIŞMIYOR OLARAK AYARLA
+    isGameRunning = false; 
     currentObstacleSpeed = baseObstacleSpeed;
     frameCounter = 0;
 
@@ -305,7 +306,7 @@ function hideMenu() {
 }
 
 function gameLoop() {
-    // BURADAKİ KONTROL ÇOK ÖNEMLİ: Eğer oyun çalışmıyorsa döngüyü hemen durdur.
+    // Eğer oyun çalışmıyorsa döngüyü hemen durdur.
     if (!isGameRunning) {
         cancelAnimationFrame(animationFrameId);
         return; 
@@ -375,11 +376,9 @@ if (leftBtn && rightBtn) {
     rightBtn.addEventListener('mouseup', () => { rightPressed = false; });
 }
 
-// Menü Butonu Olayı - ARTIK DOĞRU ÇALIŞIYOR
+// Menü Butonu Olayı
 startRestartBtn.addEventListener('click', () => {
-    // Önce oyunun değişkenlerini sıfırla (eğer bitmişse veya yeni başlıyorsa)
     initGame(); 
-    // Sonra oyunu başlat
     startGame(); 
 });
 
@@ -388,7 +387,6 @@ startRestartBtn.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('gameCanvas');
     if (canvasElement) {
-        // Sayfa yüklendiğinde oyun değişkenlerini hazırla ve başlangıç menüsünü göster
         initGame(); 
     }
 });
