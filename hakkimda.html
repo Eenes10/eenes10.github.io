@@ -74,7 +74,7 @@
             
             const savedText = localStorage.getItem(storageKey);
             
-            if (savedText && aboutParagraph) {
+            if (savedText !== null && aboutParagraph) {
                 aboutParagraph.textContent = savedText;
             }
         });
