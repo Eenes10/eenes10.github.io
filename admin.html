@@ -12,24 +12,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Sadece Admin Paneli için özel CSS (style.css'e eklemeniz GEREKMEZ) */
+        /* Admin Paneli Özel CSS */
         #admin-section {
             padding-top: 15vh;
             text-align: left;
-            max-width: 700px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
         }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+        #admin-section input[type="text"], 
+        #admin-section input[type="password"],
         #admin-section textarea {
             width: 100%;
-            height: 200px;
             padding: 10px;
-            margin-top: 10px;
             border: 1px solid var(--border-color);
             background-color: var(--card-color);
             color: var(--text-color);
             font-family: 'Fira Code', monospace;
+            border-radius: 4px;
+        }
+        #admin-section textarea {
+            height: 150px;
             resize: vertical;
         }
-        #save-btn {
+        #save-btn, #login-btn {
             background-color: var(--neon-main-color);
             color: var(--bg-color);
             border: none;
@@ -40,7 +55,7 @@
             border-radius: 8px;
             transition: opacity 0.3s;
         }
-        #save-btn:hover {
+        #save-btn:hover, #login-btn:hover {
             opacity: 0.9;
         }
         .message {
@@ -48,10 +63,14 @@
             color: var(--neon-glow-color);
             font-weight: bold;
         }
+        #admin-panel { display: none; } /* Yönetim alanını varsayılan olarak gizle */
+        #login-form { text-align: center; padding: 50px; }
+        .error { color: #e74c3c; margin-top: 10px; }
     </style>
 </head>
 
 <body class="fade-out">
+
     <header>
         <nav>
             <div class="nav-left">
@@ -85,16 +104,44 @@
 
     <main>
         <section id="admin-section">
-            <h2>Admin Paneli - Hakkımda Metni Düzenleme</h2>
-            <p>
-                **ÖNEMLİ:** Bu paneldeki değişiklikler sadece sizin tarayıcınızda geçerli olmak üzere "Hakkımda" metnini günceller. Başka bir cihazdan veya tarayıcıdan bakıldığında ana metin görünmeye devam eder.
-            </p>
+            <h2>Admin Paneli</h2>
             
-            <label for="about-content">Hakkımda Metni:</label>
-            <textarea id="about-content" placeholder="Yeni metni buraya girin..."></textarea>
+            <div id="login-form">
+                <p>Yönetim paneline erişmek için şifrenizi girin.</p>
+                <input type="password" id="password-input" placeholder="Şifreniz" required>
+                <button id="login-btn">Giriş Yap</button>
+                <div id="login-error" class="error"></div>
+            </div>
+
+            <div id="admin-panel">
+                <p>
+                    **ÖNEMLİ:** Değişiklikler sadece bu tarayıcıda geçerli olmak üzere yerel olarak kaydedilir.
+                </p>
+                
+                <h3>Ana Sayfa Metinleri (index.html)</h3>
+                <div class="form-group">
+                    <label for="hero-title">Ana Başlık (h1 Merhaba, ben...):</label>
+                    <input type="text" id="hero-title" data-key="heroTitle" value="Merhaba, ben Enes">
+                </div>
+                <div class="form-group">
+                    <label for="hero-highlight">Vurgulu İsim (Enes):</label>
+                    <input type="text" id="hero-highlight" data-key="heroHighlight" value="Enes">
+                </div>
+                <div class="form-group">
+                    <label for="hero-slogan">Açıklama (p):</label>
+                    <input type="text" id="hero-slogan" data-key="heroSlogan" value="15 yaşındayım ve hobi olarak kod yazıyorum.">
+                </div>
+                
+                <h3>Hakkımda Metni (hakkimda.html)</h3>
+                <div class="form-group">
+                    <label for="about-content">Hakkımda Detaylı Metin:</label>
+                    <textarea id="about-content" data-key="aboutContent" placeholder="Yeni metni buraya girin..."></textarea>
+                </div>
+                
+                <button id="save-btn">Tüm Değişiklikleri Kaydet</button>
+                <div id="status-message" class="message"></div>
+            </div>
             
-            <button id="save-btn">Değişiklikleri Kaydet</button>
-            <div id="status-message" class="message"></div>
         </section>
     </main>
 
@@ -105,26 +152,74 @@
     <script src="script.js"></script>
     <script>
         // Admin Paneli Özel JavaScript
-        const aboutContentArea = document.getElementById('about-content');
+        const ADMIN_PASSWORD = '3169';
+        const storagePrefix = 'admin_text_'; 
+        
+        const loginForm = document.getElementById('login-form');
+        const adminPanel = document.getElementById('admin-panel');
+        const passwordInput = document.getElementById('password-input');
+        const loginBtn = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
         const saveBtn = document.getElementById('save-btn');
         const statusMessage = document.getElementById('status-message');
-        const storageKey = 'admin_about_text';
 
-        // 1. Kayıtlı metni yükle
-        const savedText = localStorage.getItem(storageKey);
-        // Eğer yerel depoda bir metin varsa, onu yükle
-        aboutContentArea.value = savedText || 'Hakkımda metni henüz yerel olarak düzenlenmedi. Buraya yeni metninizi yazabilirsiniz.';
+        const editableElements = document.querySelectorAll('#admin-panel [data-key]');
 
+
+        // --- GÜVENLİK KATI (SADECE GÖRSEL) ---
+
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+                loadSettings(); // Başarılı girişte ayarları yükle
+            } else {
+                loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
+                setTimeout(() => { loginError.textContent = ''; }, 3000);
+            }
+        });
+
+        // --- VERİ YÖNETİMİ ---
+
+        // 1. Kayıtlı metinleri yükle
+        function loadSettings() {
+            editableElements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                const savedValue = localStorage.getItem(storagePrefix + key);
+                
+                if (savedValue !== null) {
+                    el.value = savedValue;
+                }
+            });
+        }
+        
         // 2. Kaydetme işlevi
         saveBtn.addEventListener('click', () => {
-            const newText = aboutContentArea.value;
-            localStorage.setItem(storageKey, newText);
-            
-            statusMessage.textContent = 'Kaydedildi! Değişiklikler tarayıcınızda geçerlidir.';
+            let changesSaved = false;
+            editableElements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                const newValue = el.value;
+
+                // Değeri sadece varsayılandan farklıysa veya boş değilse kaydet
+                if (newValue.trim() !== '') {
+                    localStorage.setItem(storagePrefix + key, newValue);
+                    changesSaved = true;
+                }
+            });
+
+            if (changesSaved) {
+                statusMessage.textContent = 'Tüm değişiklikler başarıyla kaydedildi!';
+            } else {
+                statusMessage.textContent = 'Kaydedilecek bir değişiklik bulunamadı.';
+            }
+
             setTimeout(() => {
                 statusMessage.textContent = '';
             }, 3000);
         });
+
+        // Sayfa yüklendiğinde şifre kontrolü
+        loadSettings(); 
     </script>
     
 </body>
