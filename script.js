@@ -22,11 +22,12 @@ const navSlide = () => {
         });
     });
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma (GÜNCELLENMİŞ KONTROL EKLENDİ)
     navLinks.forEach(li => {
-        const link = li.querySelector('a');
-        if (link) {
+        const link = li.querySelector('a'); // Linki seç
+        if (link) { // Linkin varlığını kontrol et
              link.addEventListener('click', () => {
+                // Menü açıkken tıklandıysa
                 if (nav.classList.contains('nav-active')) {
                     // Menüyü kapat
                     nav.classList.remove('nav-active');
@@ -45,7 +46,12 @@ const pageTransition = () => {
     const body = document.querySelector('body');
     const navLoader = document.querySelector('.nav-loader'); 
 
+    // Sayfa yüklendiğinde fade-out class'ını kaldır
     body.classList.remove('fade-out');
+    if (navLoader) {
+        navLoader.classList.remove('loading');
+    }
+
     const allLinks = document.querySelectorAll('a');
 
     allLinks.forEach(link => {
@@ -119,7 +125,7 @@ const themeHandler = () => {
     }
 };
 
-// Admin paneli linkini navbar'a dinamik olarak ekler (YENİ KOD)
+// Admin paneli linkini navbar'a dinamik olarak ekler (EK ÖZELLİK)
 const setupAdminLink = () => {
     const navLinksList = document.querySelector('.nav-links');
     if (!navLinksList) return;
@@ -145,7 +151,7 @@ const setupAdminLink = () => {
         const isLoggedIn = sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true';
         if (isLoggedIn) {
             adminLinkEl.style.display = 'block';
-            adminLinkEl.classList.add('admin-active'); // Opsiyonel CSS için class
+            adminLinkEl.classList.add('admin-active');
         } else {
             adminLinkEl.style.display = 'none';
             adminLinkEl.classList.remove('admin-active');
