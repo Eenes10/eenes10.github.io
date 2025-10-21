@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Paneli | Enes</title>
+    <title>Admin Paneli | Giriş</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241025-v2">
+    <link rel="stylesheet" href="style.css?v=20241026-v3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -75,8 +75,7 @@
             color: var(--neon-glow-color);
             font-weight: bold;
         }
-        /* Başlangıçta panel gizli, form açık */
-        #admin-panel { display: none; }
+        #admin-panel { display: none; } /* Başlangıçta gizli */
         #login-form { text-align: center; padding: 50px; } 
         .error { color: #e74c3c; margin-top: 10px; }
     </style>
@@ -134,29 +133,29 @@
                 <div class="form-group">
                     <h4>Ana Sayfa (index.html)</h4>
                     <label for="hero-title-base">Ana Başlık (Merhaba, ben...):</label>
-                    <input type="text" id="hero-title-base" data-key="heroTitleBase">
+                    <input type="text" id="hero-title-base" data-key="heroTitleBase" placeholder="Merhaba, ben ">
                     <label for="hero-highlight">Vurgulu İsim (Enes):</label>
-                    <input type="text" id="hero-highlight" data-key="heroHighlight">
+                    <input type="text" id="hero-highlight" data-key="heroHighlight" placeholder="Enes">
                     <label for="hero-slogan">Açıklama (p):</label>
-                    <input type="text" id="hero-slogan" data-key="heroSlogan">
+                    <input type="text" id="hero-slogan" data-key="heroSlogan" placeholder="15 yaşındayım ve hobi olarak kod yazıyorum.">
                 </div>
                 
                 <div class="form-group">
                     <h4>Hakkımda Sayfası (hakkimda.html)</h4>
                     <label for="about-content-text">Hakkımda Detaylı Metin:</label>
-                    <textarea id="about-content-text" data-key="aboutContent">Selam! Benim adım Enes. 15 yaşındayım ve şu anda lise öğrencisiyim. 22 Şubat doğumluyum. Hayatımda en çok sevdiğim şey ne diye sorarsan, kesinlikle futbol oynamak derim. Fırsat buldukça sahada olmayı ve top peşinde koşmayı çok seviyorum. Hem derslerimi takip eden hem de spor tutkusundan vazgeçmeyen bir gencim.</textarea>
+                    <textarea id="about-content-text" data-key="aboutContent" placeholder="Yeni metni buraya girin..."></textarea>
                 </div>
 
                 <div class="form-group">
                     <h4>İletişim Sayfası (iletisim.html)</h4>
                     <label for="iletisim-slogan-text">Açıklama Metni (p):</label>
-                     <textarea id="iletisim-slogan-text" data-key="iletisimSlogan">Projeler hakkında konuşmak veya tanışmak için bana aşağıdaki platformlardan ulaşabilirsiniz.</textarea>
+                    <textarea id="iletisim-slogan-text" data-key="iletisimSlogan" placeholder="Projeler hakkında konuşmak..."></textarea>
                 </div>
 
                 <div class="form-group">
                     <h4>Yorumlar Sayfası (yorumlar.html)</h4>
                     <label for="yorumlar-slogan-text">Açıklama Metni (p):</label>
-                    <input type="text" id="yorumlar-slogan-text" data-key="yorumlarSlogan">
+                    <input type="text" id="yorumlar-slogan-text" data-key="yorumlarSlogan" placeholder="Sitem hakkında ne düşündüğünüzü merak ediyorum...">
                 </div>
                 
                 <button id="save-btn">Tüm Değişiklikleri Kaydet</button>
@@ -173,7 +172,7 @@
     <script src="script.js"></script>
     <script>
         // Admin Paneli Özel JavaScript
-        const ADMIN_PASSWORD = '3169'; // LÜTFEN BUNU DEĞİŞTİRMEYİ UNUTMAYIN!
+        const ADMIN_PASSWORD = '3169'; // !!! LÜTFEN BUNU DEĞİŞTİRİN !!!
         const storagePrefix = 'admin_text_'; 
         const ADMIN_STATUS_KEY = 'admin_logged_in'; 
 
@@ -184,7 +183,6 @@
         const loginError = document.getElementById('login-error');
         const saveBtn = document.getElementById('save-btn');
         const statusMessage = document.getElementById('status-message');
-
         const editableElements = document.querySelectorAll('#admin-panel [data-key]');
 
         // 1. Kayıtlı metinleri yükle
@@ -195,12 +193,15 @@
                 
                 if (savedValue !== null) {
                     el.value = savedValue;
+                } else if (el.tagName === 'TEXTAREA' || el.type === 'text') {
+                    // Kayıtlı değer yoksa HTML'deki placeholder/varsayılan değeri kullan
+                    el.value = el.placeholder || el.value;
                 }
-                // Eğer kaydedilen bir değer yoksa, HTML'deki varsayılan değeri kullanır.
             });
         }
         
         function checkLoginStatus() {
+            // Sadece bu sayfa yüklendiğinde şifre ister
             if (sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true') {
                 loginForm.style.display = 'none';
                 adminPanel.style.display = 'block';
@@ -213,16 +214,12 @@
 
         loginBtn.addEventListener('click', () => {
             if (passwordInput.value === ADMIN_PASSWORD) {
-                sessionStorage.setItem(ADMIN_STATUS_KEY, 'true');
-                // Başarılı girişte paneli göster, formu gizle ve ayarları yükle
-                loginForm.style.display = 'none';
-                adminPanel.style.display = 'block';
-                loadSettings();
+                sessionStorage.setItem(ADMIN_STATUS_KEY, 'true'); // Başarılı girişi kaydet (oturum süresince geçerli)
+                checkLoginStatus(); // Paneli göster
                 loginError.textContent = '';
-                // Navbar'daki Admin linkini görünür yapmak için event gönder
-                window.dispatchEvent(new CustomEvent('adminLoggedIn', { detail: true }));
             } else {
                 loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
+                passwordInput.value = '';
                 setTimeout(() => { loginError.textContent = ''; }, 3000);
             }
         });
@@ -232,7 +229,7 @@
             let changesSaved = false;
             editableElements.forEach(el => {
                 const key = el.getAttribute('data-key');
-                const newValue = el.value;
+                const newValue = el.value.trim();
 
                 localStorage.setItem(storagePrefix + key, newValue);
                 changesSaved = true;
@@ -250,7 +247,14 @@
         });
 
         // DOM yüklendiğinde oturum durumunu kontrol et
-        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        document.addEventListener('DOMContentLoaded', () => {
+             // Admin sayfasına geldiğimizde oturumu sıfırlayalım ki her seferinde şifre sorsun.
+             // Sadece admin.html sayfasında çalışacak bu. Diğer sayfalarda giriş açık kalabilir.
+             if(window.location.pathname.endsWith('admin.html')) {
+                 sessionStorage.removeItem(ADMIN_STATUS_KEY);
+             }
+             checkLoginStatus();
+        });
     </script>
     
 </body>
