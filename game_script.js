@@ -16,8 +16,8 @@ const startRestartBtn = document.getElementById('start-restart-btn');
 // Oyun Ayarları
 const GAME_WIDTH = canvas.width;
 const GAME_HEIGHT = canvas.height;
-let isGameRunning = false; // Oyunun devam edip etmediği
-let isGameOver = false;
+let isGameRunning = false; // OYUNUN AKTİF ÇALIŞMA DURUMU
+let isGameOver = false; // OYUNUN KAYBEDİLME DURUMU
 let animationFrameId;
 
 // Oyuncu Ayarları (Araba - Neon Blok)
@@ -125,7 +125,7 @@ function drawObstacles() {
         // Metal Desteklerin Genişliği
         const supportWidth = 5; 
         // Lamba çapı
-        const lampRadius = 4; // Lamba küçültüldü
+        const lampRadius = 4; 
 
         // Gölge efekti (tüm bariyer için)
         ctx.shadowBlur = 8; // Gölge azaltıldı
@@ -211,8 +211,8 @@ function updateObstacles() {
 }
 
 function spawnObstacle() {
-    const obsWidth = 60; // Engel genişliği küçültüldü (80 -> 60)
-    const obsHeight = 40; // Engel yüksekliği küçültüldü (60 -> 40)
+    const obsWidth = 60; // Engel genişliği
+    const obsHeight = 40; // Engel yüksekliği
     
     // Rastgele X pozisyonu (yol ve bariyer sınırları içinde)
     const randomX = Math.random() * (GAME_WIDTH - obsWidth - 20) + 10; 
@@ -249,17 +249,20 @@ function initGame() {
     score = 0;
     obstacles = [];
     isGameOver = false;
-    isGameRunning = false;
+    isGameRunning = false; // BAŞLANGIÇTA ÇALIŞMIYOR OLARAK AYARLA
     currentObstacleSpeed = baseObstacleSpeed;
     frameCounter = 0;
 
     // Skoru ve menüyü güncelle
     updateScore();
+    
+    // Menü açıkken Canvas'ı temizle (Sadece yol çizimini göster)
+    drawRoad(); 
     showMenu('start');
 }
 
 function startGame() {
-    if (isGameRunning) return; // Zaten çalışıyorsa tekrar başlatma
+    if (isGameRunning) return; 
 
     isGameRunning = true;
     isGameOver = false;
@@ -302,7 +305,11 @@ function hideMenu() {
 }
 
 function gameLoop() {
-    if (!isGameRunning || isGameOver) return;
+    // BURADAKİ KONTROL ÇOK ÖNEMLİ: Eğer oyun çalışmıyorsa döngüyü hemen durdur.
+    if (!isGameRunning) {
+        cancelAnimationFrame(animationFrameId);
+        return; 
+    }
 
     // 1. Güncelleme
     updateCar();
@@ -368,13 +375,12 @@ if (leftBtn && rightBtn) {
     rightBtn.addEventListener('mouseup', () => { rightPressed = false; });
 }
 
-// Menü Butonu Olayı
+// Menü Butonu Olayı - ARTIK DOĞRU ÇALIŞIYOR
 startRestartBtn.addEventListener('click', () => {
-    if (isGameOver || !isGameRunning) {
-        // Eğer oyun bitmişse veya hiç başlamamışsa, oyunu yeniden başlat/başlat
-        initGame(); // Tüm değişkenleri sıfırla
-        startGame(); // Oyunu başlat
-    }
+    // Önce oyunun değişkenlerini sıfırla (eğer bitmişse veya yeni başlıyorsa)
+    initGame(); 
+    // Sonra oyunu başlat
+    startGame(); 
 });
 
 
@@ -382,6 +388,7 @@ startRestartBtn.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('gameCanvas');
     if (canvasElement) {
-        initGame(); // Sayfa yüklendiğinde başlangıç menüsünü göster
+        // Sayfa yüklendiğinde oyun değişkenlerini hazırla ve başlangıç menüsünü göster
+        initGame(); 
     }
 });
