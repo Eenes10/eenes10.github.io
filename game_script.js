@@ -4,6 +4,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score-display');
+const leftBtn = document.getElementById('left-btn');
+const rightBtn = document.getElementById('right-btn');
+
 
 // Oyun Ayarları
 const GAME_WIDTH = canvas.width;
@@ -20,11 +23,11 @@ const carSpeed = 6; // Yana hareket hızı
 
 // Oyun Nesneleri (Engeller - Levhalar)
 let obstacles = [];
-let baseObstacleSpeed = 4;
+let baseObstacleSpeed = 3; // BAŞLANGIÇ HIZI AZALTILDI (4 -> 3)
 let currentObstacleSpeed = baseObstacleSpeed;
-const obstacleSpawnRate = 90; // Frame cinsinden
+const obstacleSpawnRate = 90; 
 let frameCounter = 0;
-let difficultyIncreaseRate = 0.005; // Her frame'de hız artışı
+let difficultyIncreaseRate = 0.005; 
 
 // Kontrol Durumu
 let leftPressed = false;
@@ -62,11 +65,11 @@ function drawRoad() {
 
     const dashLength = 20;
     const gapLength = 20;
-    let offset = frameCounter * 3 % (dashLength + gapLength); 
+    // Hız azaldığı için animasyon hızı da düşürülmeli
+    let offset = frameCounter * 2 % (dashLength + gapLength); 
 
     for (let i = -dashLength; i < GAME_HEIGHT; i += (dashLength + gapLength)) {
         ctx.beginPath();
-        // Ortadaki şerit
         ctx.setLineDash([dashLength, gapLength]);
         ctx.moveTo(GAME_WIDTH / 2, i + offset);
         ctx.lineTo(GAME_WIDTH / 2, i + offset + dashLength);
@@ -74,12 +77,11 @@ function drawRoad() {
     }
     
     // Kenar çizgileri (Sabit)
-    ctx.setLineDash([0, 0]); // Kesikli çizgiyi sıfırla
+    ctx.setLineDash([0, 0]); 
     ctx.lineWidth = 2;
     ctx.moveTo(10, 0); ctx.lineTo(10, GAME_HEIGHT); ctx.stroke();
     ctx.moveTo(GAME_WIDTH - 10, 0); ctx.lineTo(GAME_WIDTH - 10, GAME_HEIGHT); ctx.stroke();
     
-    // Gölgeyi temizle
     ctx.shadowBlur = 0;
 }
 
@@ -92,12 +94,11 @@ function drawCar() {
     ctx.shadowColor = colors.carGlow;
     ctx.fillRect(carX, carY, carWidth, carHeight);
     
-    // Detaylar (Parlama olmadan)
+    // Detaylar
     ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; // Cam
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; 
     ctx.fillRect(carX + 5, carY + 5, carWidth - 10, 15);
     
-    // Tekrar parlaklığı aç
     ctx.shadowBlur = 0;
 }
 
@@ -116,15 +117,12 @@ function drawObstacles() {
         ctx.fillStyle = 'white';
         ctx.font = 'bold 20px Fira Code';
         ctx.textAlign = 'center';
-        // Yazıyı engelin ortasına konumla
         ctx.fillText('STOP', obs.x + obs.width / 2, obs.y + obs.height / 2 + 5);
     });
-    // Gölgeyi temizle
     ctx.shadowBlur = 0;
 }
 
 function updateScore() {
-    // HTML elementini güncelle
     scoreDisplay.textContent = `Puan: ${score}`;
 }
 
@@ -163,7 +161,8 @@ function updateObstacles() {
         }
     });
 
-    // Yeni engel oluşturma (hız arttıkça daha sık)
+    // Yeni engel oluşturma
+    // Hız arttıkça oluşturma süresi azalır, ancak minimum 25 frame'den az olamaz
     const dynamicSpawnRate = Math.max(25, obstacleSpawnRate / (1 + (currentObstacleSpeed - baseObstacleSpeed) * 0.5));
     if (frameCounter % Math.floor(dynamicSpawnRate) === 0) {
         spawnObstacle();
@@ -267,6 +266,24 @@ document.addEventListener('keyup', (e) => {
         rightPressed = false;
     }
 });
+
+// Mobil Kontroller (Buton Dokunmaları)
+if (leftBtn && rightBtn) {
+    // Sol Buton Basıldığında
+    leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); leftPressed = true; });
+    leftBtn.addEventListener('touchend', () => { leftPressed = false; });
+    
+    // Sağ Buton Basıldığında
+    rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); rightPressed = true; });
+    rightBtn.addEventListener('touchend', () => { rightPressed = false; });
+    
+    // Tarayıcı sürüklemeyi engellemek için mouse olaylarını da ekleyelim (desktop/mobile test için)
+    leftBtn.addEventListener('mousedown', () => { leftPressed = true; });
+    leftBtn.addEventListener('mouseup', () => { leftPressed = false; });
+    rightBtn.addEventListener('mousedown', () => { rightPressed = true; });
+    rightBtn.addEventListener('mouseup', () => { rightPressed = false; });
+}
+
 
 // Oyunun başlatılması
 document.addEventListener('DOMContentLoaded', () => {
