@@ -1,33 +1,39 @@
 // game_script.js
 
-// Canvas ve Çizim Bağlamını Al
+// Canvas ve Menü Elementlerini Al
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score-display');
 const leftBtn = document.getElementById('left-btn');
 const rightBtn = document.getElementById('right-btn');
+const gameMenu = document.getElementById('game-menu');
+const menuHeadline = document.getElementById('menu-headline');
+const menuInstructionText = document.getElementById('menu-instruction-text');
+const finalScoreDisplay = document.getElementById('final-score');
+const startRestartBtn = document.getElementById('start-restart-btn');
 
 
 // Oyun Ayarları
 const GAME_WIDTH = canvas.width;
 const GAME_HEIGHT = canvas.height;
+let isGameRunning = false; // Oyunun devam edip etmediği
 let isGameOver = false;
 let animationFrameId;
 
 // Oyuncu Ayarları (Araba - Neon Blok)
 const carWidth = 40;
 const carHeight = 70;
-let carX = GAME_WIDTH / 2 - carWidth / 2;
-let carY = GAME_HEIGHT - carHeight - 30;
-const carSpeed = 4; // Yana hareket hızı (6 -> 4 düşürüldü)
+let carX;
+let carY;
+const carSpeed = 4; // Yana hareket hızı
 
 // Oyun Nesneleri (Engeller - Bariyerler)
 let obstacles = [];
-let baseObstacleSpeed = 2; // Başlangıç engel düşüş hızı (3 -> 2 düşürüldü)
-let currentObstacleSpeed = baseObstacleSpeed;
-const obstacleSpawnRate = 120; // Engel oluşturma sıklığı (90 -> 120 artırıldı = daha seyrek)
+let baseObstacleSpeed = 2; 
+let currentObstacleSpeed;
+const obstacleSpawnRate = 120; // Daha seyrek çıkış
 let frameCounter = 0;
-let difficultyIncreaseRate = 0.003; // Hız artışı biraz düşürüldü (0.005 -> 0.003)
+let difficultyIncreaseRate = 0.003; 
 
 // Kontrol Durumu
 let leftPressed = false;
@@ -43,30 +49,30 @@ function getThemeColors() {
         carColor: isLight ? '#ff9900' : '#fffc7f', 
         carGlow: isLight ? '#ffcc00' : '#ffffff', 
         // Bariyer renkleri
-        barrierOrange: isLight ? '#e67e22' : '#f39c12', // Daha canlı turuncu
-        barrierRed: isLight ? '#c0392b' : '#e74c3c', // Kırmızı lamba
-        barrierMetal: isLight ? '#95a5a6' : '#bdc3c7', // Metal destekler
-        barrierGlow: isLight ? '#ffcc00' : '#ffffff' // Bariyer parlama rengi
+        barrierOrange: isLight ? '#e67e22' : '#f39c12', 
+        barrierRed: isLight ? '#c0392b' : '#e74c3c', 
+        barrierMetal: isLight ? '#95a5a6' : '#bdc3c7', 
+        barrierGlow: isLight ? '#ffcc00' : '#ffffff' 
     };
 }
 
 // ------------------- ÇİZİM FONKSİYONLARI -------------------
 
 function drawRoad() {
-    ctx.fillStyle = '#34495e'; // Koyu Asfalt
+    ctx.fillStyle = '#34495e'; 
     ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     const colors = getThemeColors();
     
     // Yol Şeritleri (Neon Animasyonlu)
-    ctx.strokeStyle = colors.carGlow; // Neon Parlama Rengi
+    ctx.strokeStyle = colors.carGlow; 
     ctx.lineWidth = 4;
     ctx.shadowBlur = 10;
     ctx.shadowColor = colors.carGlow; 
 
     const dashLength = 20;
     const gapLength = 20;
-    let offset = frameCounter * 1.5 % (dashLength + gapLength); // Animasyon hızı düşürüldü
+    let offset = frameCounter * 1.5 % (dashLength + gapLength); 
 
     for (let i = -dashLength; i < GAME_HEIGHT; i += (dashLength + gapLength)) {
         ctx.beginPath();
@@ -119,19 +125,18 @@ function drawObstacles() {
         // Metal Desteklerin Genişliği
         const supportWidth = 5; 
         // Lamba çapı
-        const lampRadius = 6;
+        const lampRadius = 4; // Lamba küçültüldü
 
         // Gölge efekti (tüm bariyer için)
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 8; // Gölge azaltıldı
         ctx.shadowColor = colors.barrierGlow;
 
         // 1. Metal Destekler
         ctx.fillStyle = colors.barrierMetal;
-        ctx.fillRect(obs.x + 5, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
-        ctx.fillRect(obs.x + barrierTotalWidth - 5 - supportWidth, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
+        ctx.fillRect(obs.x + 3, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
+        ctx.fillRect(obs.x + barrierTotalWidth - 3 - supportWidth, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
         
         // 2. Üst Tahta
-        // Turuncu ve Beyaz Çizgiler
         const stripeWidth = boardHeight / 2;
         for (let i = 0; i < barrierTotalWidth; i += stripeWidth) {
             ctx.fillStyle = (Math.floor(i / stripeWidth) % 2 === 0) ? colors.barrierOrange : 'white';
@@ -145,14 +150,14 @@ function drawObstacles() {
         }
 
         // 4. Kırmızı Lambalar (Üst Tahtanın Üzerinde)
-        ctx.shadowBlur = 15; // Lambalar daha çok parlasın
+        ctx.shadowBlur = 12; 
         ctx.shadowColor = colors.barrierRed;
         ctx.fillStyle = colors.barrierRed;
         ctx.beginPath();
-        ctx.arc(obs.x + barrierTotalWidth * 0.25, boardY1 + 5, lampRadius, 0, Math.PI * 2);
+        ctx.arc(obs.x + barrierTotalWidth * 0.25, boardY1 + 3, lampRadius, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(obs.x + barrierTotalWidth * 0.75, boardY1 + 5, lampRadius, 0, Math.PI * 2);
+        ctx.arc(obs.x + barrierTotalWidth * 0.75, boardY1 + 3, lampRadius, 0, Math.PI * 2);
         ctx.fill();
     });
     // Gölgeyi temizle
@@ -199,8 +204,6 @@ function updateObstacles() {
     });
 
     // Yeni engel oluşturma
-    // Hız arttıkça oluşturma süresi azalır (yani daha sık), ancak minimum 40 frame'den az olamaz.
-    // Başlangıçta daha seyrek olması için obstacleSpawnRate 120'ye ayarlandı.
     const dynamicSpawnRate = Math.max(40, obstacleSpawnRate / (1 + (currentObstacleSpeed - baseObstacleSpeed) * 0.5));
     if (frameCounter % Math.floor(dynamicSpawnRate) === 0) {
         spawnObstacle();
@@ -208,15 +211,15 @@ function updateObstacles() {
 }
 
 function spawnObstacle() {
-    const obsWidth = 80; // Bariyer genişliği
-    const obsHeight = 60; // Bariyer yüksekliği
+    const obsWidth = 60; // Engel genişliği küçültüldü (80 -> 60)
+    const obsHeight = 40; // Engel yüksekliği küçültüldü (60 -> 40)
     
     // Rastgele X pozisyonu (yol ve bariyer sınırları içinde)
     const randomX = Math.random() * (GAME_WIDTH - obsWidth - 20) + 10; 
     
     obstacles.push({
         x: randomX,
-        y: -obsHeight, // Ekranın tepesinden gelsin
+        y: -obsHeight, 
         width: obsWidth,
         height: obsHeight
     });
@@ -230,47 +233,76 @@ function checkCollision() {
             carY < obs.y + obs.height &&
             carY + carHeight > obs.y) {
             
-            isGameOver = true;
+            gameOver();
         }
     });
 }
 
-function drawGameOver() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    
-    const colors = getThemeColors();
-    
-    // Neon Başlık
-    ctx.fillStyle = colors.carColor;
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = colors.carGlow;
-    ctx.font = 'bold 45px Fira Code';
-    ctx.textAlign = 'center';
-    ctx.fillText('OYUN BİTTİ!', GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40);
-    
-    // Puan
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'white';
-    ctx.font = '30px Fira Code';
-    ctx.fillText('Puan: ' + score, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10);
-    
-    // Yeniden Başlatma Talimatı
-    ctx.font = '18px Fira Code';
-    ctx.fillStyle = colors.carGlow;
-    ctx.fillText('Yeniden Oynamak İçin Sayfayı Yenile', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 70);
-    
-    // Animasyonu durdur
-    cancelAnimationFrame(animationFrameId);
+// ------------------- OYUN DÖNGÜSÜ VE DURUM YÖNETİMİ -------------------
+
+function initGame() {
+    // Oyuncu konumunu sıfırla
+    carX = GAME_WIDTH / 2 - carWidth / 2;
+    carY = GAME_HEIGHT - carHeight - 30;
+
+    // Oyun değişkenlerini sıfırla
+    score = 0;
+    obstacles = [];
+    isGameOver = false;
+    isGameRunning = false;
+    currentObstacleSpeed = baseObstacleSpeed;
+    frameCounter = 0;
+
+    // Skoru ve menüyü güncelle
+    updateScore();
+    showMenu('start');
 }
 
-// ------------------- OYUN DÖNGÜSÜ -------------------
+function startGame() {
+    if (isGameRunning) return; // Zaten çalışıyorsa tekrar başlatma
+
+    isGameRunning = true;
+    isGameOver = false;
+    hideMenu();
+
+    // Kontrol tuşlarını temizle
+    leftPressed = false;
+    rightPressed = false;
+
+    // Oyun döngüsünü başlat
+    gameLoop();
+}
+
+function gameOver() {
+    isGameOver = true;
+    isGameRunning = false;
+    cancelAnimationFrame(animationFrameId);
+    showMenu('end');
+}
+
+function showMenu(type) {
+    gameMenu.style.display = 'flex'; 
+    finalScoreDisplay.style.display = 'none';
+
+    if (type === 'start') {
+        menuHeadline.textContent = 'ARABA OYUNU';
+        menuInstructionText.textContent = 'Engellerden kaçın, puan toplayın!';
+        startRestartBtn.textContent = 'OYUNA BAŞLA';
+    } else if (type === 'end') {
+        menuHeadline.textContent = 'OYUN BİTTİ!';
+        menuInstructionText.textContent = 'Çarpışma gerçekleşti.';
+        finalScoreDisplay.textContent = `SON PUANIN: ${score}`;
+        finalScoreDisplay.style.display = 'block';
+        startRestartBtn.textContent = 'TEKRAR OYNA';
+    }
+}
+
+function hideMenu() {
+    gameMenu.style.display = 'none';
+}
 
 function gameLoop() {
-    if (isGameOver) {
-        drawGameOver();
-        return; 
-    }
+    if (!isGameRunning || isGameOver) return;
 
     // 1. Güncelleme
     updateCar();
@@ -286,48 +318,70 @@ function gameLoop() {
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
+
 // ------------------- GİRİŞ İŞLEYİCİLERİ -------------------
 
 // Klavye Kontrolleri
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
-        leftPressed = true;
-    } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-        rightPressed = true;
+    if (isGameRunning) {
+        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+            leftPressed = true;
+        } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+            rightPressed = true;
+        }
     }
 });
 
 document.addEventListener('keyup', (e) => {
-    if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
-        leftPressed = false;
-    } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-        rightPressed = false;
+    if (isGameRunning) {
+        if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+            leftPressed = false;
+        } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+            rightPressed = false;
+        }
     }
 });
 
 // Mobil Kontroller (Buton Dokunmaları)
 if (leftBtn && rightBtn) {
-    // Sol Buton Basıldığında
-    leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); leftPressed = true; });
-    leftBtn.addEventListener('touchend', () => { leftPressed = false; });
+    const handleTouchStart = (e, isLeft) => { 
+        e.preventDefault(); 
+        if (isGameRunning) {
+            if (isLeft) leftPressed = true;
+            else rightPressed = true;
+        }
+    };
+    const handleTouchEnd = (isLeft) => { 
+        if (isLeft) leftPressed = false;
+        else rightPressed = false;
+    };
+
+    leftBtn.addEventListener('touchstart', (e) => handleTouchStart(e, true));
+    leftBtn.addEventListener('touchend', () => handleTouchEnd(true));
+    rightBtn.addEventListener('touchstart', (e) => handleTouchStart(e, false));
+    rightBtn.addEventListener('touchend', () => handleTouchEnd(false));
     
-    // Sağ Buton Basıldığında
-    rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); rightPressed = true; });
-    rightBtn.addEventListener('touchend', () => { rightPressed = false; });
-    
-    // Tarayıcı sürüklemeyi engellemek için mouse olaylarını da ekleyelim (desktop/mobile test için)
-    leftBtn.addEventListener('mousedown', () => { leftPressed = true; });
+    // Mouse olayları
+    leftBtn.addEventListener('mousedown', () => { if (isGameRunning) leftPressed = true; });
     leftBtn.addEventListener('mouseup', () => { leftPressed = false; });
-    rightBtn.addEventListener('mousedown', () => { rightPressed = true; });
+    rightBtn.addEventListener('mousedown', () => { if (isGameRunning) rightPressed = true; });
     rightBtn.addEventListener('mouseup', () => { rightPressed = false; });
 }
+
+// Menü Butonu Olayı
+startRestartBtn.addEventListener('click', () => {
+    if (isGameOver || !isGameRunning) {
+        // Eğer oyun bitmişse veya hiç başlamamışsa, oyunu yeniden başlat/başlat
+        initGame(); // Tüm değişkenleri sıfırla
+        startGame(); // Oyunu başlat
+    }
+});
 
 
 // Oyunun başlatılması
 document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('gameCanvas');
     if (canvasElement) {
-        updateScore(); 
-        gameLoop(); 
+        initGame(); // Sayfa yüklendiğinde başlangıç menüsünü göster
     }
 });
