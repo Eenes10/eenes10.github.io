@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli | Enes</title>
+    <link rel="icon" href="./pp.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Sadece Admin Paneli için özel CSS (style.css'e eklemeniz GEREKMEZ) */
+        #admin-section {
+            padding-top: 15vh;
+            text-align: left;
+            max-width: 700px;
+        }
+        #admin-section textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            font-family: 'Fira Code', monospace;
+            resize: vertical;
+        }
+        #save-btn {
+            background-color: var(--neon-main-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: opacity 0.3s;
+        }
+        #save-btn:hover {
+            opacity: 0.9;
+        }
+        .message {
+            margin-top: 10px;
+            color: var(--neon-glow-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="fade-out">
+    <header>
+        <nav>
+            <div class="nav-left">
+                <a href="index.html" class="logo">Enes</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="yorumlar.html">Yorumlar</a></li>
+                    <li><a href="iletisim.html">İletişim</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="https://github.com/Eenes10" target="_blank" class="github-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <button id="theme-toggle" aria-label="Tema Değiştir">
+                    <i id="icon-moon" class="fas fa-moon"></i>
+                    <i id="icon-sun" class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+            <div class="nav-loader"></div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="admin-section">
+            <h2>Admin Paneli - Hakkımda Metni Düzenleme</h2>
+            <p>
+                **ÖNEMLİ:** Bu paneldeki değişiklikler sadece sizin tarayıcınızda geçerli olmak üzere "Hakkımda" metnini günceller. Başka bir cihazdan veya tarayıcıdan bakıldığında ana metin görünmeye devam eder.
+            </p>
+            
+            <label for="about-content">Hakkımda Metni:</label>
+            <textarea id="about-content" placeholder="Yeni metni buraya girin..."></textarea>
+            
+            <button id="save-btn">Değişiklikleri Kaydet</button>
+            <div id="status-message" class="message"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Enes. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Admin Paneli Özel JavaScript
+        const aboutContentArea = document.getElementById('about-content');
+        const saveBtn = document.getElementById('save-btn');
+        const statusMessage = document.getElementById('status-message');
+        const storageKey = 'admin_about_text';
+
+        // 1. Kayıtlı metni yükle
+        const savedText = localStorage.getItem(storageKey);
+        // Eğer yerel depoda bir metin varsa, onu yükle
+        aboutContentArea.value = savedText || 'Hakkımda metni henüz yerel olarak düzenlenmedi. Buraya yeni metninizi yazabilirsiniz.';
+
+        // 2. Kaydetme işlevi
+        saveBtn.addEventListener('click', () => {
+            const newText = aboutContentArea.value;
+            localStorage.setItem(storageKey, newText);
+            
+            statusMessage.textContent = 'Kaydedildi! Değişiklikler tarayıcınızda geçerlidir.';
+            setTimeout(() => {
+                statusMessage.textContent = '';
+            }, 3000);
+        });
+    </script>
+    
+</body>
+</html>
