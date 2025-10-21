@@ -66,11 +66,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sloganParagraph = document.getElementById('iletisim-slogan-text');
             const storageKey = 'admin_text_iletisimSlogan';
+            const defaultText = 'Projeler hakkında konuşmak veya tanışmak için bana aşağıdaki platformlardan ulaşabilirsiniz.';
             
             const savedText = localStorage.getItem(storageKey);
             
-            if (savedText !== null && sloganParagraph) {
-                sloganParagraph.textContent = savedText;
+            if (sloganParagraph) {
+                sloganParagraph.textContent = savedText !== null ? savedText : defaultText;
             }
         });
     </script>
