@@ -141,8 +141,8 @@
     
     <main>
         <section id="oyun">
-            <h2>Araba Yarışı / Engellerden Kaçış Oyunu</h2>
-            <p>
+            <h2 id="oyun-title-text">Araba Yarışı / Engellerden Kaçış Oyunu</h2>
+            <p id="oyun-description-text">
                 Oyunu başlatmak için alttaki menüden "BAŞLA" butonuna tıklayın. 
                 Bilgisayarda **Sol/Sağ ok tuşlarını**, mobilde ise alttaki **butonları** kullanın.
             </p>
@@ -175,5 +175,22 @@
 
     <script src="script.js"></script>
     <script src="game_script.js"></script> 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadTextFromStorage = (elementId, storageKey, defaultValue) => {
+                const element = document.getElementById(elementId);
+                const savedText = localStorage.getItem('admin_text_' + storageKey);
+                
+                if (element) {
+                    element.textContent = savedText !== null ? savedText : defaultValue;
+                }
+            };
+
+            loadTextFromStorage('oyun-title-text', 'oyunTitle', 'Araba Yarışı / Engellerden Kaçış Oyunu');
+            loadTextFromStorage('oyun-description-text', 'oyunDescription', 'Oyunu başlatmak için alttaki menüden "BAŞLA" butonuna tıklayın. Bilgisayarda Sol/Sağ ok tuşlarını, mobilde ise alttaki butonları kullanın.');
+        });
+    </script>
+
 </body>
 </html>
