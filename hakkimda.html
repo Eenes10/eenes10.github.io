@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hakkımda | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241025">
+    <link rel="stylesheet" href="style.css?v=20241025-v2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -69,7 +69,8 @@
     <script>
         // Hakkımda Metnini Yerel Depodan Yükleme
         document.addEventListener('DOMContentLoaded', () => {
-            const aboutParagraph = document.getElementById('about-content-text');
+            // ID'nin 'about-content-text' olduğundan emin olundu.
+            const aboutParagraph = document.getElementById('about-content-text'); 
             const storageKey = 'admin_text_aboutContent';
             const defaultText = `Selam! Benim adım Enes. 15 yaşındayım ve şu anda lise öğrencisiyim. 22 Şubat doğumluyum.
                     Hayatımda en çok sevdiğim şey ne diye sorarsan, kesinlikle futbol oynamak derim. Fırsat buldukça
