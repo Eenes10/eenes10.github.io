@@ -125,11 +125,19 @@
             color: var(--text-color);
             border-radius: 4px;
         }
+        /* YENİ CSS: Giriş ekranındaki Ana Menüye Dön butonu için stil */
         .login-box button {
             width: 100%;
             background-color: var(--neon-glow-color);
             color: #111;
+            margin-bottom: 10px; /* Alttaki butondan ayır */
         }
+        .login-box #exit-login-btn {
+            background-color: var(--card-color);
+            color: var(--neon-glow-color);
+            border: 1px solid var(--neon-glow-color);
+        }
+        
         #login-error {
             color: #e74c3c;
             margin-top: 10px;
@@ -145,6 +153,9 @@
             <h2>Admin Girişi</h2>
             <input type="password" id="admin-password" placeholder="Şifre" required>
             <button id="login-btn">Giriş Yap</button>
+            
+            <button id="exit-login-btn">Ana Menüye Dön</button>
+
             <p id="login-error"></p>
         </div>
     </div>
@@ -214,6 +225,7 @@
         const saveBtn = document.getElementById('save-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const statusMessage = document.getElementById('status-message');
+        const exitLoginBtn = document.getElementById('exit-login-btn'); // YENİ ELEMENT
         
         // Tüm düzenlenebilir input/textarea elementleri
         const editableElements = [
@@ -225,7 +237,7 @@
             document.getElementById('iletisimSlogan'),
             document.getElementById('oyunTitle'),
             document.getElementById('oyunDescription')
-        ].filter(el => el != null); // Bulunmayanları filtrele
+        ].filter(el => el != null); 
 
         // 1. Durum Kontrolü ve Yükleme
         const checkLoginStatus = () => {
@@ -263,7 +275,7 @@
             } else {
                 loginError.textContent = 'Yanlış şifre. Lütfen tekrar deneyin.';
                 passwordInput.value = '';
-                setTimeout(() => { loginError.textContent = '', 3000 });
+                setTimeout(() => { loginError.textContent = '' }, 3000);
             }
         });
 
@@ -289,13 +301,16 @@
             }, 3000);
         });
         
-        // 5. Çıkış Yapma İşlevi (GÜNCELLENMİŞ KISIM)
+        // 5. Çıkış Yapma İşlevi (Admin Panelinden Çıkış)
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem(ADMIN_STATUS_KEY);
-            // index.html'ye yönlendir
             window.location.href = 'index.html'; 
         });
 
+        // 6. Giriş Ekranından Çıkış İşlevi (YENİ EKLENEN)
+        exitLoginBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
 
         // DOM yüklendiğinde oturum durumunu kontrol et
         document.addEventListener('DOMContentLoaded', () => {
