@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Sayfa | Enes</title>
     <link rel="icon" href="./pp.png">
-    <link rel="stylesheet" href="style.css?v=20241026-v5">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
@@ -20,10 +20,10 @@
             <div class="nav-left">
                 <a href="index.html" class="logo">Enes</a>
                 <ul class="nav-links">
-                    <li><a href="index.html" class="active">Ana Sayfa</a></li>
+                    <li><a href="index.html" class="active" id="nav-anasayfa">Ana Sayfa</a></li>
                     <li><a href="hakkimda.html">Hakkımda</a></li>
                     <li><a href="yorumlar.html">Yorumlar</a></li>
-                    <li><a href="oyun.html">Oyun</a></li>
+                    <li><a href="index.html#oyun" id="nav-oyun">Oyun</a></li>
                     <li><a href="iletisim.html">İletişim</a></li>
                 </ul>
             </div>
@@ -48,39 +48,45 @@
     </header>
 
     <main>
-        <section id="hero">
+        <section id="hero-original" style="display: none;"> 
             <div class="hero-text">
-                <h1><span id="hero-title-base">Merhaba, ben </span><span id="hero-highlight" class="highlight">Enes</span></h1>
-                <p id="hero-slogan">15 yaşındayım ve hobi olarak kod yazıyorum.</p>
+                <h1>Merhaba, ben <span class="highlight">Enes</span></h1>
+                <p>15 yaşındayım ve hobi olarak kod yazıyorum.</p>
                 <a href="iletisim.html" class="btn">İletişime Geç</a>
             </div>
         </section>
-    </main>
+
+        <section id="oyun" style="display: none;">
+            <h2>Araba Oyunu</h2>
+            <div id="game-container">
+                <div id="game-area">
+                </div>
+
+                <div id="start-screen" class="game-screen" style="display: flex;">
+                    <h3>ARABA OYUNU</h3>
+                    <p>Engellerden kaçın, puan toplayın!</p>
+                    <button id="start-button" class="btn">OYUNA BAŞLA</button>
+                </div>
+
+                <div id="end-screen" class="game-screen" style="display: none;">
+                    <h3>OYUN BİTTİ!</h3>
+                    <p>Puanınız:</p>
+                    <p id="final-score" style="font-size: 3rem; margin: 10px 0;"></p>
+                    <button id="restart-button" class="btn">YENİDEN BAŞLA</button>
+                </div>
+            </div>
+            <div id="score-container">
+                Puan: <span id="score">0</span>
+            </div>
+            <p style="margin-top: 20px; color: var(--text-color);">Kontroller: Sol/Sağ Ok Tuşları veya A/D</p>
+        </section>
+        </main>
 
     <footer>
         <p>&copy; 2024 Enes</p>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Metinleri Yerel Depodan Yükleme
-        document.addEventListener('DOMContentLoaded', () => {
-            const storagePrefix = 'admin_text_';
-            
-            const loadAndApply = (key, targetElementId, defaultValue) => {
-                const savedText = localStorage.getItem(storagePrefix + key);
-                const targetEl = document.getElementById(targetElementId);
-
-                if (targetEl) {
-                    targetEl.textContent = savedText !== null ? savedText : defaultValue;
-                }
-            };
-
-            loadAndApply('heroTitleBase', 'hero-title-base', 'Merhaba, ben ');
-            loadAndApply('heroHighlight', 'hero-highlight', 'Enes');
-            loadAndApply('heroSlogan', 'hero-slogan', '15 yaşındayım ve hobi olarak kod yazıyorum.');
-        });
-    </script>
 </body>
 
 </html>
