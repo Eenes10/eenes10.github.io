@@ -22,7 +22,7 @@ const navSlide = () => {
         });
     });
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma (GÜNCELLENMİŞ KONTROL EKLENDİ)
+    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma (GÜVENLİ KONTROL EKLENDİ)
     navLinks.forEach(li => {
         const link = li.querySelector('a'); // Linki seç
         if (link) { // Linkin varlığını kontrol et
@@ -153,6 +153,9 @@ const setupAdminLink = () => {
             adminLinkEl.style.display = 'block';
             adminLinkEl.classList.add('admin-active');
         } else {
+            // DİKKAT: Mobil menüde sadece görünürlüğü kapatıyoruz.
+            // Responsive tasarımda bu linkin görünürlüğü CSS tarafından yönetilir.
+            // Burada sadece masaüstü görünümde gizlenmesini sağlıyoruz.
             adminLinkEl.style.display = 'none';
             adminLinkEl.classList.remove('admin-active');
         }
