@@ -121,21 +121,30 @@ const themeHandler = () => {
     }
 };
 
-// YENİ: Gizli Admin Panel Erişimi (Hakkımda linkine 3 tıklama)
+// YENİ GÜNCELLEME: Gizli Admin Panel Erişimi (Hakkımda sayfasındaki PP'ye 3 tıklama)
 let adminClickCount = 0;
 let clickTimeout;
 
 const setupSecretAdminAccess = () => {
-    const hakkimdaLink = document.querySelector('a[href="hakkimda.html"]');
-    if (!hakkimdaLink) return;
+    // Yeni hedef: Hakkımda sayfasındaki profil fotoğrafı (.profile-pic)
+    const profilePic = document.querySelector('.profile-pic');
+    
+    // Eğer element yoksa (başka bir sayfadaysak), fonksiyonu bitir.
+    if (!profilePic) return; 
 
-    hakkimdaLink.addEventListener('click', (e) => {
+    // Kullanıcı deneyimi için imleci 'tıklanabilir' olarak ayarla
+    profilePic.style.cursor = 'pointer';
+
+    profilePic.addEventListener('click', (e) => {
+        // Görüntünün varsayılan tıklama davranışını (olmasa bile) ve gezintiyi engelle
+        e.preventDefault(); 
+        
         // Yönlendirme zaten admin.html'e doğruysa bir şey yapma
         if (window.location.pathname.endsWith('admin.html')) return; 
 
         adminClickCount++;
         
-        // 2 saniye içinde 3 tıklama olmazsa sayacı sıfırla
+        // 1.5 saniye içinde 3 tıklama olmazsa sayacı sıfırla
         clearTimeout(clickTimeout);
         clickTimeout = setTimeout(() => {
             adminClickCount = 0;
@@ -143,12 +152,9 @@ const setupSecretAdminAccess = () => {
         }, 1500); // 1.5 saniye içinde 3 tıklama bekleniyor
 
         if (adminClickCount < 3) {
-            // 3. tıklamaya kadar normal yönlendirmeyi engelle
-            e.preventDefault();
             console.log(`Admin Panel Gizli Giriş Denemesi: ${adminClickCount}/3`);
         } else {
             // 3. tıklamada yönlendir
-            e.preventDefault();
             
             // Animasyonları başlat
             const body = document.querySelector('body');
@@ -161,6 +167,8 @@ const setupSecretAdminAccess = () => {
 
             // Yönlendirme (Admin paneline)
             setTimeout(() => {
+                // Şifre giriş ekranı için session'ı temizle (admin.html'de de var ama emin olalım)
+                sessionStorage.removeItem('admin_logged_in'); 
                 window.location.href = 'admin.html';
             }, 600); 
             
