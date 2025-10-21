@@ -1,4 +1,4 @@
-/* --- HAREKETLİ ALTIN TEMA v3 (TÜM ELEMENTLER NEON) --- */
+/* --- HAREKETLİ CYBER TEMA v4 (DAHA GÖZE HOŞ GELEN) --- */
 
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
@@ -7,29 +7,29 @@
 }
 
 :root {
-    /* DARK TEMA (VARSAYILAN) */
-    --bg-color: #111111;
-    --card-color: rgba(24, 24, 27, 0.7);
+    /* DARK TEMA (VARSAYILAN) - Cyber Purple/Blue */
+    --bg-color: #1a1a2e; /* Koyu Mavi-Mor */
+    --card-color: rgba(27, 27, 47, 0.7);
     --text-color: #e2e8f0;
     --text-muted: #94a3b8;
-    --accent-gradient: linear-gradient(60deg, #fffc7f, #ffffff, #fffc7f, #fffc7f); /* Altın Gradient */
-    --nav-bg: rgba(17, 17, 17, 0.9);
+    --accent-gradient: linear-gradient(60deg, #bb64ff, #8d7eff, #6495ed); /* Mor/Mavi Gradient */
+    --nav-bg: rgba(26, 26, 46, 0.9);
     --border-color: rgba(255, 255, 255, 0.1);
-    --neon-main-color: #ffffff; /* Altın */
-    --neon-glow-color: #fffc7f;  /* Parlak Sarı */
+    --main-accent-color: #8d7eff; /* Ana Vurgu Rengi (Mor Mavi) */
+    --glow-color: #bb64ff;  /* Parlama Rengi (Parlak Mor) */
 }
 
 /* LIGHT TEMA */
 body.light-theme {
-    --bg-color: #f3f4f6;
-    --card-color: rgba(255, 255, 255, 0.8);
+    --bg-color: #f0f8ff; /* Açık Beyaz/Mavi */
+    --card-color: rgba(255, 255, 255, 0.9);
     --text-color: #1f2937;
     --text-muted: #4b5563;
-    --accent-gradient: linear-gradient(60deg, #ff9900, #ffcc00, #ff9900, #ff9900); /* Parlak Turuncu Gradient */
+    --accent-gradient: linear-gradient(60deg, #3d5afe, #448aff, #3d5afe); /* Parlak Mavi Gradient */
     --nav-bg: rgba(255, 255, 255, 0.9);
     --border-color: rgba(0, 0, 0, 0.1);
-    --neon-main-color: #ff9900; 
-    --neon-glow-color: #ffcc00; 
+    --main-accent-color: #3d5afe; 
+    --glow-color: #448aff; 
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,12 +56,12 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .nav-links a.active { color: var(--bg-color); background: var(--accent-gradient); background-size: 300% 300%; animation: gradient-animation 5s ease infinite; }
 
 
-/* YENİ: NAV ACTIONS (TEMA BUTONU VE GITHUB) */
+/* NAV ACTIONS (TEMA BUTONU VE GITHUB) */
 .nav-actions { display: flex; align-items: center; gap: 20px; }
 
 /* GitHub Linki */
 .github-link { color: var(--text-muted); font-size: 1.5rem; transition: color 0.3s ease, text-shadow 0.3s ease; display: flex; align-items: center; }
-.github-link:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
+.github-link:hover { color: var(--glow-color); text-shadow: 0 0 8px var(--glow-color); }
 
 /* Tema Değiştirme Butonu */
 #theme-toggle { 
@@ -70,7 +70,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     width: 24px; height: 24px; display: flex; align-items: center; 
     justify-content: center; transition: all 0.3s ease; 
 }
-#theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
+#theme-toggle:hover { color: var(--glow-color); text-shadow: 0 0 8px var(--glow-color); }
 #theme-toggle i { position: absolute; transition: opacity 0.3s ease, transform 0.3s ease; }
 
 /* Tema İkon Yönetimi */
@@ -80,7 +80,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 /* LIGHT TEMA AKTİFKEN İkonlar */
 body.light-theme #icon-moon { opacity: 0; transform: scale(0); }
 body.light-theme #icon-sun { opacity: 1; transform: scale(1); }
-body.light-theme #theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
+body.light-theme #theme-toggle:hover { color: var(--glow-color); text-shadow: 0 0 8px var(--glow-color); }
 
 
 /* --- ANA İÇERİK BÖLÜMÜ --- */
@@ -92,7 +92,7 @@ section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: cen
 
 
 /* --- BAŞLIKLAR VE DİĞER ELEMENTLER --- */
-h1, h2, .highlight { background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; background-size: 300% 300%; animation: gradient-animation 5s ease infinite; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
+h1, h2, .highlight { background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; background-size: 300% 300%; animation: gradient-animation 5s ease infinite; text-shadow: 0 0 8px rgba(141, 126, 255, 0.5); /* Yumuşak parlama */ }
 body.light-theme h1, body.light-theme h2, body.light-theme .highlight { text-shadow: 0 0 8px rgba(0, 0, 0, 0.2); } 
 
 h1 { font-size: 3rem; color: var(--text-color); }
@@ -102,18 +102,18 @@ p { color: var(--text-muted); }
 .about-container { display: flex; align-items: center; justify-content: center; gap: 40px; text-align: left; }
 
 .btn {
-    background: transparent; border: 1px solid var(--neon-main-color);
-    color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color);
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+    background: transparent; border: 1px solid var(--main-accent-color);
+    color: var(--glow-color); text-shadow: 0 0 4px var(--glow-color);
+    box-shadow: 0 0 8px rgba(141, 126, 255, 0.3); /* Yumuşak mor gölge */
     padding: 14px 28px; margin-top: 20px; text-decoration: none;
     border-radius: 8px; font-weight: bold; transition: all 0.3s ease;
 }
 
-/* Anasayfa İletişim Butonu Hover Efekti */
+/* Buton Hover Efekti */
 .btn:hover {
     color: var(--bg-color); /* Hover'da arka plan rengini alır */
-    background-color: var(--neon-main-color);
-    box-shadow: 0 0 25px var(--neon-main-color), 0 0 50px var(--neon-glow-color); /* Daha güçlü parlama */
+    background-color: var(--main-accent-color);
+    box-shadow: 0 0 15px var(--main-accent-color), 0 0 30px var(--glow-color); /* Daha güçlü parlama */
     text-shadow: none; /* Metin gölgesini kaldır */
 }
 
@@ -122,21 +122,21 @@ p { color: var(--text-muted); }
 
 .profile-pic {
     width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--neon-main-color);
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    border: 2px solid var(--main-accent-color);
+    box-shadow: 0 0 25px rgba(141, 126, 255, 0.5);
 }
 
 /* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
 .social-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; }
 .social-links a { color: var(--text-muted); font-size: 2.5rem; transition: all 0.3s ease; }
-.social-links a:hover { color: var(--neon-glow-color); text-shadow: 0 0 10px var(--neon-glow-color); transform: translateY(-5px); }
+.social-links a:hover { color: var(--glow-color); text-shadow: 0 0 10px var(--glow-color); transform: translateY(-5px); }
 footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 
 /* --- NAVBAR GEÇİŞ ANİMASYONU --- */
 .nav-loader {
     position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; 
     background: var(--accent-gradient); background-size: 200% 200%;
-    animation: gradient-animation 4s ease infinite; box-shadow: 0 0 15px var(--neon-main-color);
+    animation: gradient-animation 4s ease infinite; box-shadow: 0 0 10px var(--main-accent-color);
     transition: width 0.4s ease-in-out; 
 }
 .nav-loader.loading { width: 100%; }
@@ -222,7 +222,7 @@ footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
 body.fade-out { opacity: 0; transition: opacity 0.3s ease-in-out; }
 body:not(.fade-out) { opacity: 1; }
 
-/* --- NEON RACER OYUN STİLLERİ (BU KISIM OYUN İÇİN KRİTİKTİR) --- */
+/* --- NEON RACER OYUN STİLLERİ --- */
 
 #game-container {
     display: flex;
@@ -241,9 +241,9 @@ body:not(.fade-out) { opacity: 1; }
 #game-area {
     width: 300px; /* Oyun Alanı Genişliği */
     height: 450px; /* Oyun Alanı Yüksekliği */
-    background: #000000;
-    border: 3px solid var(--neon-glow-color);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5) inset, 0 0 10px var(--neon-glow-color);
+    background: linear-gradient(to bottom, #1a1a2e, #000000); /* Yola hafif gradient */
+    border: 3px solid var(--main-accent-color);
+    box-shadow: 0 0 15px rgba(141, 126, 255, 0.5) inset, 0 0 8px var(--glow-color);
     position: relative;
     overflow: hidden;
     margin-bottom: 20px;
@@ -251,30 +251,30 @@ body:not(.fade-out) { opacity: 1; }
 
 /* ------------------- OYUN OBJELERİ ------------------- */
 
-/* Arabamızın Şekli (Neon Çizgi Stili) */
+/* Arabamızın Şekli */
 #player {
     position: absolute;
     bottom: 20px;
     width: 30px;
     height: 50px;
-    background-color: var(--bg-color); /* Arka plan rengini alır */
-    border: 2px solid var(--neon-main-color);
+    background-color: var(--bg-color); 
+    border: 2px solid var(--main-accent-color);
     border-radius: 5px;
-    box-shadow: 0 0 10px var(--neon-main-color), 0 0 20px var(--neon-glow-color);
-    transition: left 0.1s linear; /* Yumuşak hareket */
-    left: 135px; /* Başlangıç pozisyonu (300/2 - 30/2 = 135) */
+    box-shadow: 0 0 8px var(--main-accent-color), 0 0 16px var(--glow-color);
+    transition: left 0.1s linear; 
+    left: 135px; 
     z-index: 10;
 }
 
-/* Araba Görünümünü Geliştirme (Işıklar ve Cam) */
+/* Araba Görünümünü Geliştirme (Ön Farlar) */
 #player::before, #player::after {
     content: '';
     position: absolute;
     height: 5px;
     width: 10px;
-    background-color: var(--neon-glow-color);
-    box-shadow: 0 0 5px var(--neon-glow-color);
-    top: 5px; /* Ön cam/ışık pozisyonu */
+    background-color: #ff9900; /* Sarı Işıklar */
+    box-shadow: 0 0 5px #ff9900, 0 0 10px #ff9900;
+    top: 5px; 
 }
 #player::before { left: 3px; }
 #player::after { right: 3px; }
@@ -287,7 +287,7 @@ body:not(.fade-out) { opacity: 1; }
     height: 10px;
     background-color: #e74c3c; /* Kırmızı/Hata Rengi */
     border: 1px solid #c0392b;
-    box-shadow: 0 0 10px #e74c3c;
+    box-shadow: 0 0 8px #e74c3c;
     border-radius: 3px;
     top: 0;
     z-index: 5;
@@ -298,30 +298,33 @@ body:not(.fade-out) { opacity: 1; }
 #score-board {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--neon-main-color);
-    text-shadow: 0 0 5px var(--neon-glow-color);
+    color: var(--text-color);
+    text-shadow: 0 0 3px var(--glow-color);
     margin-bottom: 15px;
 }
 
 #start-btn {
-    background: none;
-    border: 2px solid var(--neon-main-color);
-    color: var(--neon-main-color);
+    /* Genel .btn stilini kullanıyoruz */
+    /* Not: @extend özelliği saf CSS'te yoktur, bu yüzden manuel olarak tekrar uygulanır: */
+    background: transparent; border: 1px solid var(--main-accent-color);
+    color: var(--glow-color); text-shadow: 0 0 4px var(--glow-color);
+    box-shadow: 0 0 8px rgba(141, 126, 255, 0.3);
     padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    font-weight: bold;
     transition: all 0.3s ease;
-    text-shadow: 0 0 3px var(--neon-glow-color);
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 10px;
 }
 
 #start-btn:hover {
-    background-color: var(--neon-main-color);
-    color: var(--bg-color);
-    box-shadow: 0 0 15px var(--neon-main-color);
-    text-shadow: none;
+    color: var(--bg-color); 
+    background-color: var(--main-accent-color);
+    box-shadow: 0 0 15px var(--main-accent-color), 0 0 30px var(--glow-color); 
+    text-shadow: none; 
 }
+
 
 /* YÜKSEK SKOR TABLOSU */
 #high-scores {
@@ -334,8 +337,8 @@ body:not(.fade-out) { opacity: 1; }
 }
 #high-scores h3 {
     text-align: center;
-    color: var(--neon-glow-color);
-    text-shadow: 0 0 5px var(--neon-glow-color);
+    color: var(--glow-color);
+    text-shadow: 0 0 5px var(--glow-color);
     margin-bottom: 10px;
     font-size: 1.2rem;
 }
@@ -357,4 +360,43 @@ body:not(.fade-out) { opacity: 1; }
 #scores-list li strong {
     color: var(--text-color);
     text-shadow: 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* --- MOBİL KONTROL TUŞLARI --- */
+#mobile-controls {
+    display: none; /* Varsayılan olarak gizle */
+    justify-content: space-between;
+    gap: 20px;
+    width: 300px;
+    margin-top: 20px;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 15px 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid var(--main-accent-color);
+    background-color: var(--card-color);
+    color: var(--main-accent-color);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(141, 126, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.control-btn:active {
+    background-color: var(--main-accent-color);
+    color: var(--bg-color);
+    transform: scale(0.98);
+}
+
+/* Mobil cihazlarda göster */
+@media screen and (max-width: 550px) {
+    #mobile-controls {
+        display: flex; /* Küçük ekranlarda göster */
+    }
+    #game-container {
+        margin-bottom: 10px; /* Butonlara yer açmak için */
+    }
 }
