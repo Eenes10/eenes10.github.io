@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simon Diyor ki | Enes</title>
+    <title>Hakkımda | Enes</title>
     <link rel="icon" href="./pp.png">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,9 +21,9 @@
                 <a href="index.html" class="logo">Enes</a>
                 <ul class="nav-links">
                     <li><a href="index.html">Ana Sayfa</a></li>
-                    <li><a href="hakkimda.html">Hakkımda</a></li>
+                    <li><a href="hakkimda.html" class="active">Hakkımda</a></li>
                     <li><a href="yorumlar.html">Yorumlar</a></li>
-                    <li><a href="oyun.html" class="active">Oyun</a></li>
+                    <li><a href="oyun.html">Oyun</a></li>
                     <li><a href="iletisim.html">İletişim</a></li>
                 </ul>
             </div>
@@ -48,25 +48,24 @@
     </header>
 
     <main>
-        <section id="game-section">
-            <h2>Simon Diyor ki</h2>
-            <p>Sırayla yanan renkleri takip et ve aynı sırayla tıkla. Yanarsan baştan başlarsın!</p>
+        <section id="about">
+            <h2>Ben Kimim?</h2>
             
-            <div id="game-container">
-                <div id="game-board">
-                    <div class="simon-btn red" data-color="red"></div>
-                    <div class="simon-btn green" data-color="green"></div>
-                    <div class="simon-btn yellow" data-color="yellow"></div>
-                    <div class="simon-btn blue" data-color="blue"></div>
-                </div>
-
-                <div id="status-board">
-                    <p id="level">Seviye: 0</p>
-                    <p id="message">Oyunu başlatmak için tıkla.</p>
+            <div class="about-container">
+                <img src="./pp.png" alt="Enes Profil Resmi" class="profile-pic">
+                
+                <div class="about-text">
+                    <h3>Yazılıma Olan Tutkum</h3>
+                    <p>
+                        Kodlama yolculuğuma 5 yıl önce küçük projelerle başladım. O günden bu yana hem ön yüz (Front-End) hem de arka yüz (Back-End) teknolojileriyle derinlemesine ilgileniyorum. Problem çözme becerimi ve yaratıcılığımı birleştiren bu alanda kendimi sürekli geliştiriyorum.
+                    </p>
+                    
+                    <h3>Uzmanlık Alanlarım</h3>
+                    <p>
+                        Başlıca odaklandığım teknolojiler: JavaScript (Node.js, React), Python (Django, Flask), SQL ve modern CSS teknikleridir. Hız, güvenlik ve kullanıcı deneyimi benim için her zaman önceliklidir.
+                    </p>
                 </div>
             </div>
-
-            <button id="start-btn">OYUNU BAŞLAT / SIFIRLA</button>
         </section>
     </main>
 
@@ -75,7 +74,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="oyun.js"></script>
 </body>
 
 </html>
