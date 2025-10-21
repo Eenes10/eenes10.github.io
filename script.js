@@ -24,16 +24,19 @@ const navSlide = () => {
 
     // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
     navLinks.forEach(li => {
-        li.querySelector('a').addEventListener('click', () => {
-            if (nav.classList.contains('nav-active')) {
-                // Menüyü kapat
-                nav.classList.remove('nav-active');
-                // Burger ikonunu düzelt
-                burger.classList.remove('toggle');
-                // Animasyonları sıfırla
-                navLinks.forEach(link => link.style.animation = '');
-            }
-        });
+        const link = li.querySelector('a');
+        if (link) {
+             link.addEventListener('click', () => {
+                if (nav.classList.contains('nav-active')) {
+                    // Menüyü kapat
+                    nav.classList.remove('nav-active');
+                    // Burger ikonunu düzelt
+                    burger.classList.remove('toggle');
+                    // Animasyonları sıfırla
+                    navLinks.forEach(link => link.style.animation = '');
+                }
+            });
+        }
     });
 };
 
@@ -116,10 +119,50 @@ const themeHandler = () => {
     }
 };
 
+// Admin paneli linkini navbar'a dinamik olarak ekler (YENİ KOD)
+const setupAdminLink = () => {
+    const navLinksList = document.querySelector('.nav-links');
+    if (!navLinksList) return;
+
+    // Link öğesini oluştur
+    const adminListItem = document.createElement('li');
+    const adminLink = document.createElement('a');
+    adminLink.href = 'admin.html';
+    adminLink.textContent = 'Admin Panel';
+    adminLink.id = 'admin-nav-link';
+    adminListItem.appendChild(adminLink);
+    
+    // Listeye ekle (eğer daha önce eklenmediyse)
+    if (!document.getElementById('admin-nav-link')) {
+        navLinksList.appendChild(adminListItem);
+    }
+    
+    const adminLinkEl = document.getElementById('admin-nav-link');
+    const ADMIN_STATUS_KEY = 'admin_logged_in';
+
+    const checkAdminStatus = () => {
+        // Oturum durumunu kontrol et
+        const isLoggedIn = sessionStorage.getItem(ADMIN_STATUS_KEY) === 'true';
+        if (isLoggedIn) {
+            adminLinkEl.style.display = 'block';
+            adminLinkEl.classList.add('admin-active'); // Opsiyonel CSS için class
+        } else {
+            adminLinkEl.style.display = 'none';
+            adminLinkEl.classList.remove('admin-active');
+        }
+    };
+
+    // İlk yüklemede ve admin.html'den gelen başarılı girişte kontrol et
+    checkAdminStatus();
+    // admin.html'de giriş yapıldığında tetiklenen event'i dinle
+    window.addEventListener('adminLoggedIn', checkAdminStatus);
+};
+
 
 // Tüm fonksiyonları DOM yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
     themeHandler(); // En başta tema ayarını yükle
     navSlide();
     pageTransition();
+    setupAdminLink(); // Admin Linkini Kur
 });
