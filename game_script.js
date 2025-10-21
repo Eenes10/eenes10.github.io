@@ -20,20 +20,29 @@ let isGameRunning = false; // OYUNUN AKTİF ÇALIŞMA DURUMU
 let isGameOver = false; // OYUNUN KAYBEDİLME DURUMU
 let animationFrameId;
 
+// MOBİL PERFORMANS AYARI
+// Mobil cihazlarda FPS kaybını telafi etmek için hız çarpanı kullanılır.
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+// Mobil cihazlar için hızı 1.5 katına çıkar
+const speedMultiplier = isMobile ? 1.5 : 1.0; 
+// Mobil cihazlarda gölge yoğunluğunu azalt
+const mobileShadowReduction = isMobile ? 0.5 : 1.0;
+
 // Oyuncu Ayarları (Araba - Neon Blok)
 const carWidth = 40;
 const carHeight = 70;
 let carX;
 let carY;
-const carSpeed = 4; // Yana hareket hızı
+// Yana hareket hızını çarpan ile ölçekle
+const carSpeed = 4 * speedMultiplier; 
 
 // Oyun Nesneleri (Engeller - Bariyerler)
 let obstacles = [];
-let baseObstacleSpeed = 2; 
+// Engel düşüş hızını çarpan ile ölçekle
+let baseObstacleSpeed = 2 * speedMultiplier; 
 let currentObstacleSpeed;
-const obstacleSpawnRate = 120; // Daha seyrek çıkış
+const obstacleSpawnRate = 120; 
 let frameCounter = 0;
-// ZORLUK ARTIŞI ÇOK YAVAŞLATILDI (0.003 -> 0.001)
 let difficultyIncreaseRate = 0.001; 
 
 // Kontrol Durumu
@@ -68,12 +77,14 @@ function drawRoad() {
     // Yol Şeritleri (Neon Animasyonlu)
     ctx.strokeStyle = colors.carGlow; 
     ctx.lineWidth = 4;
-    ctx.shadowBlur = 10;
+    // Mobil cihazlarda gölgeyi azalt
+    ctx.shadowBlur = 10 * mobileShadowReduction; 
     ctx.shadowColor = colors.carGlow; 
 
     const dashLength = 20;
     const gapLength = 20;
-    let offset = frameCounter * 1.5 % (dashLength + gapLength); 
+    // Animasyon hızını çarpan ile ölçekle
+    let offset = frameCounter * 1.5 * speedMultiplier % (dashLength + gapLength); 
 
     for (let i = -dashLength; i < GAME_HEIGHT; i += (dashLength + gapLength)) {
         ctx.beginPath();
@@ -97,7 +108,8 @@ function drawCar() {
     
     // Araba gövdesi (Neon Parlaklığı)
     ctx.fillStyle = colors.carColor;
-    ctx.shadowBlur = 15;
+    // Mobil cihazlarda gölgeyi azalt
+    ctx.shadowBlur = 15 * mobileShadowReduction; 
     ctx.shadowColor = colors.carGlow;
     ctx.fillRect(carX, carY, carWidth, carHeight);
     
@@ -118,8 +130,8 @@ function drawObstacles() {
         const barrierTotalHeight = obs.height;
 
         // Üst ve Alt Tahta Kalınlığı
-        const boardHeight = barrierTotalHeight * 0.35; // %35'i tahta
-        const boardGap = barrierTotalHeight * 0.15; // %15'i boşluk
+        const boardHeight = barrierTotalHeight * 0.35; 
+        const boardGap = barrierTotalHeight * 0.15; 
         const boardY1 = obs.y;
         const boardY2 = obs.y + boardHeight + boardGap;
 
@@ -129,7 +141,8 @@ function drawObstacles() {
         const lampRadius = 4; 
 
         // Gölge efekti (tüm bariyer için)
-        ctx.shadowBlur = 8; // Gölge azaltıldı
+        // Mobil cihazlarda gölgeyi azalt
+        ctx.shadowBlur = 8 * mobileShadowReduction; 
         ctx.shadowColor = colors.barrierGlow;
 
         // 1. Metal Destekler
@@ -151,7 +164,8 @@ function drawObstacles() {
         }
 
         // 4. Kırmızı Lambalar (Üst Tahtanın Üzerinde)
-        ctx.shadowBlur = 12; 
+        // Mobil cihazlarda gölgeyi azalt
+        ctx.shadowBlur = 12 * mobileShadowReduction; 
         ctx.shadowColor = colors.barrierRed;
         ctx.fillStyle = colors.barrierRed;
         ctx.beginPath();
@@ -173,6 +187,7 @@ function updateScore() {
 
 function updateCar() {
     let newCarX = carX;
+    // carSpeed zaten çarpan ile ayarlandı
     if (rightPressed) {
         newCarX += carSpeed;
     } else if (leftPressed) {
@@ -189,7 +204,7 @@ function updateObstacles() {
 
     // Engelleri hareket ettir
     obstacles.forEach(obs => {
-        obs.y += currentObstacleSpeed;
+        obs.y += currentObstacleSpeed; // currentObstacleSpeed zaten çarpan ile başlar
     });
 
     // Ekran dışına çıkan engelleri sil ve puanı artır
@@ -205,7 +220,8 @@ function updateObstacles() {
     });
 
     // Yeni engel oluşturma
-    const dynamicSpawnRate = Math.max(40, obstacleSpawnRate / (1 + (currentObstacleSpeed - baseObstacleSpeed) * 0.5));
+    // dynamicSpawnRate hesaplaması
+    const dynamicSpawnRate = Math.max(40, obstacleSpawnRate / (1 + (currentObstacleSpeed / speedMultiplier - baseObstacleSpeed / speedMultiplier) * 0.5));
     if (frameCounter % Math.floor(dynamicSpawnRate) === 0) {
         spawnObstacle();
     }
