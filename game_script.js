@@ -19,15 +19,15 @@ const carWidth = 40;
 const carHeight = 70;
 let carX = GAME_WIDTH / 2 - carWidth / 2;
 let carY = GAME_HEIGHT - carHeight - 30;
-const carSpeed = 6; // Yana hareket hızı
+const carSpeed = 4; // Yana hareket hızı (6 -> 4 düşürüldü)
 
-// Oyun Nesneleri (Engeller - Levhalar)
+// Oyun Nesneleri (Engeller - Bariyerler)
 let obstacles = [];
-let baseObstacleSpeed = 3; // BAŞLANGIÇ HIZI AZALTILDI (4 -> 3)
+let baseObstacleSpeed = 2; // Başlangıç engel düşüş hızı (3 -> 2 düşürüldü)
 let currentObstacleSpeed = baseObstacleSpeed;
-const obstacleSpawnRate = 90; 
+const obstacleSpawnRate = 120; // Engel oluşturma sıklığı (90 -> 120 artırıldı = daha seyrek)
 let frameCounter = 0;
-let difficultyIncreaseRate = 0.005; 
+let difficultyIncreaseRate = 0.003; // Hız artışı biraz düşürüldü (0.005 -> 0.003)
 
 // Kontrol Durumu
 let leftPressed = false;
@@ -38,14 +38,15 @@ let score = 0;
 function getThemeColors() {
     const isLight = document.body.classList.contains('light-theme');
     
-    // CSS değişkenlerini okuyarak temayı dinamik olarak uygula
     return {
         // Altın/Turuncu tema renkleri
         carColor: isLight ? '#ff9900' : '#fffc7f', 
         carGlow: isLight ? '#ffcc00' : '#ffffff', 
-        // Kırmızı Levha Engeli
-        obstacleColor: isLight ? '#c0392b' : '#e74c3c', 
-        obstacleGlow: isLight ? '#e74c3c' : '#f06292' 
+        // Bariyer renkleri
+        barrierOrange: isLight ? '#e67e22' : '#f39c12', // Daha canlı turuncu
+        barrierRed: isLight ? '#c0392b' : '#e74c3c', // Kırmızı lamba
+        barrierMetal: isLight ? '#95a5a6' : '#bdc3c7', // Metal destekler
+        barrierGlow: isLight ? '#ffcc00' : '#ffffff' // Bariyer parlama rengi
     };
 }
 
@@ -65,8 +66,7 @@ function drawRoad() {
 
     const dashLength = 20;
     const gapLength = 20;
-    // Hız azaldığı için animasyon hızı da düşürülmeli
-    let offset = frameCounter * 2 % (dashLength + gapLength); 
+    let offset = frameCounter * 1.5 % (dashLength + gapLength); // Animasyon hızı düşürüldü
 
     for (let i = -dashLength; i < GAME_HEIGHT; i += (dashLength + gapLength)) {
         ctx.beginPath();
@@ -106,19 +106,56 @@ function drawObstacles() {
     const colors = getThemeColors();
     
     obstacles.forEach(obs => {
-        // Engel (Levha) gövdesi
-        ctx.fillStyle = colors.obstacleColor;
+        // Bariyerin toplam genişliği ve yüksekliği
+        const barrierTotalWidth = obs.width;
+        const barrierTotalHeight = obs.height;
+
+        // Üst ve Alt Tahta Kalınlığı
+        const boardHeight = barrierTotalHeight * 0.35; // %35'i tahta
+        const boardGap = barrierTotalHeight * 0.15; // %15'i boşluk
+        const boardY1 = obs.y;
+        const boardY2 = obs.y + boardHeight + boardGap;
+
+        // Metal Desteklerin Genişliği
+        const supportWidth = 5; 
+        // Lamba çapı
+        const lampRadius = 6;
+
+        // Gölge efekti (tüm bariyer için)
         ctx.shadowBlur = 10;
-        ctx.shadowColor = colors.obstacleGlow;
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        ctx.shadowColor = colors.barrierGlow;
+
+        // 1. Metal Destekler
+        ctx.fillStyle = colors.barrierMetal;
+        ctx.fillRect(obs.x + 5, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
+        ctx.fillRect(obs.x + barrierTotalWidth - 5 - supportWidth, obs.y + boardHeight * 0.8, supportWidth, barrierTotalHeight * 0.5);
         
-        // Üzerindeki "STOP" yazısı
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 20px Fira Code';
-        ctx.textAlign = 'center';
-        ctx.fillText('STOP', obs.x + obs.width / 2, obs.y + obs.height / 2 + 5);
+        // 2. Üst Tahta
+        // Turuncu ve Beyaz Çizgiler
+        const stripeWidth = boardHeight / 2;
+        for (let i = 0; i < barrierTotalWidth; i += stripeWidth) {
+            ctx.fillStyle = (Math.floor(i / stripeWidth) % 2 === 0) ? colors.barrierOrange : 'white';
+            ctx.fillRect(obs.x + i, boardY1, stripeWidth, boardHeight);
+        }
+
+        // 3. Alt Tahta
+        for (let i = 0; i < barrierTotalWidth; i += stripeWidth) {
+            ctx.fillStyle = (Math.floor(i / stripeWidth) % 2 === 0) ? colors.barrierOrange : 'white';
+            ctx.fillRect(obs.x + i, boardY2, stripeWidth, boardHeight);
+        }
+
+        // 4. Kırmızı Lambalar (Üst Tahtanın Üzerinde)
+        ctx.shadowBlur = 15; // Lambalar daha çok parlasın
+        ctx.shadowColor = colors.barrierRed;
+        ctx.fillStyle = colors.barrierRed;
+        ctx.beginPath();
+        ctx.arc(obs.x + barrierTotalWidth * 0.25, boardY1 + 5, lampRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(obs.x + barrierTotalWidth * 0.75, boardY1 + 5, lampRadius, 0, Math.PI * 2);
+        ctx.fill();
     });
+    // Gölgeyi temizle
     ctx.shadowBlur = 0;
 }
 
@@ -162,18 +199,19 @@ function updateObstacles() {
     });
 
     // Yeni engel oluşturma
-    // Hız arttıkça oluşturma süresi azalır, ancak minimum 25 frame'den az olamaz
-    const dynamicSpawnRate = Math.max(25, obstacleSpawnRate / (1 + (currentObstacleSpeed - baseObstacleSpeed) * 0.5));
+    // Hız arttıkça oluşturma süresi azalır (yani daha sık), ancak minimum 40 frame'den az olamaz.
+    // Başlangıçta daha seyrek olması için obstacleSpawnRate 120'ye ayarlandı.
+    const dynamicSpawnRate = Math.max(40, obstacleSpawnRate / (1 + (currentObstacleSpeed - baseObstacleSpeed) * 0.5));
     if (frameCounter % Math.floor(dynamicSpawnRate) === 0) {
         spawnObstacle();
     }
 }
 
 function spawnObstacle() {
-    const obsWidth = 60;
-    const obsHeight = 60;
+    const obsWidth = 80; // Bariyer genişliği
+    const obsHeight = 60; // Bariyer yüksekliği
     
-    // Rastgele X pozisyonu (yol ve levha sınırları içinde)
+    // Rastgele X pozisyonu (yol ve bariyer sınırları içinde)
     const randomX = Math.random() * (GAME_WIDTH - obsWidth - 20) + 10; 
     
     obstacles.push({
