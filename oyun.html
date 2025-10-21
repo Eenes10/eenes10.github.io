@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyun | Hız Şeridi</title>
+    <title>Araba Oyunu | Enes</title>
     <link rel="icon" href="./pp.png">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +24,7 @@
         #gameCanvas {
             border: 4px solid var(--neon-main-color);
             box-shadow: 0 0 25px var(--neon-glow-color); /* Neon çerçeve efekti */
-            background-color: #34495e; /* Yol rengi */
+            /* background-color: #34495e; ARTIK GAME_SCRIPT'TE YOL ÇİZİMİ YAPILDIĞINDAN BURADAN KALDIRILDI */
             margin-top: 20px;
             cursor: none; /* Arabayı gizlemek için */
         }
@@ -45,7 +45,7 @@
         /* MOBİL KONTROL BUTONLARI STİLİ */
         #mobile-controls {
             display: none; /* Varsayılan olarak gizli */
-            width: 350px;
+            width: 350px; /* Canvas genişliğiyle aynı olsun */
             margin-top: 20px;
             justify-content: space-between;
         }
@@ -120,7 +120,7 @@
 
     <main>
         <section id="game-section">
-            <h2 class="highlight">Hız Şeridi: Levhalardan Kaçış</h2>
+            <h2 class="highlight">Araba Oyunu</h2>
             <p class="game-info">Klavye Kontrolleri: Sol/Sağ Ok Tuşları veya A/D</p>
             
             <canvas id="gameCanvas" width="350" height="550"></canvas>
