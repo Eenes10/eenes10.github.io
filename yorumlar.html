@@ -79,11 +79,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const sloganParagraph = document.getElementById('yorumlar-slogan-text');
             const storageKey = 'admin_text_yorumlarSlogan';
+            const defaultText = 'Sitem hakkında ne düşündüğünüzü merak ediyorum. Görüş ve önerilerinizi paylaşın!';
             
             const savedText = localStorage.getItem(storageKey);
             
-            if (savedText !== null && sloganParagraph) {
-                sloganParagraph.textContent = savedText;
+            if (sloganParagraph) {
+                sloganParagraph.textContent = savedText !== null ? savedText : defaultText;
             }
         });
     </script>
