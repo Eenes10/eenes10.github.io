@@ -16,13 +16,13 @@ const startRestartBtn = document.getElementById('start-restart-btn');
 // Oyun Ayarları
 const GAME_WIDTH = canvas.width;
 const GAME_HEIGHT = canvas.height;
-let isGameRunning = false;
-let isGameOver = false;
+let isGameRunning = false; // OYUNUN AKTİF ÇALIŞMA DURUMU
+let isGameOver = false; // OYUNUN KAYBEDİLME DURUMU
 let animationFrameId;
 
-// MOBİL PERFORMANS AYARI (Önceki Adımdan Devralındı)
+// MOBİL PERFORMANS AYARI
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-const speedMultiplier = isMobile ? 1.5 : 1.0; 
+const speedMultiplier = isMobile ? 1.5 : 1.0;
 const mobileShadowReduction = isMobile ? 0.5 : 1.0;
 
 // Oyuncu Ayarları (Araba - Neon Blok)
@@ -34,19 +34,13 @@ const carSpeed = 4 * speedMultiplier;
 
 // Oyun Nesneleri (Engeller - Bariyerler)
 let obstacles = [];
-let powerUps = []; // YENİ: Güçlendirme listesi
 let baseObstacleSpeed = 2 * speedMultiplier; 
 let currentObstacleSpeed;
 const obstacleSpawnRate = 120; 
 let frameCounter = 0;
 let difficultyIncreaseRate = 0.001; 
 
-// YENİ: Güçlendirme Ayarları
-let isSlowdownActive = false;
-const slowdownDuration = 5000; // 5 saniye
-const powerUpSpawnRate = 600; // Her 10 saniyede bir (60 FPS varsayımıyla 10 * 60)
-
-// YENİ: Görsel Geri Bildirim Ayarları
+// Görsel Geri Bildirim Ayarları
 let scoreAnimations = []; // Puan animasyonları için
 let shakeDuration = 0; // Çarpışma Sarsıntısı süresi
 
@@ -66,8 +60,6 @@ function getThemeColors() {
         barrierRed: isLight ? '#c0392b' : '#e74c3c', 
         barrierMetal: isLight ? '#95a5a6' : '#bdc3c7', 
         barrierGlow: isLight ? '#ffcc00' : '#ffffff',
-        powerUpColor: '#3498db', // Mavi
-        powerUpGlow: '#85c1e9' 
     };
 }
 
@@ -79,17 +71,16 @@ function drawRoad() {
 
     const colors = getThemeColors();
     
-    // YENİ: Sarsıntı Efekti Uygula
+    // Sarsıntı Efekti Uygula
     let shakeX = 0;
     let shakeY = 0;
     if (shakeDuration > 0) {
-        shakeX = (Math.random() - 0.5) * 8; // Rastgele 4 piksel sağa/sola
+        shakeX = (Math.random() - 0.5) * 8; 
         shakeY = (Math.random() - 0.5) * 8;
         shakeDuration--;
     }
     ctx.save();
     ctx.translate(shakeX, shakeY);
-    // Sarsıntı bittikten sonra geri yüklenir.
 
     // Yol Şeritleri (Neon Animasyonlu)
     ctx.strokeStyle = colors.carGlow; 
@@ -129,14 +120,6 @@ function drawCar() {
     ctx.shadowColor = colors.carGlow;
     ctx.fillRect(carX, carY, carWidth, carHeight);
     
-    // YENİ: Yavaşlatıcı aktifken arabayı mavi yap
-    if (isSlowdownActive) {
-        ctx.fillStyle = colors.powerUpColor;
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = colors.powerUpGlow;
-        ctx.fillRect(carX, carY, carWidth, carHeight);
-    }
-
     // Detaylar
     ctx.shadowBlur = 0;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; 
@@ -189,27 +172,8 @@ function drawObstacles() {
     ctx.shadowBlur = 0;
 }
 
-// YENİ: Güçlendirmeyi Çizme Fonksiyonu
-function drawPowerUps() {
-    const colors = getThemeColors();
-    powerUps.forEach(pu => {
-        ctx.fillStyle = colors.powerUpColor;
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = colors.powerUpGlow;
-        ctx.beginPath();
-        ctx.arc(pu.x + pu.width / 2, pu.y + pu.height / 2, pu.width / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
 
-        // "S" harfi
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('S', pu.x + pu.width / 2, pu.y + pu.height / 2 + 7);
-    });
-}
-
-// YENİ: Puan Animasyonunu Çizme Fonksiyonu
+// Puan Animasyonunu Çizme Fonksiyonu
 function drawScoreAnimations() {
     scoreAnimations.forEach((anim, index) => {
         // Opaklık azaldıkça metin yukarı kayar ve kaybolur
@@ -238,7 +202,6 @@ function updateScore() {
 function updateCar() {
     let newCarX = carX;
     if (rightPressed) {
-        // YENİ: Hız Çukuru/Tümsek olsaydı buraya etki ederdi. Şu anlık yok.
         newCarX += carSpeed;
     } else if (leftPressed) {
         newCarX -= carSpeed;
@@ -251,17 +214,18 @@ function updateObstacles() {
     // Zorluğu ve Hızı Artır
     currentObstacleSpeed += difficultyIncreaseRate;
 
-    // Engelleri ve Güçlendirmeleri hareket ettir
-    [...obstacles, ...powerUps].forEach(obj => {
-        obj.y += currentObstacleSpeed;
+    // Engelleri hareket ettir
+    obstacles.forEach(obs => {
+        obs.y += currentObstacleSpeed;
     });
+
 
     // Ekran dışına çıkan engelleri sil ve puanı artır
     obstacles = obstacles.filter(obs => {
         if (obs.y < GAME_HEIGHT) {
             return true;
         } else {
-            // YENİ: Puan animasyonu ekle
+            // Puan animasyonu ekle
             scoreAnimations.push({ 
                 x: carX + carWidth / 2, 
                 y: carY, 
@@ -274,20 +238,13 @@ function updateObstacles() {
         }
     });
 
-    // Ekran dışına çıkan güçlendirmeleri sil
-    powerUps = powerUps.filter(pu => pu.y < GAME_HEIGHT);
-
-
     // Yeni engel oluşturma
     const dynamicSpawnRate = Math.max(40, obstacleSpawnRate / (1 + (currentObstacleSpeed / speedMultiplier - baseObstacleSpeed / speedMultiplier) * 0.5));
     if (frameCounter % Math.floor(dynamicSpawnRate) === 0) {
         spawnObstacle();
     }
 
-    // YENİ: Yeni güçlendirme oluşturma
-    if (frameCounter % powerUpSpawnRate === 0) {
-        spawnPowerUp('slowdown'); 
-    }
+    // Güçlendirme oluşturma mantığı KALDIRILDI
 }
 
 function spawnObstacle() {
@@ -304,40 +261,6 @@ function spawnObstacle() {
     });
 }
 
-// YENİ: Güçlendirme Oluşturma
-function spawnPowerUp(type) {
-    const puSize = 30; // Güçlendirme boyutu
-    const randomX = Math.random() * (GAME_WIDTH - puSize - 20) + 10; 
-
-    powerUps.push({
-        x: randomX,
-        y: -puSize,
-        width: puSize,
-        height: puSize,
-        type: type 
-    });
-}
-
-// YENİ: Güçlendirme Etkinleştirme
-function activateSlowdown() {
-    if (isSlowdownActive) {
-        clearTimeout(window.slowdownTimer);
-    }
-    
-    isSlowdownActive = true;
-    
-    // Hızı geçici olarak yarıya düşür
-    const slowedSpeed = baseObstacleSpeed / 2;
-    currentObstacleSpeed = slowedSpeed; 
-    
-    // Süre sonunda hızı normal veya olması gereken zorluk seviyesine geri döndür
-    window.slowdownTimer = setTimeout(() => {
-        isSlowdownActive = false;
-        // Hızı, oyunun o anki zorluk seviyesinde olması gereken hıza getir
-        currentObstacleSpeed = baseObstacleSpeed + (frameCounter * difficultyIncreaseRate); 
-    }, slowdownDuration);
-}
-
 
 function checkCollision() {
     // Engel Çarpışması
@@ -347,27 +270,13 @@ function checkCollision() {
             carY < obs.y + obs.height &&
             carY + carHeight > obs.y) {
             
-            // YENİ: Çarpışma Sarsıntısı Ekle
+            // Çarpışma Sarsıntısı Ekle
             shakeDuration = 10; 
             gameOver();
         }
     });
 
-    // YENİ: Güçlendirme Çarpışması
-    powerUps = powerUps.filter(pu => {
-        if (carX < pu.x + pu.width &&
-            carX + carWidth > pu.x &&
-            carY < pu.y + pu.height &&
-            carY + carHeight > pu.y) {
-            
-            if (pu.type === 'slowdown') {
-                activateSlowdown();
-            }
-            // Güçlendirme toplandı, listeden çıkar
-            return false;
-        }
-        return true;
-    });
+    // Güçlendirme Çarpışması kontrolü KALDIRILDI
 }
 
 // ------------------- OYUN DÖNGÜSÜ VE DURUM YÖNETİMİ -------------------
@@ -378,12 +287,9 @@ function initGame() {
 
     score = 0;
     obstacles = [];
-    powerUps = []; // Güçlendirmeleri sıfırla
-    scoreAnimations = []; // Animasyonları sıfırla
+    scoreAnimations = []; 
     isGameOver = false;
     isGameRunning = false; 
-    isSlowdownActive = false; // Yavaşlatıcıyı sıfırla
-    clearTimeout(window.slowdownTimer); // Geri sayımı durdur
     currentObstacleSpeed = baseObstacleSpeed;
     frameCounter = 0;
     shakeDuration = 0;
@@ -409,7 +315,6 @@ function startGame() {
 function gameOver() {
     isGameOver = true;
     isGameRunning = false;
-    clearTimeout(window.slowdownTimer); // Oyunu durdururken zamanlayıcıyı kapat
     cancelAnimationFrame(animationFrameId);
     showMenu('end');
 }
@@ -436,6 +341,7 @@ function hideMenu() {
 }
 
 function gameLoop() {
+    // Eğer oyun çalışmıyorsa döngüyü hemen durdur.
     if (!isGameRunning) {
         cancelAnimationFrame(animationFrameId);
         return; 
@@ -448,10 +354,9 @@ function gameLoop() {
 
     // 2. Çizim
     drawRoad();
-    drawPowerUps(); // YENİ: Güçlendirmeleri çiz
     drawObstacles();
     drawCar();
-    drawScoreAnimations(); // YENİ: Puan animasyonlarını çiz
+    drawScoreAnimations(); 
 
     frameCounter++;
     animationFrameId = requestAnimationFrame(gameLoop);
