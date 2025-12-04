@@ -1,11 +1,8 @@
 const kurAlani = document.getElementById('kur-kartlari');
 
 // --- API ANAHTARLARI VE URL'LER ---
-// FIXER API Anahtarınızı buraya girin
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
-
-// CoinGecko API'si (Altın ve BTC için)
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
@@ -14,8 +11,8 @@ async function verileriCek() {
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
     let tryPerChf = 35.0000; 
-    let onsPerUsd = 2000.00; // Ons Altın Dolar Fiyatı Varsayılanı
-    let usdPerBtc = 60000.00; // Bitcoin Dolar Fiyatı Varsayılanı
+    let onsPerUsd = 2000.00;
+    let usdPerBtc = 60000.00;
     let tryPerGramAltin = 2000.00; 
     
     // Değişim yüzdeleri (Simülasyon)
@@ -52,12 +49,10 @@ async function verileriCek() {
         const cryptoResponse = await fetch(COINGECKO_URL);
         const cryptoData = await cryptoResponse.json();
         
-        // Ons Altın Fiyatı (CoinGecko'da "tether-gold" ID'si kullanılıyor)
         if (cryptoData?.['tether-gold']?.usd) {
             onsPerUsd = cryptoData['tether-gold'].usd;
         } 
 
-        // Bitcoin Fiyatı
         if (cryptoData?.bitcoin?.usd) {
             usdPerBtc = cryptoData.bitcoin.usd;
         } 
@@ -68,17 +63,10 @@ async function verileriCek() {
     
     // --- 3. Nihai Hesaplamalar ---
     
-    // Bitcoin/TRY
     const tryPerBtc = usdPerBtc * tryPerUsd;
-
-    // Ons Altın/TRY
     const onsPerTry = onsPerUsd * tryPerUsd;
-    
-    // Gram Altın (24 ayar has) - Ham Spot Fiyat
     const ONS_KARSILIGI_GRAM = 31.1035; 
     tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
-    
-    // Çeyrek Altın Hesabı
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
@@ -127,9 +115,8 @@ setInterval(verileriCek, 10000);
 const modal = document.getElementById('modal');
 const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
-let mevcutGrafik; // Tekrar çizim yaparken eski grafiği yok etmek için
+let mevcutGrafik; 
 
-// Kapatma butonu veya dışarı tıklandığında modalı kapat
 kapatDugmesi.onclick = function() {
   modal.style.display = "none";
 }
@@ -142,7 +129,8 @@ window.onclick = function(event) {
 
 // Geçmiş fiyat verilerini simüle eden fonksiyon
 function gecmisVeriSimulasyonu(fiyat, zamanDilimi) {
-    const veriAdedi = 30; 
+    // 30 yerine 100 veri noktası kullanılarak aralık genişletildi
+    const veriAdedi = 100; 
     const veriler = [];
     let baslangicFiyati = fiyat * (1 - Math.random() * 0.05); 
 
@@ -233,7 +221,8 @@ function cizGrafik(isim, fiyat, zamanDilimi) {
 
 // Kartlara tıklama olayını ekleyen fonksiyon
 function kartTiklamaDinleyicileriEkle() {
-    // Mevcut tıklama olaylarını temizle (setInterval ile tekrar tekrar eklenmesini önlemek için)
+    
+    // Tıklama olaylarını tekrar tekrar eklenmesini önler
     const guncelKartlar = document.querySelectorAll('.kur-kart');
     guncelKartlar.forEach(kart => {
         const yeniKart = kart.cloneNode(true);
@@ -245,11 +234,10 @@ function kartTiklamaDinleyicileriEkle() {
         const sembol = kart.querySelector('.sembol').textContent;
         const isim = kart.querySelector('.isim').textContent;
         
-        // Fiyatı alırken Türkçe formatlama (nokta ve virgül) sorunlarını temizle
         const fiyatMetni = kart.querySelector('.fiyat').textContent
                                .replace('₺ ', '')
-                               .replace(/\./g, '') // Tüm noktaları kaldır (binlik ayraçlar)
-                               .replace(',', '.'); // Virgülü ondalık ayraca çevir
+                               .replace(/\./g, '') 
+                               .replace(',', '.'); 
         const fiyat = parseFloat(fiyatMetni);
 
         kart.addEventListener('click', () => {
