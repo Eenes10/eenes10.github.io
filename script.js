@@ -1,40 +1,26 @@
 const kurAlani = document.getElementById('kur-kartlari');
 
-// Sizin Fixer.io API anahtarınız
+// Döviz için Fixer.io API anahtarınız
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
-
-// Fixer API: Base (Ana) Para Birimi EUR olmak zorundadır (Ücretsiz plan kısıtlaması)
-// Çekilecek kurlar: TRY (Türk Lirası), USD (Amerikan Doları)
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD`; 
 
-// Kripto için CoinGecko API'si
-const CRYPTO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=try&include_24hr_change=true';
-
-// Fixer'dan çekilemeyen Altın fiyatı için simülasyon verisi (Geçici)
-const SIMULASYON_ALTIN_VERISI = { fiyat: 2470.50, degisim: 1.15 }; 
+// Metals-API anahtarınız (Altın için)
+const METALS_API_KEY = 'API_KEY'; // Lütfen buradaki 'API_KEY' yerine kendi Metals-API anahtarınızı yapıştırın.
+const METALS_URL = `https://api.metals-api.com/v1/latest?access_key=${METALS_API_KEY}&base=XAU&symbols=TRY`; 
 
 async function verileriCek() {
-    let btcFiyat = null;
-    let btcDegisim = 0;
-    
-    // Varsayılan değerler (API çekimi başarısız olursa bunlar kullanılır)
+    // API çekimi başarısız olursa kullanılacak varsayılan değerler
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
+    let tryPerGramAltin = 2500.00; 
+    
+    // Değişim yüzdeleri (API'ler ücretsiz planda bu veriyi vermediği için simülasyon kalır)
+    const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
+    const ALTIN_DEGISM_YUZDESI_CEYREK = 0.90;
+    const DOVIZ_DEGISM_USD = 0.35;
+    const DOVIZ_DEGISM_EUR = -0.15;
 
-    // 1. Kripto Verisini Çekme (BTC)
-    try {
-        const cryptoResponse = await fetch(CRYPTO_API);
-        const cryptoData = await cryptoResponse.json();
-        
-        if (cryptoData?.bitcoin?.try) {
-            btcFiyat = cryptoData.bitcoin.try;
-            btcDegisim = cryptoData.bitcoin.try_24h_change || 0; 
-        }
-    } catch (error) {
-        console.error("BTC API çekiminde hata:", error);
-    }
-
-    // 2. Döviz Verisini Çekme (USD, EUR) - Fixer API'den
+    // --- 1. Döviz Verisini Çekme (USD, EUR) - Fixer API'den ---
     try {
         const dovizResponse = await fetch(FIXER_URL);
         const dovizData = await dovizResponse.json();
@@ -42,38 +28,56 @@ async function verileriCek() {
         if (dovizData?.rates && dovizData.success) {
             const eurTry = dovizData.rates.TRY;
             const eurUsd = dovizData.rates.USD;
-
-            // Fixer, EUR bazlı kur verdiği için USD/TRY kurunu hesaplıyoruz.
-            tryPerUsd = eurTry / eurUsd;
-            tryPerEur = eurTry; // EUR/TRY kuru
             
-            // Not: Fixer ücretsiz planı 24s değişim verisi sağlamaz, bu yüzden değişim yüzdeleri simülasyon kalır.
+            // Hesaplama: USD/TRY kuru = (EUR/TRY) / (EUR/USD)
+            tryPerUsd = eurTry / eurUsd;
+            tryPerEur = eurTry; 
         } else {
-             console.error("Fixer API'den veri alınamadı. Hata kodu:", dovizData?.error?.code, dovizData?.error?.info);
+             console.error("Fixer API'den veri alınamadı. Fixer hata kodu:", dovizData?.error?.code);
         }
     } catch (error) {
         console.error("Döviz API çekiminde hata:", error);
     }
+    
+    // --- 2. Altın Verisini Çekme (Gram Altın - XAU) - Metals-API'den ---
+    try {
+        const altinResponse = await fetch(METALS_URL);
+        const altinData = await altinResponse.json();
+        
+        if (altinData?.rates && altinData.success) {
+            // Gelen değer, 1 Ons Altının kaç TRY olduğunu gösterir.
+            const onsTry = altinData.rates.TRY;
+            const ONS_KARSILIGI_GRAM = 31.1035; // 1 Troy Ons = 31.1035 gramdır.
+            
+            // Gram Altın fiyatı (24 ayar has)
+            tryPerGramAltin = onsTry / ONS_KARSILIGI_GRAM;
+        } else {
+            console.error("Metals-API'den veri alınamadı. Metals-API hata kodu:", altinData?.error?.code);
+        }
+    } catch (error) {
+        console.error("Altın API çekiminde hata:", error);
+    }
+    
+    // Çeyrek Altın Hesabı: Çeyrek Altın (has) yaklaşık 1.754 gramdır.
+    const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
     kurAlani.innerHTML = ''; 
 
     // --- Kartları Oluşturma ---
     
-    // 1. Bitcoin (BTC)
-    const finalBtcFiyat = btcFiyat || 4000000.00; 
-    const finalBtcDegisim = btcFiyat ? btcDegisim : 1.50; 
-    kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', finalBtcFiyat, finalBtcDegisim);
-
-    // 2. Gram Altın (XAU) - Simülasyon
-    const altin = SIMULASYON_ALTIN_VERISI;
-    kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', altin.fiyat, altin.degisim);
+    // 1. Gram Altın (XAU/TRY) - Canlı
+    kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
+    
+    // 2. Çeyrek Altın (ÇYRK) - Hesaplanan Canlı
+    kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
 
     // 3. Amerikan Doları (USD) - Canlı, hesaplanmış kur
-    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, 0.35); // Değişim simülasyonu
+    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
 
     // 4. Euro (EUR) - Canlı kur
-    kurAlani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, -0.15); // Değişim simülasyonu
+    kurani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
+
 }
 
 // Kart oluşturma fonksiyonu (Değişmedi)
