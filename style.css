@@ -1,80 +1,20 @@
-/* Genel Stil ve Koyu Tema */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #1a1a2e; /* Koyu Lacivert Arka Plan */
-    color: #f0f0f0; /* Açık Yazı Rengi */
-    margin: 0;
-    padding: 20px;
-}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlı Finans Takip Merkezi</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <header>
+        <h1>💵 Canlı Finans Takip Merkezi</h1>
+        </header>
+    
+    <div id="kur-kartlari" class="kart-alanı">
+        <p>Veriler yükleniyor...</p>
+    </div>
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #2e2e4e;
-    padding-bottom: 20px;
-}
-
-/* Kart Alanı Düzeni */
-.kart-alanı {
-    display: flex;
-    flex-wrap: wrap; /* Kartların alt alta kaymasını sağlar */
-    gap: 20px; /* Kartlar arası boşluk */
-    justify-content: center;
-}
-
-/* Tek Bir Kart Stili */
-.kur-kart {
-    background-color: #2a2a4a; /* Kart İç Rengi */
-    padding: 20px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    width: 250px; /* Kart Genişliği */
-    transition: transform 0.3s;
-}
-
-.kur-kart:hover {
-    transform: translateY(-5px); /* Hafif yukarı kayma efekti */
-}
-
-.sembol {
-    font-size: 2.5em;
-    color: #ffcc00; /* Altın Rengi vurgu */
-    margin: 0 0 5px 0;
-}
-
-.isim {
-    font-size: 1.1em;
-    color: #cccccc;
-    margin: 0 0 15px 0;
-    border-bottom: 1px solid #3a3a5a;
-    padding-bottom: 10px;
-}
-
-.fiyat-alanı {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fiyat {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #ffffff;
-}
-
-/* Değişim Renkleri */
-.degisim {
-    font-weight: 700;
-    padding: 5px 8px;
-    border-radius: 5px;
-}
-
-.pozitif {
-    color: #33ff33; /* Yeşil */
-    background-color: rgba(51, 255, 51, 0.15);
-}
-
-.negatif {
-    color: #ff3333; /* Kırmızı */
-    background-color: rgba(255, 51, 51, 0.15);
-}
+    <script src="script.js"></script>
+</body>
+</html>
