@@ -1,53 +1,57 @@
-/* Genel Stil ve Koyu Tema */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #1a1a2e; /* Koyu Lacivert Arka Plan */
-    color: #f0f0f0; /* Açık Yazı Rengi */
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e; /* Koyu arka plan */
+    color: #f0f0f0;
     margin: 0;
     padding: 20px;
-}
-
-header {
     text-align: center;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #2e2e4e;
-    padding-bottom: 20px;
 }
 
-/* Kart Alanı Düzeni */
+header h1 {
+    color: #ffcc00; /* Sarı başlık */
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #bbb;
+    margin-bottom: 30px;
+}
+
 .kart-alanı {
     display: flex;
-    flex-wrap: wrap; 
-    gap: 20px; 
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 20px;
+    padding: 0 10px;
 }
 
-/* Tek Bir Kart Stili */
 .kur-kart {
-    background-color: #2a2a4a; /* Kart İç Rengi */
-    padding: 20px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    width: 250px; 
-    transition: transform 0.3s;
+    background-color: #2a2a4a; /* Koyu mor kart */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    width: 280px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: left;
+    cursor: pointer; /* Tıklanabilir olduğunu gösterir */
 }
 
 .kur-kart:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .sembol {
-    font-size: 2.5em;
-    color: #ffcc00; /* Altın Rengi vurgu */
-    margin: 0 0 5px 0;
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffcc00; /* Sarı sembol */
+    margin-bottom: 5px;
 }
 
 .isim {
-    font-size: 1.1em;
-    color: #cccccc;
-    margin: 0 0 15px 0;
-    border-bottom: 1px solid #3a3a5a;
-    padding-bottom: 10px;
+    font-size: 1em;
+    color: #bbb;
+    margin-bottom: 15px;
 }
 
 .fiyat-alanı {
@@ -59,22 +63,68 @@ header {
 .fiyat {
     font-size: 1.8em;
     font-weight: bold;
-    color: #ffffff;
+    color: #f0f0f0;
 }
 
-/* Değişim Renkleri */
 .degisim {
-    font-weight: 700;
-    padding: 5px 8px;
+    padding: 5px 10px;
     border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
 }
 
 .pozitif {
-    color: #33ff33; /* Yeşil */
-    background-color: rgba(51, 255, 51, 0.15);
+    background-color: #4CAF50; /* Yeşil */
+    color: white;
 }
 
 .negatif {
-    color: #ff3333; /* Kırmızı */
-    background-color: rgba(255, 51, 51, 0.15);
+    background-color: #f44336; /* Kırmızı */
+    color: white;
+}
+
+/* --- Grafik Modal (Pop-up) Stilleri --- */
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.8); 
+}
+
+.modal-icerik {
+    background-color: #2a2a4a; 
+    margin: 10% auto; 
+    padding: 20px;
+    border: 1px solid #444;
+    border-radius: 12px;
+    width: 80%; 
+    max-width: 700px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    color: #f0f0f0;
+}
+
+#grafik-baslik {
+    margin-top: 0;
+    border-bottom: 1px solid #3a3a5a;
+    padding-bottom: 10px;
+}
+
+.kapat-dugmesi {
+    color: #f0f0f0;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.kapat-dugmesi:hover,
+.kapat-dugmesi:focus {
+    color: #ffcc00;
+    text-decoration: none;
+    cursor: pointer;
 }
