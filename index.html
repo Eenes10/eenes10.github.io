@@ -4,15 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canlı Finans Takip Merkezi</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
     <header>
         <h1>💵 Canlı Finans Takip Merkezi</h1>
+        <p>Veriler her 10 saniyede bir güncellenir.</p>
     </header>
     
     <div id="kur-kartlari" class="kart-alanı">
         <p>Veriler yükleniyor...</p>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-icerik">
+            <span class="kapat-dugmesi">&times;</span>
+            <h2 id="grafik-baslik"></h2>
+            <canvas id="fiyatGrafik"></canvas>
+        </div>
     </div>
 
     <script src="script.js"></script>
