@@ -1,225 +1,80 @@
-/* --- HAREKETLİ ALTIN TEMA v4 (TÜM ELEMENTLER NEON) --- */
-
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-:root {
-    /* DARK TEMA (VARSAYILAN) */
-    --bg-color: #111111;
-    --card-color: rgba(24, 24, 27, 0.7);
-    --text-color: #e2e8f0;
-    --text-muted: #94a3b8;
-    --accent-gradient: linear-gradient(60deg, #fffc7f, #ffffff, #fffc7f, #fffc7f); /* Altın Gradient */
-    --nav-bg: rgba(17, 17, 17, 0.9);
-    --border-color: rgba(255, 255, 255, 0.1);
-    --neon-main-color: #ffffff; /* Altın */
-    --neon-glow-color: #fffc7f;  /* Parlak Sarı */
-}
-
-/* LIGHT TEMA */
-body.light-theme {
-    --bg-color: #f3f4f6;
-    --card-color: rgba(255, 255, 255, 0.8);
-    --text-color: #1f2937;
-    --text-muted: #4b5563;
-    --accent-gradient: linear-gradient(60deg, #ff9900, #ffcc00, #ff9900, #ff9900); /* Parlak Turuncu Gradient */
-    --nav-bg: rgba(255, 255, 255, 0.9);
-    --border-color: rgba(0, 0, 0, 0.1);
-    --neon-main-color: #ff9900; 
-    --neon-glow-color: #ffcc00; 
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
+/* Genel Stil ve Koyu Tema */
 body {
-    font-family: 'Fira Code', monospace;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #1a1a2e; /* Koyu Lacivert Arka Plan */
+    color: #f0f0f0; /* Açık Yazı Rengi */
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #2e2e4e;
+    padding-bottom: 20px;
+}
+
+/* Kart Alanı Düzeni */
+.kart-alanı {
     display: flex;
-    flex-direction: column;
-    
-    /* KRİTİK DÜZELTME */
-    opacity: 1; 
-    transition: opacity 0.3s ease-in-out;
+    flex-wrap: wrap; /* Kartların alt alta kaymasını sağlar */
+    gap: 20px; /* Kartlar arası boşluk */
+    justify-content: center;
 }
 
-body.fade-out { opacity: 0; }
-
-/* --- NAVİGASYON --- */
-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 5%; min-height: 8vh; background-color: var(--nav-bg); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: fixed; width: 100%; z-index: 10; }
-.nav-left { display: flex; align-items: center; gap: 60px; }
-.logo { background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; background-size: 200% 200%; animation: gradient-animation 6s ease-in-out infinite; font-size: 20px; font-weight: 700; text-decoration: none; }
-.nav-links { display: flex; list-style: none; gap: 20px; }
-.nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 700; padding: 0.5em 1.2em; border-radius: 999px; transition: all 0.4s ease; }
-.nav-links a:not(.active):hover { color: var(--text-color); background-color: var(--border-color); }
-.nav-links a.active { color: var(--bg-color); background: var(--accent-gradient); background-size: 300% 300%; animation: gradient-animation 5s ease infinite; }
-
-
-/* YENİ: NAV ACTIONS (TEMA BUTONU VE GITHUB) */
-.nav-actions { display: flex; align-items: center; gap: 20px; }
-
-/* GitHub Linki */
-.github-link { color: var(--text-muted); font-size: 1.5rem; transition: color 0.3s ease, text-shadow 0.3s ease; display: flex; align-items: center; }
-.github-link:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
-
-/* Tema Değiştirme Butonu */
-#theme-toggle { 
-    background: none; border: none; color: var(--text-muted); 
-    font-size: 1.4rem; cursor: pointer; padding: 0; position: relative; 
-    width: 24px; height: 24px; display: flex; align-items: center; 
-    justify-content: center; transition: all 0.3s ease; 
-}
-#theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
-#theme-toggle i { position: absolute; transition: opacity 0.3s ease, transform 0.3s ease; }
-
-/* Tema İkon Yönetimi */
-#icon-moon { opacity: 1; transform: scale(1); }
-#icon-sun { opacity: 0; transform: scale(0); }
-
-/* LIGHT TEMA AKTİFKEN İkonlar */
-body.light-theme #icon-moon { opacity: 0; transform: scale(0); }
-body.light-theme #icon-sun { opacity: 1; transform: scale(1); }
-body.light-theme #theme-toggle:hover { color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color); }
-
-
-/* --- ANA İÇERİK BÖLÜMÜ --- */
-main { transition: opacity 0.4s ease-in-out; flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; padding-top: 8vh; }
-body.fade-out main { opacity: 0; }
-section { padding: 50px 20px; max-width: 1000px; margin: 0 auto; text-align: center; }
-/* Yorumlar sayfasına özel genişlik */
-#yorumlar { max-width: 800px; }
-
-
-/* --- BAŞLIKLAR VE DİĞER ELEMENTLER --- */
-h1, h2, .highlight { background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; background-size: 300% 300%; animation: gradient-animation 5s ease infinite; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
-body.light-theme h1, body.light-theme h2, body.light-theme .highlight { text-shadow: 0 0 8px rgba(0, 0, 0, 0.2); } 
-
-h1 { font-size: 3rem; color: var(--text-color); }
-h1 .highlight { display: inline-block; }
-h2 { font-size: 2.5rem; margin-bottom: 40px; }
-p { color: var(--text-muted); }
-.about-container { display: flex; align-items: center; justify-content: center; gap: 40px; text-align: left; }
-
-.btn {
-    background: transparent; border: 1px solid var(--neon-main-color);
-    color: var(--neon-glow-color); text-shadow: 0 0 8px var(--neon-glow-color);
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
-    padding: 14px 28px; margin-top: 20px; text-decoration: none;
-    border-radius: 8px; font-weight: bold; transition: all 0.3s ease;
+/* Tek Bir Kart Stili */
+.kur-kart {
+    background-color: #2a2a4a; /* Kart İç Rengi */
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 250px; /* Kart Genişliği */
+    transition: transform 0.3s;
 }
 
-/* Anasayfa İletişim Butonu Hover Efekti */
-.btn:hover {
-    color: var(--bg-color); /* Hover'da arka plan rengini alır */
-    background-color: var(--neon-main-color);
-    box-shadow: 0 0 25px var(--neon-main-color), 0 0 50px var(--neon-glow-color); /* Daha güçlü parlama */
-    text-shadow: none; /* Metin gölgesini kaldır */
+.kur-kart:hover {
+    transform: translateY(-5px); /* Hafif yukarı kayma efekti */
 }
 
-#hero p { margin-bottom: 60px; }
-#hero .btn { margin-top: 40px; }
-
-.profile-pic {
-    width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--neon-main-color);
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+.sembol {
+    font-size: 2.5em;
+    color: #ffcc00; /* Altın Rengi vurgu */
+    margin: 0 0 5px 0;
 }
 
-/* --- İLETİŞİM VE YORUMLAR BÖLÜMÜ --- */
-.social-links { margin-top: 20px; display: flex; justify-content: center; gap: 30px; }
-.social-links a { color: var(--text-muted); font-size: 2.5rem; transition: all 0.3s ease; }
-.social-links a:hover { color: var(--neon-glow-color); text-shadow: 0 0 10px var(--neon-glow-color); transform: translateY(-5px); }
-footer { text-align: center; padding: 20px 0; color: var(--text-muted); }
-
-/* --- NAVBAR GEÇİŞ ANİMASYONU --- */
-.nav-loader {
-    position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; 
-    background: var(--accent-gradient); background-size: 200% 200%;
-    animation: gradient-animation 4s ease infinite; box-shadow: 0 0 15px var(--neon-main-color);
-    transition: width 0.4s ease-in-out; 
-}
-.nav-loader.loading { width: 100%; }
-
-/* --- MOBİL UYUMLULUK VE NAVİGASYON EKLEMELERİ (Responsive Tasarım) --- */
-.burger { 
-    display: none; 
-    cursor: pointer; 
-    z-index: 20; 
-}
-.burger div {
-    width: 25px;
-    height: 3px;
-    background-color: var(--text-color);
-    margin: 5px;
-    transition: all 0.3s ease;
+.isim {
+    font-size: 1.1em;
+    color: #cccccc;
+    margin: 0 0 15px 0;
+    border-bottom: 1px solid #3a3a5a;
+    padding-bottom: 10px;
 }
 
-@media screen and (max-width: 768px) {
-    /* Genel Responsive Ayarlar */
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 2rem; }
-    .about-container { flex-direction: column; text-align: center; }
-    .profile-pic { margin-bottom: 20px; }
-    
-    /* BURGER İKONUNU GÖRÜNÜR YAP */
-    .burger { display: block; } 
-
-    /* Mobil Menü Konumlandırma ve Görünüm */
-    .nav-links {
-        display: flex; /* Görünürlüğü açmak için */
-        position: absolute; 
-        right: 0; 
-        top: 8vh; 
-        height: 92vh; 
-        background-color: var(--nav-bg); 
-        backdrop-filter: blur(20px); 
-        flex-direction: column; 
-        align-items: center;
-        width: 100%; 
-        transform: translateX(100%); /* Başlangıçta ekranın dışına kaydır */
-        transition: transform 0.5s ease-in;
-        padding-top: 50px;
-    }
-    
-    .nav-links li { 
-        opacity: 0; 
-    }
-    
-    .nav-links a { 
-        font-size: 1.5rem; 
-        padding: 15px 30px; 
-        width: 100%; 
-        text-align: center; 
-    }
-
-    /* Menü Aktif (Açık) İken */
-    .nav-active { 
-        transform: translateX(0%); /* Menüyü içeri kaydır */
-    }
-
-    /* Burger Menü Animasyonu (X şekli) */
-    .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
-    .toggle .line2 { opacity: 0; }
-    .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
-    
-    /* Nav Loader'ı mobil görünümde göster */
-    .nav-loader { display: block; }
+.fiyat-alanı {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Masaüstünde nav loader'ı gizle */
-@media screen and (min-width: 769px) {
-    .nav-loader { display: none !important; } 
+.fiyat {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ffffff;
 }
 
-/* Linkler için animasyon (JavaScript'te kullanılacak) */
-@keyframes navLinkFade {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0px); }
+/* Değişim Renkleri */
+.degisim {
+    font-weight: 700;
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+.pozitif {
+    color: #33ff33; /* Yeşil */
+    background-color: rgba(51, 255, 51, 0.15);
+}
+
+.negatif {
+    color: #ff3333; /* Kırmızı */
+    background-color: rgba(255, 51, 51, 0.15);
 }
