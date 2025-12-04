@@ -4,17 +4,18 @@ const kurAlani = document.getElementById('kur-kartlari');
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD`; 
 
-// Metals-API anahtarınız (Altın için)
-const METALS_API_KEY = 'API_KEY'; // Lütfen buradaki 'API_KEY' yerine kendi Metals-API anahtarınızı yapıştırın.
-const METALS_URL = `https://api.metals-api.com/v1/latest?access_key=${METALS_API_KEY}&base=XAU&symbols=TRY`; 
+// Metals-API anahtarınız.
+const METALS_API_KEY = 'API_KEY'; 
+// Altın: API'nin ücretsiz planda otomatik döndürdüğü 'base=USD' verisini bekliyoruz.
+const METALS_URL = `https://api.metals-api.com/v1/latest?access_key=${METALS_API_KEY}&base=USD&symbols=XAU`; 
 
 async function verileriCek() {
-    // API çekimi başarısız olursa kullanılacak varsayılan değerler
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
+    let onsPerUsd = 4200.00; // Ons Altın Dolar Fiyatı Varsayılanı
     let tryPerGramAltin = 2500.00; 
     
-    // Değişim yüzdeleri (API'ler ücretsiz planda bu veriyi vermediği için simülasyon kalır)
+    // Değişim yüzdeleri (Simülasyon olarak kalır)
     const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
     const ALTIN_DEGISM_YUZDESI_CEYREK = 0.90;
     const DOVIZ_DEGISM_USD = 0.35;
@@ -29,34 +30,42 @@ async function verileriCek() {
             const eurTry = dovizData.rates.TRY;
             const eurUsd = dovizData.rates.USD;
             
-            // Hesaplama: USD/TRY kuru = (EUR/TRY) / (EUR/USD)
             tryPerUsd = eurTry / eurUsd;
             tryPerEur = eurTry; 
         } else {
-             console.error("Fixer API'den veri alınamadı. Fixer hata kodu:", dovizData?.error?.code);
+             console.error("Fixer API'den döviz verisi alınamadı.");
         }
     } catch (error) {
         console.error("Döviz API çekiminde hata:", error);
     }
     
-    // --- 2. Altın Verisini Çekme (Gram Altın - XAU) - Metals-API'den ---
+    // --- 2. Altın Verisini Çekme (Ons Altın/USD) - Metals-API'den ---
     try {
         const altinResponse = await fetch(METALS_URL);
         const altinData = await altinResponse.json();
         
-        if (altinData?.rates && altinData.success) {
-            // Gelen değer, 1 Ons Altının kaç TRY olduğunu gösterir.
-            const onsTry = altinData.rates.TRY;
-            const ONS_KARSILIGI_GRAM = 31.1035; // 1 Troy Ons = 31.1035 gramdır.
+        if (altinData?.rates && altinData.success && altinData.rates.XAU) {
             
-            // Gram Altın fiyatı (24 ayar has)
-            tryPerGramAltin = onsTry / ONS_KARSILIGI_GRAM;
+            // KESİN DÜZELTME BURADA: API, 1 USD'nin kaç XAU ettiğini veriyor.
+            // Biz 1 XAU'nun kaç USD ettiğini bulmak için tersini almalıyız.
+            const XAU_PER_USD = altinData.rates.XAU; 
+            onsPerUsd = 1 / XAU_PER_USD; // Ons Altın/USD fiyatı
+            
         } else {
-            console.error("Metals-API'den veri alınamadı. Metals-API hata kodu:", altinData?.error?.code);
+            console.error("Metals-API'den Ons Altın verisi alınamadı. Hata kodu:", altinData?.error?.code);
         }
     } catch (error) {
         console.error("Altın API çekiminde hata:", error);
     }
+    
+    // --- 3. Nihai Altın Fiyatı Hesaplamaları ---
+    
+    // Ons Altın/TRY = (Ons Altın/USD) * (USD/TRY)
+    const onsPerTry = onsPerUsd * tryPerUsd;
+    
+    // Gram Altın (24 ayar has) = Ons Altın/TRY / 31.1035
+    const ONS_KARSILIGI_GRAM = 31.1035; // 1 Troy Ons = 31.1035 gramdır.
+    tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
     
     // Çeyrek Altın Hesabı: Çeyrek Altın (has) yaklaşık 1.754 gramdır.
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
@@ -64,19 +73,19 @@ async function verileriCek() {
     // Ekranı temizle
     kurAlani.innerHTML = ''; 
 
-    // --- Kartları Oluşturma ---
+    // --- Kartları Oluşturma (Sıralama değiştirilmedi) ---
     
-    // 1. Gram Altın (XAU/TRY) - Canlı
+    // 1. Amerikan Doları (USD) - Canlı, hesaplanmış kur
+    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
+    
+    // 2. Euro (EUR) - Canlı kur
+    kurAlani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
+
+    // 3. Gram Altın (XAU/TRY) - Canlı ve Hesaplanan
     kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
     
-    // 2. Çeyrek Altın (ÇYRK) - Hesaplanan Canlı
+    // 4. Çeyrek Altın (ÇYRK) - Hesaplanan
     kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
-
-    // 3. Amerikan Doları (USD) - Canlı, hesaplanmış kur
-    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
-
-    // 4. Euro (EUR) - Canlı kur
-    kurani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
 
 }
 
