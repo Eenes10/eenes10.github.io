@@ -4,16 +4,14 @@ const kurAlani = document.getElementById('kur-kartlari');
 
 // 1. Döviz için Fixer.io API anahtarınız
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
-// TRY, USD, GBP (İngiliz Sterlini), CHF (İsviçre Frangı) kurlarını EUR bazında istiyoruz.
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
 
 // 2. Metals-API anahtarınız (Altın için)
 const METALS_API_KEY = 'API_KEY'; 
-// Altın: API'nin ücretsiz planda otomatik döndürdüğü 'base=USD' verisini talep ediyoruz.
+// API'nin 'USDXAU' değerini vermesini bekliyoruz.
 const METALS_URL = `https://api.metals-api.com/v1/latest?access_key=${METALS_API_KEY}&base=USD&symbols=XAU`; 
 
-// 3. Bitcoin için harici API (CoinGecko'dan Basit Fiyat Servisi)
-// BTC'nin USD karşılığını çekiyoruz.
+// 3. Bitcoin için harici API
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd';
 
 async function verileriCek() {
@@ -24,9 +22,9 @@ async function verileriCek() {
     let tryPerChf = 35.0000; 
     let onsPerUsd = 2000.00; // Ons Altın Dolar Fiyatı Varsayılanı
     let tryPerGramAltin = 2000.00; 
-    let usdPerBtc = 60000.00; // Bitcoin Dolar Fiyatı Varsayılanı
+    let usdPerBtc = 60000.00; 
     
-    // Değişim yüzdeleri (Simülasyon olarak kalır)
+    // Değişim yüzdeleri (Simülasyon)
     const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
     const ALTIN_DEGISM_YUZDESI_CEYREK = 0.90;
     const DOVIZ_DEGISM_USD = 0.35;
@@ -46,15 +44,11 @@ async function verileriCek() {
             const eurGbp = dovizData.rates.GBP;
             const eurChf = dovizData.rates.CHF;
             
-            // TRY kurları hesaplanır: (EUR/TRY) / (EUR/X)
             tryPerUsd = eurTry / eurUsd;
             tryPerEur = eurTry; 
             tryPerGbp = eurTry / eurGbp;
             tryPerChf = eurTry / eurChf;
-
-        } else {
-             console.error("Fixer API'den döviz verisi alınamadı.");
-        }
+        } 
     } catch (error) {
         console.error("Döviz API çekiminde hata:", error);
     }
@@ -64,15 +58,14 @@ async function verileriCek() {
         const altinResponse = await fetch(METALS_URL);
         const altinData = await altinResponse.json();
         
-        if (altinData?.rates && altinData.success && altinData.rates.XAU) {
+        // DÜZELTME: Artık rates.USDXAU değerini doğrudan kullanıyoruz!
+        if (altinData?.rates && altinData.success && altinData.rates.USDXAU) {
             
-            // KESİN DÜZELTME: API'nizin çıktısı (image_4ab61d.png) 1 USD'nin kaç XAU ettiğini veriyor.
-            // 1 XAU'nun kaç USD ettiğini bulmak için tersini (1/XAU) alıyoruz.
-            const XAU_PER_USD = altinData.rates.XAU; 
-            onsPerUsd = 1 / XAU_PER_USD; // Ons Altın/USD fiyatı
+            // USDXAU alanı, 1 Ons Altının kaç USD ettiğini veriyor.
+            onsPerUsd = altinData.rates.USDXAU;
             
         } else {
-            console.error("Metals-API'den Ons Altın verisi alınamadı. Hata kodu:", altinData?.error?.code);
+            console.error("Metals-API'den Ons Altın verisi alınamadı veya 'USDXAU' alanı mevcut değil.");
         }
     } catch (error) {
         console.error("Altın API çekiminde hata:", error);
@@ -85,26 +78,21 @@ async function verileriCek() {
         
         if (btcData?.bitcoin?.usd) {
             usdPerBtc = btcData.bitcoin.usd;
-        } else {
-             console.error("CoinGecko API'den BTC verisi alınamadı.");
-        }
+        } 
     } catch (error) {
         console.error("Bitcoin API çekiminde hata:", error);
     }
     
     // --- 4. Nihai Hesaplamalar ---
     
-    // Bitcoin/TRY = (BTC/USD) * (USD/TRY)
     const tryPerBtc = usdPerBtc * tryPerUsd;
 
     // Ons Altın/TRY = (Ons Altın/USD) * (USD/TRY)
     const onsPerTry = onsPerUsd * tryPerUsd;
     
-    // Gram Altın (24 ayar has) = Ons Altın/TRY / 31.1035
     const ONS_KARSILIGI_GRAM = 31.1035; 
     tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
     
-    // Çeyrek Altın Hesabı: Çeyrek Altın (has) yaklaşık 1.754 gramdır.
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
@@ -112,32 +100,18 @@ async function verileriCek() {
 
     // --- Kartları Oluşturma ---
     
-    // 1. Bitcoin (Yeni eklendi)
     kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', tryPerBtc, BTC_DEGISM_YUZDESI); 
-
-    // 2. Gram Altın (Artık doğru hesaplanmalı)
     kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
-    
-    // 3. Çeyrek Altın (Hesaplanan)
     kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
-    
-    // 4. Amerikan Doları
     kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
-
-    // 5. Euro
     kurAlani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
-
-    // 6. İngiliz Sterlini (Yeni eklendi)
     kurAlani.innerHTML += kartOlustur('İngiliz Sterlini', 'GBP', tryPerGbp, DOVIZ_DEGISM_GBP); 
-
-    // 7. İsviçre Frangı (Yeni eklendi)
     kurAlani.innerHTML += kartOlustur('İsviçre Frangı', 'CHF', tryPerChf, DOVIZ_DEGISM_CHF); 
 
 }
 
-// Kart oluşturma fonksiyonu (Fiyat formatlama güncellendi)
+// Kart oluşturma fonksiyonu
 function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
-    // BTC ve Altın gibi yüksek fiyatlı varlıklar için daha az ondalık basamak kullan
     const minD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
     const maxD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
     
