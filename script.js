@@ -3,47 +3,58 @@ const kurAlani = document.getElementById('kur-kartlari');
 // Kripto için CoinGecko API'si (BTC fiyatı ve 24s değişimini çeker)
 const CRYPTO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=try&include_24hr_change=true';
 
-// Döviz ve Altın verileri için simülasyon (Gerçek projede burayı API ile değiştirmelisiniz)
-const guncelDovizData = {
-    // Gerçek ve güncel fiyatları temsil eden simülasyon verileridir.
-    'USD': { fiyat: 32.5870, degisim: 0.45 },
-    'EUR': { fiyat: 35.5120, degisim: -0.12 },
-    'XAU': { fiyat: 2420.50, degisim: 1.15 } // Gram Altın
+// API'dan veri gelmeme ihtimaline karşı kullanılacak GÜVENLİ simülasyon verileri.
+const SIMULASYON_DOVIZ_DATA = {
+    'USD': { fiyat: 32.6500, degisim: 0.45 },
+    'EUR': { fiyat: 35.6000, degisim: -0.12 },
+    'XAU': { fiyat: 2420.50, degisim: 1.15 } // Gram Altın (TRY)
 };
 
 async function verileriCek() {
+    let btcFiyat = null;
+    let btcDegisim = 0;
+    
     try {
         // --- 1. Kripto Verisini Çekme (BTC) ---
         const cryptoResponse = await fetch(CRYPTO_API);
         const cryptoData = await cryptoResponse.json();
         
-        // Ekranı temizle
-        kurAlani.innerHTML = ''; 
-
-        // --- Kartları Oluşturma ---
-        
-        // 1. Bitcoin (BTC)
-        const btcFiyat = cryptoData.bitcoin.try;
-        // CoinGecko'dan gelen değişim yüzdesi 
-        const btcDegisim = cryptoData.bitcoin.try_24h_change || 0; 
-        kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', btcFiyat, btcDegisim);
-
-        // 2. Gram Altın (XAU) - Simülasyon
-        const altin = guncelDovizData.XAU;
-        kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', altin.fiyat, altin.degisim);
-
-        // 3. Amerikan Doları (USD) - Simülasyon
-        const dolar = guncelDovizData.USD;
-        kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', dolar.fiyat, dolar.degisim);
-
-        // 4. Euro (EUR) - Simülasyon
-        const euro = guncelDovizData.EUR;
-        kurAlani.innerHTML += kartOlustur('Euro', 'EUR', euro.fiyat, euro.degisim);
+        // Verinin doğru geldiğini kontrol et
+        if (cryptoData && cryptoData.bitcoin && cryptoData.bitcoin.try) {
+            btcFiyat = cryptoData.bitcoin.try;
+            // 24 saatlik değişim yoksa 0 al
+            btcDegisim = cryptoData.bitcoin.try_24h_change || 0; 
+        } else {
+            console.error("CoinGecko'dan BTC verisi alınamadı. Simülasyon kullanılacak.");
+        }
 
     } catch (error) {
-        // Hata durumunda ekrana mesajı yazdır
-        kurAlani.innerHTML = `<p style="color: red; text-align: center;">Veri çekme hatası oluştu: ${error.message}</p>`;
+        // BTC API çekiminde hata olursa konsola yazdır
+        console.error("BTC API çekiminde hata:", error);
     }
+    
+    // Ekranı temizle (API hatası alsa bile kartlar bu noktada yüklenir)
+    kurAlani.innerHTML = ''; 
+
+    // --- Kartları Oluşturma ---
+    
+    // 1. Bitcoin (BTC) - Eğer gerçek veri alınamadıysa simülasyon kullan
+    const finalBtcFiyat = btcFiyat || 3950000.00; // API hata verirse bu fiyatı kullan
+    const finalBtcDegisim = btcFiyat ? btcDegisim : 1.50; // API hata verirse bu değişimi kullan
+
+    kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', finalBtcFiyat, finalBtcDegisim);
+
+    // 2. Gram Altın (XAU) - Simülasyon
+    const altin = SIMULASYON_DOVIZ_DATA.XAU;
+    kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', altin.fiyat, altin.degisim);
+
+    // 3. Amerikan Doları (USD) - Simülasyon
+    const dolar = SIMULASYON_DOVIZ_DATA.USD;
+    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', dolar.fiyat, dolar.degisim);
+
+    // 4. Euro (EUR) - Simülasyon
+    const euro = SIMULASYON_DOVIZ_DATA.EUR;
+    kurAlani.innerHTML += kartOlustur('Euro', 'EUR', euro.fiyat, euro.degisim);
 }
 
 // Estetik kart HTML yapısını oluşturan fonksiyon
