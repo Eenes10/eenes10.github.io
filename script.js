@@ -1,188 +1,74 @@
-// --- SCRIPT.JS (SON VE TAM HALİ) ---
+const kurAlani = document.getElementById('kur-kartlari');
 
-// Mobil menü fonksiyonu
-const navSlide = () => {
-    const burger = document.querySelector('.burger');
-    const nav = document.querySelector('.nav-links');
-    if (!burger || !nav) return;
-    const navLinks = nav.querySelectorAll('li');
+// Kripto için CoinGecko API'si (BTC fiyatı ve 24s değişimini çeker)
+const CRYPTO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=try&include_24hr_change=true';
 
-    burger.addEventListener('click', () => {
-        nav.classList.toggle('nav-active');
-        burger.classList.toggle('toggle');
+// Döviz ve Altın verileri için simülasyon (Gerçek projede burayı API ile değiştirmelisiniz)
+const guncelDovizData = {
+    // Gerçek ve güncel fiyatları temsil eden simülasyon verileridir.
+    'USD': { fiyat: 32.5870, degisim: 0.45 },
+    'EUR': { fiyat: 35.5120, degisim: -0.12 },
+    'XAU': { fiyat: 2420.50, degisim: 1.15 } // Gram Altın
+};
+
+async function verileriCek() {
+    try {
+        // --- 1. Kripto Verisini Çekme (BTC) ---
+        const cryptoResponse = await fetch(CRYPTO_API);
+        const cryptoData = await cryptoResponse.json();
         
-        // Linklerin tek tek kayma animasyonu
-        navLinks.forEach((link, index) => {
-            if (nav.classList.contains('nav-active')) {
-                link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
-            } else {
-                // Menü kapanırken animasyonu sıfırla
-                link.style.animation = '';
-            }
-        });
-    });
+        // Ekranı temizle
+        kurAlani.innerHTML = ''; 
 
-    // DÜZELTME: Mobil Menü Linkine Tıklayınca Kapatma
-    navLinks.forEach(li => {
-        const link = li.querySelector('a'); 
-        if (link) { 
-             link.addEventListener('click', () => {
-                // Sadece normal link tıklamalarında menüyü kapat
-                if (nav.classList.contains('nav-active') && link.href.includes('.html')) {
-                    nav.classList.remove('nav-active');
-                    burger.classList.remove('toggle');
-                    navLinks.forEach(link => link.style.animation = '');
-                }
-            });
-        }
-    });
-};
+        // --- Kartları Oluşturma ---
+        
+        // 1. Bitcoin (BTC)
+        const btcFiyat = cryptoData.bitcoin.try;
+        // CoinGecko'dan gelen değişim yüzdesi 
+        const btcDegisim = cryptoData.bitcoin.try_24h_change || 0; 
+        kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', btcFiyat, btcDegisim);
 
-// Sayfa geçiş animasyonu
-const pageTransition = () => {
-    const body = document.querySelector('body');
-    const navLoader = document.querySelector('.nav-loader'); 
+        // 2. Gram Altın (XAU) - Simülasyon
+        const altin = guncelDovizData.XAU;
+        kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', altin.fiyat, altin.degisim);
 
-    // Sayfa yüklendiğinde fade-out class'ını kaldır
-    body.classList.remove('fade-out');
-    if (navLoader) {
-        navLoader.classList.remove('loading');
+        // 3. Amerikan Doları (USD) - Simülasyon
+        const dolar = guncelDovizData.USD;
+        kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', dolar.fiyat, dolar.degisim);
+
+        // 4. Euro (EUR) - Simülasyon
+        const euro = guncelDovizData.EUR;
+        kurAlani.innerHTML += kartOlustur('Euro', 'EUR', euro.fiyat, euro.degisim);
+
+    } catch (error) {
+        // Hata durumunda ekrana mesajı yazdır
+        kurAlani.innerHTML = `<p style="color: red; text-align: center;">Veri çekme hatası oluştu: ${error.message}</p>`;
     }
-
-    const allLinks = document.querySelectorAll('a');
-
-    allLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const url = link.href;
-            
-            // # (sayfa içi link) veya _blank (yeni sekme) veya Ctrl/Meta tuşlarıyla açılmasını engelleme
-            if (url.includes('#') || link.target === '_blank' || e.ctrlKey || e.metaKey) return;
-            
-            // Aynı domain içindeki farklı bir sayfaya yönlendirme kontrolü
-            if (url.startsWith(window.location.origin) && url !== window.location.href) {
-                e.preventDefault();
-
-                if (navLoader) {
-                    navLoader.classList.add('loading');
-                }
-                body.classList.add('fade-out');
-                
-                setTimeout(() => {
-                    window.location.href = url;
-                }, 600); // Süre 600ms (0.6s)
-            }
-        });
-    });
-};
-
-// Giscus'a Tema Değişikliğin Bildirme
-const setGiscusTheme = (theme) => {
-    const giscusTheme = theme === 'light' ? 'light' : 'dark_dimmed'; 
-    const iframe = document.querySelector('iframe.giscus-frame');
-    if (!iframe) return;
-
-    iframe.contentWindow.postMessage(
-        { giscus: { setConfig: { theme: giscusTheme } } },
-        'https://giscus.app'
-    );
 }
 
-// Tema değiştirme fonksiyonu
-const themeHandler = () => {
-    const toggleButton = document.getElementById('theme-toggle');
-    const body = document.body;
+// Estetik kart HTML yapısını oluşturan fonksiyon
+function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     
-    // 1. Kayıtlı temayı yükle
-    const savedTheme = localStorage.getItem('theme');
-    let currentTheme = 'dark';
+    // Fiyatı TR formatında virgül ve nokta ile formatla
+    const formatliFiyat = fiyat.toLocaleString('tr-TR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     
-    if (savedTheme === 'light' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-        body.classList.add('light-theme');
-        currentTheme = 'light';
-    } else {
-        body.classList.remove('light-theme');
-    }
-
-    // İlk yüklemede Giscus temasını ayarla
-    setTimeout(() => setGiscusTheme(currentTheme), 500); 
-
-
-    // 2. Buton tıklama olayını dinle
-    if (toggleButton) {
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('light-theme');
-            
-            const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            
-            // Tema değiştiğinde Giscus'a bildir
-            setGiscusTheme(newTheme);
-        });
-    }
-};
-
-// YENİ GÜNCELLEME: Gizli Admin Panel Erişimi (Hakkımda sayfasındaki PP'ye 3 tıklama)
-let adminClickCount = 0;
-let clickTimeout;
-
-const setupSecretAdminAccess = () => {
-    // Yeni hedef: Hakkımda sayfasındaki profil fotoğrafı (.profile-pic)
-    const profilePic = document.querySelector('.profile-pic');
+    // Değişime göre CSS sınıfı ve metni belirle
+    const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
+    const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
-    // Eğer element yoksa (başka bir sayfadaysak), fonksiyonu bitir.
-    if (!profilePic) return; 
+    return `
+        <div class="kur-kart">
+            <h2 class="sembol">${sembol}</h2>
+            <h3 class="isim">${isim}</h3>
+            <div class="fiyat-alanı">
+                <span class="fiyat">₺ ${formatliFiyat}</span>
+                <span class="degisim ${degisimSinifi}">${degisimMetni}</span>
+            </div>
+        </div>
+    `;
+}
 
-    // Kullanıcı deneyimi için imleci 'tıklanabilir' olarak ayarla
-    profilePic.style.cursor = 'pointer';
-
-    profilePic.addEventListener('click', (e) => {
-        // Görüntünün varsayılan tıklama davranışını (olmasa bile) ve gezintiyi engelle
-        e.preventDefault(); 
-        
-        // Yönlendirme zaten admin.html'e doğruysa bir şey yapma
-        if (window.location.pathname.endsWith('admin.html')) return; 
-
-        adminClickCount++;
-        
-        // 1.5 saniye içinde 3 tıklama olmazsa sayacı sıfırla
-        clearTimeout(clickTimeout);
-        clickTimeout = setTimeout(() => {
-            adminClickCount = 0;
-            console.log('Gizli Giriş Sayacı Sıfırlandı.');
-        }, 1500); // 1.5 saniye içinde 3 tıklama bekleniyor
-
-        if (adminClickCount < 3) {
-            console.log(`Admin Panel Gizli Giriş Denemesi: ${adminClickCount}/3`);
-        } else {
-            // 3. tıklamada yönlendir
-            
-            // Animasyonları başlat
-            const body = document.querySelector('body');
-            const navLoader = document.querySelector('.nav-loader');
-            
-            if (navLoader) {
-                navLoader.classList.add('loading');
-            }
-            body.classList.add('fade-out');
-
-            // Yönlendirme (Admin paneline)
-            setTimeout(() => {
-                // Şifre giriş ekranı için session'ı temizle (admin.html'de de var ama emin olalım)
-                sessionStorage.removeItem('admin_logged_in'); 
-                window.location.href = 'admin.html';
-            }, 600); 
-            
-            // Sayacı sıfırla
-            adminClickCount = 0;
-        }
-    });
-};
-
-
-// Tüm fonksiyonları DOM yüklendiğinde çalıştır
-document.addEventListener('DOMContentLoaded', () => {
-    themeHandler(); // En başta tema ayarını yükle
-    navSlide();
-    pageTransition();
-    setupSecretAdminAccess(); // Gizli Girişi Kur
-});
+// Sayfa yüklendiğinde veriyi çek
+verileriCek();
+// setInterval ile her 10 saniyede bir veriyi tekrar çek ve kartları güncelle
+setInterval(verileriCek, 10000);
