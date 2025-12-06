@@ -1,305 +1,120 @@
-// Global değişkenler
-const kurAlani = document.getElementById('kur-kartlari');
-const modal = document.getElementById('modal');
-const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
-const grafikBaslik = document.getElementById('grafik-baslik');
-let mevcutGrafik; 
+const soruMetni = document.getElementById('soru-metni');
+const cozBtn = document.getElementById('coz-btn');
+const cozumIcerigi = document.getElementById('cozum-icerigi');
+const motivasyonAlani = document.getElementById('motivasyon-alani');
 
-// İkon Eşleştirme Fonksiyonu
-function getIcon(sembol) {
-    switch (sembol) {
-        case 'BTC': return '<i class="fa-brands fa-bitcoin kart-icon"></i>';
-        case 'XAU': return '<i class="fa-solid fa-sack-dollar kart-icon" style="color:#FFD700;"></i>'; // Altın sarısı
-        case 'ÇYRK': return '<i class="fa-solid fa-ring kart-icon" style="color:#FFD700;"></i>';
-        case 'USD': return '<i class="fa-solid fa-dollar-sign kart-icon"></i>';
-        case 'EUR': return '<i class="fa-solid fa-euro-sign kart-icon"></i>';
-        case 'GBP': return '<i class="fa-solid fa-sterling-sign kart-icon"></i>';
-        case 'CHF': return '<i class="fa-solid fa-swiss-sign kart-icon"></i>'; 
-        default: return '<i class="fa-solid fa-chart-line kart-icon"></i>';
+// Simülasyon Çözüm Kütüphanesi
+const ornekCozumler = {
+    "matematik": {
+        soru_parcasi: ["x² - 5x + 6", "denkleminin kökleri", "ikinci derece"],
+        cozum_basligi: "İkinci Dereceden Denklemler Çözümü 📐",
+        adımlar: [
+            "**Adım 1: Denklemin Katsayılarını Belirle**",
+            "Denklem: $x^2 - 5x + 6 = 0$. Burada $a=1$, $b=-5$, $c=6$ olarak belirlenir. (Gizli formül: $\\Delta = b^2 - 4ac$)",
+            "**Adım 2: Çarpanlara Ayırma Yöntemi**",
+            "Çarpımları 6, toplamları -5 olan iki sayı bulmalıyız. Bu sayılar -2 ve -3'tür.",
+            "**Adım 3: Çözümü Yaz**",
+            "Denklem $(x-2)(x-3) = 0$ şeklinde çarpanlara ayrılır. Buradan kökler $x_1 = 2$ ve $x_2 = 3$ bulunur.",
+            "**Tebrikler!** Bu denklemin kökleri $x_1=2$ ve $x_2=3$'tür. Çok başarılısın!"
+        ]
+    },
+    "edebiyat": {
+        soru_parcasi: ["servet-i fünun", "edebiyat", "şair"],
+        cozum_basligi: "Servet-i Fünun Dönemi Özeti 📜",
+        adımlar: [
+            "**Adım 1: Tanım ve Başlangıç**",
+            "Servet-i Fünun (Edebiyat-ı Cedide) dergi etrafında toplanan bir topluluktur ve Batı edebiyatını esas alır.",
+            "**Adım 2: Önemli Temsilciler**",
+            "Tevfik Fikret (şiirde usta), Cenap Şahabettin (sembolizm etkisinde), Halit Ziya Uşaklıgil (modern romanın kurucusu) en önemli şair ve yazarlarıdır.",
+            "**Adım 3: Temel Özellikler**",
+            "Sanat için sanat anlayışı, ağır ve süslü dil, bireysel konular (aşk, doğa, karamsarlık) işlenmiştir.",
+            "**Unutma!** Bu dönem 'sanat için sanat' ilkesini benimsemiştir. Edebiyat bilgin çok yerinde!"
+        ]
+    },
+    "fen": {
+        soru_parcasi: ["fizik", "hız", "ivme", "hareket"],
+        cozum_basligi: "Hareket Problemi Çözümü 🚀",
+        adımlar: [
+            "**Adım 1: Verileri Not Al**",
+            "Sorudaki başlangıç hızı ($v_0$), ivme ($a$) ve geçen zaman ($t$) değerlerini bir yere yaz.",
+            "**Adım 2: Formülü Seç**",
+            "Son hızı ($v$) bulmak için $v = v_0 + a \\cdot t$ formülünü kullanmalısın.",
+            "**Adım 3: Hesaplama ve Sonuç**",
+            "Değerleri formülde yerine koyarak sonucu bul. (Unutma, her zaman birimi kontrol et!)",
+            "**Aferin!** Fizik zor görünebilir ama formülleri doğru uyguladığında her şey çözülür."
+        ]
     }
-}
+};
 
-// API ÇAĞRISI İÇERMEYEN, SADECE SİMÜLASYON VERİ ÇEKİMİ
-async function verileriCek() {
+// Eğlenceli Motivasyon Mesajları
+const motivasyonlar = [
+    "İnanılmazsın! Baykuş bile bu kadar hızlı çözemezdi. 🦉",
+    "Mola verme zamanı gelmiş olabilir. Beynine biraz pasta ikram et. 🍰",
+    "Günde 1 soru çözmek, bir sonraki seviyeye geçmek demektir! Devam et! ⭐",
+    "Senin beynin, Bilge Baykuş'un tüm kütüphanesinden daha değerli! 💪",
+    "Bu soruyu çözdün, sırada Everest'e tırmanmak var! (Ya da bir sonraki ünite.) ⛰️"
+];
+
+// Ana Çözümleme Fonksiyonu
+cozBtn.addEventListener('click', () => {
+    const soru = soruMetni.value.trim().toLowerCase();
     
-    // Sabit Simülasyon değerleri
-    let tryPerUsd = 33.2000; 
-    let tryPerEur = 36.1000; 
-    let tryPerGbp = 40.5000; 
-    let tryPerChf = 35.0000; 
-    let onsPerUsd = 2000.00;
-    let usdPerBtc = 60000.00;
-    
-    // Değişim yüzdeleri (Simülasyon)
-    const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
-    const ALTIN_DEGISM_YUZDESI_CEYREK = 0.90;
-    const DOVIZ_DEGISM_USD = 0.35;
-    const DOVIZ_DEGISM_EUR = -0.15;
-    const DOVIZ_DEGISM_GBP = 0.50;
-    const DOVIZ_DEGISM_CHF = -0.05;
-    const BTC_DEGISM_YUZDESI = 1.50;
-
-    // --- Nihai Hesaplamalar ---
-    
-    const tryPerBtc = usdPerBtc * tryPerUsd;
-    const onsPerTry = onsPerUsd * tryPerUsd;
-    const ONS_KARSILIGI_GRAM = 31.1035; 
-    const tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
-    const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
-    
-    // Ekranı temizle
-    kurAlani.innerHTML = ''; 
-
-    // --- Kartları Oluşturma ---
-    
-    kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', tryPerBtc, BTC_DEGISM_YUZDESI); 
-    kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
-    kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
-    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
-    kurAlani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
-    kurAlani.innerHTML += kartOlustur('İngiliz Sterlini', 'GBP', tryPerGbp, DOVIZ_DEGISM_GBP); 
-    kurAlani.innerHTML += kartOlustur('İsviçre Frangı', 'CHF', tryPerChf, DOVIZ_DEGISM_CHF); 
-
-    // Kartlar oluşturulduktan sonra tıklama dinleyicilerini ekle
-    kartTiklamaDinleyicileriEkle();
-}
-
-// Yeni kart oluşturma fonksiyonu (Estetik Görünüme Uygun)
-function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
-    const minD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
-    const maxD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
-    
-    const formatliFiyat = fiyat.toLocaleString('tr-TR', { minimumFractionDigits: minD, maximumFractionDigits: maxD });
-    const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
-    const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
-    const ikon = getIcon(sembol);
-
-    // Simülasyon Bilgisi (Estetik amaçlı)
-    const simulasyonBilgisi = `Geçmiş Veri Simülasyonu: ₺ ${ (fiyat * 0.05).toFixed(2) }`;
-    
-    return `
-        <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
-            
-            <div class="kart-sol">
-                ${ikon}
-                <div class="isim-ve-sembol">
-                    <p class="isim">${isim}</p>
-                    <p class="sembol">${sembol}</p>
-                </div>
-            </div>
-
-            <div class="kart-sag">
-                <p class="simulasyon-bilgi">${simulasyonBilgisi}</p>
-                <div class="fiyat-ve-degisim">
-                    <span class="fiyat">₺ ${formatliFiyat}</span>
-                    <span class="degisim ${degisimSinifi}">${degisimMetni}</span>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-verileriCek();
-// 10 saniyede bir simülasyon verilerini güncelle
-setInterval(verileriCek, 10000); 
-
-// --- MODAL VE GRAFİK İŞLEVLERİ (Aynı Kaldı) ---
-
-// Modal Kapatma Olayları
-kapatDugmesi.onclick = function() {
-  modal.style.display = "none";
-}
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
-
-// Geçmiş fiyat verilerini simüle eden fonksiyon (Aynı Kaldı)
-function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
-    const veriler = [];
-    const etiketler = [];
-    
-    let fiyatSim = fiyat * (1 - Math.random() * 0.05); 
-    const simdikiTarih = new Date();
-
-    for (let i = 0; i < veriAdedi; i++) {
-        
-        fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
-        
-        // YUMUŞATMA
-        if (i >= veriAdedi * 0.8) {
-            const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
-            fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
-        }
-
-        veriler.push(parseFloat(fiyatSim.toFixed(4)));
-
-        // Etiket hesaplama 
-        let tarih = new Date(simdikiTarih);
-        
-        if (zamanDilimi === 'Gün') {
-            tarih.setDate(simdikiTarih.getDate() - (veriAdedi - 1 - i));
-            etiketler.push(`${tarih.getDate()} ${tarih.toLocaleString('tr-TR', { month: 'short' })}`);
-        } else if (zamanDilimi === 'Saat') {
-            tarih.setHours(simdikiTarih.getHours() - (veriAdedi - 1 - i));
-            etiketler.push(`${tarih.getHours().toString().padStart(2, '0')}:${tarih.getMinutes().toString().padStart(2, '0')}`);
-        }
+    if (soru.length < 10) {
+        alert("Lütfen çözmek istediğin sorunun tamamını yaz.");
+        return;
     }
-    
-    veriler[veriAdedi - 1] = parseFloat(fiyat.toFixed(4));
-    
-    return { etiketler, veriler };
-}
 
-// Tekil Grafiği Çizen Fonksiyon (Aynı Kaldı)
-function cizTekilGrafik(kartVerisi, zamanDilimi) {
-    
-    const veriAdedi = 100;
-    const veri = gecmisVeriSimulasyonu(kartVerisi.fiyat, veriAdedi, zamanDilimi);
-    
-    if (mevcutGrafik) {
-        mevcutGrafik.destroy();
-    }
-    
-    const isLight = document.body.classList.contains('light');
-    const fontColor = getComputedStyle(document.body).getPropertyValue('--text-color');
-    const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-    const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; 
+    cozBtn.disabled = true;
+    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çözümleniyor...';
+    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Baykuş tüm bilgeliğini topluyor, biraz bekle...</p>';
+    motivasyonAlani.style.display = 'none';
 
-    grafikBaslik.textContent = `${kartVerisi.isim} Fiyat Grafiği (${zamanDilimi} Bazlı)`;
-    
-    const ctx = document.getElementById('fiyatGrafik').getContext('2d');
-    
-    const datasets = [
-        {
-            label: `${kartVerisi.isim} (₺)`,
-            data: veri.veriler,
-            borderColor: cizgiRengi, 
-            backgroundColor: `${cizgiRengi}20`,
-            tension: 0.2, 
-            pointRadius: 0
-        }
-    ];
+    // 2 saniyelik Simülasyon bekleme süresi
+    setTimeout(() => {
+        let eslesenCozum = null;
+        let konu = "";
 
-    const scales = {
-        x: {
-            title: { display: true, text: zamanDilimi, color: fontColor },
-            ticks: { color: fontColor },
-            grid: { color: gridColor }
-        },
-        y: { 
-            type: 'linear',
-            position: 'left',
-            beginAtZero: false,
-            title: { display: true, text: `Fiyat (₺)`, color: fontColor },
-            ticks: { color: fontColor },
-            grid: { color: gridColor }
-        }
-    };
-    
-    mevcutGrafik = new Chart(ctx, {
-        type: 'line', 
-        data: {
-            labels: veri.etiketler,
-            datasets: datasets 
-        },
-        options: {
-            responsive: true,
-            scales: scales, 
-            plugins: {
-                legend: { display: true, labels: { color: fontColor } }
+        // Soru metni ile simülasyon çözümlerini eşleştirme
+        for (const key in ornekCozumler) {
+            const cozum = ornekCozumler[key];
+            if (cozum.soru_parcasi.some(parca => soru.includes(parca))) {
+                eslesenCozum = cozum;
+                konu = key.toUpperCase();
+                break;
             }
         }
-    });
 
-    modal.style.display = "block";
-}
-
-
-// Kartlara tıklama olayını ekleyen fonksiyon
-function kartTiklamaDinleyicileriEkle() {
-    
-    const guncelKartlar = document.querySelectorAll('.kur-kart');
-    guncelKartlar.forEach(kart => {
-        const yeniKart = kart.cloneNode(true);
-        kart.parentNode.replaceChild(yeniKart, kart);
-    });
-
-    const sonKartlar = document.querySelectorAll('.kur-kart');
-    sonKartlar.forEach(kart => {
-        kart.addEventListener('click', () => {
-            
-            // Tüm kartlardan 'secili' sınıfını kaldır
-            document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
-            // Tıklanan karta 'secili' sınıfını ekle (Görseldeki turkuaz vurgu)
-            kart.classList.add('secili');
-
-            if (mevcutGrafik) {
-                mevcutGrafik.destroy();
-            }
-            
-            const fiyat = parseFloat(kart.getAttribute('data-fiyat'));
-            const isim = kart.getAttribute('data-isim');
-            const sembol = kart.getAttribute('data-sembol');
-            
-            const kartVerisi = { fiyat, isim, sembol };
-            
-            const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
-            let zaman = isHizliVarlik(sembol) ? 'Saat' : 'Gün';
-            
-            cizTekilGrafik(kartVerisi, zaman);
-        });
-    });
-}
-
-// --- TEMA DEĞİŞTİRME MANTIĞI (Aynı Kaldı) ---
-
-document.getElementById('temaDegistirBtn').addEventListener('click', () => {
-    const body = document.body;
-    const btn = document.getElementById('temaDegistirBtn');
-    
-    if (body.classList.contains('light')) {
-        body.classList.remove('light');
-        localStorage.setItem('tema', 'dark');
-        btn.textContent = '🌙'; 
-    } else {
-        body.classList.add('light');
-        localStorage.setItem('tema', 'light');
-        btn.textContent = '🌞'; 
-    }
-    
-    // Grafik açıksa renkleri güncelle
-    if (mevcutGrafik) {
-        const isLight = document.body.classList.contains('light');
-        const fontColor = getComputedStyle(document.body).getPropertyValue('--text-color');
-        const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-        const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; 
+        // --- Çözüm Sonuçlarını Ekrana Basma ---
         
-        mevcutGrafik.options.scales.y.ticks.color = fontColor;
-        mevcutGrafik.options.scales.y.grid.color = gridColor;
-        mevcutGrafik.options.scales.y.title.color = fontColor;
+        if (eslesenCozum) {
+            let htmlCozum = `<h3>${eslesenCozum.cozum_basligi}</h3>`;
+            eslesenCozum.adımlar.forEach(adim => {
+                htmlCozum += `<div class="cozum-adimi">${adim}</div>`;
+            });
+            
+            cozumIcerigi.innerHTML = htmlCozum;
+            
+            // Eğlenceli Motivasyon Mesajını Göster
+            const rastgeleMotivasyon = motivasyonlar[Math.floor(Math.random() * motivasyonlar.length)];
+            motivasyonAlani.textContent = rastgeleMotivasyon;
+            motivasyonAlani.style.display = 'block';
+            
+        } else {
+            cozumIcerigi.innerHTML = `
+                <p class="baslangic-mesaj" style="color: red;">
+                    Üzgünüm, Bilge Baykuş bu soruyu henüz kütüphanesine eklememiş. 😅
+                    Lütfen daha spesifik bir matematik, fizik veya edebiyat sorusu dene.
+                </p>
+            `;
+            motivasyonAlani.style.display = 'none';
+        }
 
-        mevcutGrafik.options.scales.x.ticks.color = fontColor;
-        mevcutGrafik.options.scales.x.grid.color = gridColor;
-        mevcutGrafik.options.scales.x.title.color = fontColor;
-        mevcutGrafik.options.plugins.legend.labels.color = fontColor;
+        // Butonu sıfırla
+        cozBtn.disabled = false;
+        cozBtn.innerHTML = 'Çözümü Getir <i class="fas fa-brain"></i>';
         
-        mevcutGrafik.data.datasets.forEach(dataset => {
-            dataset.borderColor = cizgiRengi;
-            dataset.backgroundColor = `${cizgiRengi}20`;
-        });
-        
-        mevcutGrafik.update();
-    }
+    }, 2000); // 2 Saniye bekletme
 });
 
-// Sayfa yüklendiğinde temayı kontrol et
-(function kontrolTemayi() {
-    if (localStorage.getItem('tema') === 'light') {
-        document.body.classList.add('light');
-        document.getElementById('temaDegistirBtn').textContent = '🌞';
-    } else {
-        document.getElementById('temaDegistirBtn').textContent = '🌙';
-    }
-})();
+// Başlangıçta matematik denklemleri için LaTeX (simülasyon) gösterme
+cozumIcerigi.innerHTML = `<p class="baslangic-mesaj">Denklem yazarken, örneğin $x^2 + 2x + 1 = 0$ formatını kullanabilirsin!</p>`;
