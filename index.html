@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canlı Finans Takip Merkezi - Pro Dashboard</title>
+    <title>Finans Panosu | Modern Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-    <header>
-        <h1>💵 Canlı Finans Takip Merkezi</h1>
-        <p>Grafik için bir karta tıklayın.</p>
+    <header class="container">
+        <h1>🚀 Finans Takip Merkezi</h1>
+        <p>Anlık (Simüle) Veriler. Detaylı Grafik için bir karta tıklayın.</p>
         
-        <div id="tema-degistir-alanı">
-            <button id="temaDegistirBtn">🌞</button>
+        <div id="tema-degistir-alani">
+            <button id="temaDegistirBtn" aria-label="Temayı Değiştir">🌙</button>
         </div>
     </header>
     
-    <div id="kur-kartlari" class="kart-alanı">
-        <p>Veriler yükleniyor...</p>
+    <div id="kur-kartlari" class="kart-alani container">
+        <div class="loading">Veriler yükleniyor...</div>
     </div>
 
     <div id="modal" class="modal">
@@ -26,6 +27,8 @@
             <span class="kapat-dugmesi">&times;</span>
             <h2 id="grafik-baslik"></h2>
             <canvas id="fiyatGrafik"></canvas>
+            <div class="grafik-secenekleri">
+                 </div>
         </div>
     </div>
 
