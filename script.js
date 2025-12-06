@@ -5,13 +5,27 @@ const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
 let mevcutGrafik; 
 
-// API URL'leri ve Anahtarları (Bu kısımlar artık kodda kullanılmamaktadır, ancak tanımlı bırakılmıştır.)
-const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
-const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
-const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
+// API'ler devre dışı bırakıldığı için bu değerler sadece referanstır.
+// const FIXER_API_KEY = '...'; 
+// const FIXER_URL = '...'; 
+// const COINGECKO_URL = '...'; 
+
+// İkon Eşleştirme Fonksiyonu
+function getIcon(sembol) {
+    switch (sembol) {
+        case 'BTC': return '<i class="fa-brands fa-bitcoin kart-icon"></i>';
+        case 'XAU': return '<i class="fa-solid fa-sack-dollar kart-icon" style="color:#FFD700;"></i>'; // Altın sarısı
+        case 'ÇYRK': return '<i class="fa-solid fa-ring kart-icon" style="color:#FFD700;"></i>';
+        case 'USD': return '<i class="fa-solid fa-dollar-sign kart-icon"></i>';
+        case 'EUR': return '<i class="fa-solid fa-euro-sign kart-icon"></i>';
+        case 'GBP': return '<i class="fa-solid fa-sterling-sign kart-icon"></i>';
+        case 'CHF': return '<i class="fa-solid fa-swiss-sign kart-icon"></i>'; // Farazi ikon
+        default: return '<i class="fa-solid fa-chart-line kart-icon"></i>';
+    }
+}
 
 async function verileriCek() {
-    // API çağrıları devre dışı bırakıldığı için SIMÜLASYON değerleri kullanılır.
+    // Sadece Simülasyon değerleri kullanılır.
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
@@ -28,11 +42,10 @@ async function verileriCek() {
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
 
-    // *** API ÇEKİM KISIMLARI YORUM SATIRI OLDUĞU İÇİN KESİNLİKLE ATLANIYOR ***
+    // *** API ÇEKİM KISIMLARI YORUM SATIRI YAPILDI ***
 
     // --- Nihai Hesaplamalar ---
     
-    // Simülasyon için Dolar/Ons değerleri kullanılarak hesaplama yapılır.
     const tryPerBtc = usdPerBtc * tryPerUsd;
     const onsPerTry = onsPerUsd * tryPerUsd;
     const ONS_KARSILIGI_GRAM = 31.1035; 
@@ -56,7 +69,7 @@ async function verileriCek() {
     kartTiklamaDinleyicileriEkle();
 }
 
-// Kart oluşturma fonksiyonu
+// Yeni kart oluşturma fonksiyonu (Modern HTML yapısına uygun)
 function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const minD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
     const maxD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
@@ -64,12 +77,18 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const formatliFiyat = fiyat.toLocaleString('tr-TR', { minimumFractionDigits: minD, maximumFractionDigits: maxD });
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
+    const ikon = getIcon(sembol);
     
     return `
         <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
-            <h2 class="sembol">${sembol}</h2>
-            <h3 class="isim">${isim}</h3>
-            <div class="fiyat-alanı">
+            <div class="kart-ust">
+                ${ikon}
+                <div class="isim-ve-sembol">
+                    <h2 class="sembol">${sembol}</h2>
+                    <p class="isim">${isim}</p>
+                </div>
+            </div>
+            <div class="kart-alt">
                 <span class="fiyat">₺ ${formatliFiyat}</span>
                 <span class="degisim ${degisimSinifi}">${degisimMetni}</span>
             </div>
@@ -80,7 +99,7 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
 verileriCek();
 setInterval(verileriCek, 10000); 
 
-// --- MODAL VE GRAFİK İŞLEVLERİ (Tekil Grafik) ---
+// --- MODAL VE GRAFİK İŞLEVLERİ (Aynı Kaldı) ---
 
 // Modal Kapatma Olayları
 kapatDugmesi.onclick = function() {
@@ -92,7 +111,7 @@ window.onclick = function(event) {
   }
 }
 
-// Geçmiş fiyat verilerini simüle eden fonksiyon
+// Geçmiş fiyat verilerini simüle eden fonksiyon (Aynı Kaldı)
 function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const veriler = [];
     const etiketler = [];
@@ -129,7 +148,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     return { etiketler, veriler };
 }
 
-// Tekil Grafiği Çizen Fonksiyon
+// Tekil Grafiği Çizen Fonksiyon (Aynı Kaldı, Tema Renkleri Güncel)
 function cizTekilGrafik(kartVerisi, zamanDilimi) {
     
     const veriAdedi = 100;
@@ -141,9 +160,9 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
     
     // Tema renklerini al
     const isLight = document.body.classList.contains('light');
-    const fontColor = isLight ? '#333' : '#f0f0f0';
+    const fontColor = isLight ? 'var(--text-color)' : 'var(--text-color)';
     const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-    const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
+    const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; // Highlight rengi 
 
     grafikBaslik.textContent = `${kartVerisi.isim} Fiyat Grafiği (${zamanDilimi} Bazlı)`;
     
@@ -195,10 +214,9 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
 }
 
 
-// Kartlara tıklama olayını ekleyen fonksiyon (Tekil Grafik Mantığı)
+// Kartlara tıklama olayını ekleyen fonksiyon (Aynı Kaldı)
 function kartTiklamaDinleyicileriEkle() {
     
-    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir (Stabilite için kritik)
     const guncelKartlar = document.querySelectorAll('.kur-kart');
     guncelKartlar.forEach(kart => {
         const yeniKart = kart.cloneNode(true);
@@ -209,7 +227,6 @@ function kartTiklamaDinleyicileriEkle() {
     sonKartlar.forEach(kart => {
         kart.addEventListener('click', () => {
             
-            // Eğer daha önce bir grafik çizilmişse yok et
             if (mevcutGrafik) {
                 mevcutGrafik.destroy();
             }
@@ -220,7 +237,6 @@ function kartTiklamaDinleyicileriEkle() {
             
             const kartVerisi = { fiyat, isim, sembol };
             
-            // Hızlı varlıksa (Kripto/Altın) Saat, dövizse Gün zaman dilimini kullan
             const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
             let zaman = isHizliVarlik(sembol) ? 'Saat' : 'Gün';
             
@@ -229,31 +245,38 @@ function kartTiklamaDinleyicileriEkle() {
     });
 }
 
-// --- TEMA DEĞİŞTİRME MANTIĞI ---
+// --- TEMA DEĞİŞTİRME MANTIĞI (Aynı Kaldı) ---
 
 document.getElementById('temaDegistirBtn').addEventListener('click', () => {
     const body = document.body;
     const btn = document.getElementById('temaDegistirBtn');
     
-    // Tema değiştirme
     if (body.classList.contains('light')) {
         body.classList.remove('light');
         localStorage.setItem('tema', 'dark');
-        btn.textContent = '🌞'; 
+        btn.textContent = '🌙'; 
     } else {
         body.classList.add('light');
         localStorage.setItem('tema', 'light');
-        btn.textContent = '🌙'; 
+        btn.textContent = '🌞'; 
     }
     
-    // Eğer grafik açıksa, rengi tema ile uyumlu hale getir
+    // Grafik açıksa renkleri güncelle
     if (mevcutGrafik) {
-        const isLight = document.body.classList.contains('light');
-        const fontColor = isLight ? '#333' : '#f0f0f0';
-        const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-        const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
+        // Grafiği yeniden çizmek, tema renklerini doğru uygulamanın en kolay yoludur.
+        const kartVerisi = { 
+            fiyat: parseFloat(document.querySelector('.kur-kart.secili')?.getAttribute('data-fiyat') || 0), // Simüle fiyatı kullan
+            isim: document.getElementById('grafik-baslik').textContent.split(' Fiyat')[0],
+            sembol: '' 
+        };
+        // Not: Burada simüle edilen fiyatı kullanmak yeterlidir.
+        // Hangi varlığa ait olduğunu bilmeden grafik çizmek zor, bu yüzden sadece renkleri güncelleyelim.
         
-        // Eksen renklerini güncelle
+        const isLight = document.body.classList.contains('light');
+        const fontColor = isLight ? 'var(--text-color)' : 'var(--text-color)';
+        const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+        const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; 
+        
         mevcutGrafik.options.scales.y.ticks.color = fontColor;
         mevcutGrafik.options.scales.y.grid.color = gridColor;
         mevcutGrafik.options.scales.y.title.color = fontColor;
@@ -263,7 +286,6 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
         mevcutGrafik.options.scales.x.title.color = fontColor;
         mevcutGrafik.options.plugins.legend.labels.color = fontColor;
         
-        // Dataset rengini güncelle
         mevcutGrafik.data.datasets.forEach(dataset => {
             dataset.borderColor = cizgiRengi;
             dataset.backgroundColor = `${cizgiRengi}20`;
@@ -277,6 +299,8 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
 (function kontrolTemayi() {
     if (localStorage.getItem('tema') === 'light') {
         document.body.classList.add('light');
+        document.getElementById('temaDegistirBtn').textContent = '🌞';
+    } else {
         document.getElementById('temaDegistirBtn').textContent = '🌙';
     }
 })();
