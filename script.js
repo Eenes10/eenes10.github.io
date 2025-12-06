@@ -101,7 +101,6 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
-    // Data nitelikleri eklenmiştir.
     return `
         <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
             <h2 class="sembol">${sembol}</h2>
@@ -133,7 +132,7 @@ window.onclick = function(event) {
   }
 }
 
-// Geçmiş fiyat verilerini simüle eden fonksiyon (Tarih etiketli ve yumuşak geçişli)
+// Geçmiş fiyat verilerini simüle eden fonksiyon
 function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const veriler = [];
     const etiketler = [];
@@ -145,7 +144,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
         
         fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
         
-        // YUMUŞATMA
+        // YUMUŞATMA (Grafik sıçramasını önler)
         if (i >= veriAdedi * 0.8) {
             const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
             fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
@@ -173,7 +172,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
 // Karşılaştırmalı Grafiği Çizen Fonksiyon
 function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
     
-    const veriAdedi = 100; // Sabit aralık
+    const veriAdedi = 100;
     const veri1 = gecmisVeriSimulasyonu(kart1.fiyat, veriAdedi, zamanDilimi);
     const veri2 = gecmisVeriSimulasyonu(kart2.fiyat, veriAdedi, zamanDilimi);
     
@@ -181,7 +180,6 @@ function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
         mevcutGrafik.destroy();
     }
     
-    // Açık/Koyu tema ayarları
     const isLight = document.body.classList.contains('light');
     const primaryColor = isLight ? '#007bff' : '#ffcc00';
     const secondaryColor = isLight ? '#28a745' : '#17a2b8';
@@ -201,7 +199,7 @@ function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
                     label: `${kart1.isim} (₺)`,
                     data: veri1.veriler,
                     borderColor: primaryColor, 
-                    backgroundColor: `${primaryColor}20`, // %20 Opak
+                    backgroundColor: `${primaryColor}20`,
                     tension: 0.2, 
                     pointRadius: 0
                 },
@@ -240,18 +238,16 @@ function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
 }
 
 
-// Kartlara tıklama olayını ekleyen fonksiyon (Karşılaştırma mantığı)
+// Kartlara tıklama olayını ekleyen fonksiyon (Karşılaştırma mantığı düzeltildi)
 function kartTiklamaDinleyicileriEkle() {
     
-    // Tıklama olaylarını tekrar tekrar eklenmesini önler
+    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir
+    const kartAlaniClone = kurAlani.cloneNode(true);
+    kurAlani.parentNode.replaceChild(kartAlaniClone, kurAlani);
     const guncelKartlar = document.querySelectorAll('.kur-kart');
-    guncelKartlar.forEach(kart => {
-        const yeniKart = kart.cloneNode(true);
-        kart.parentNode.replaceChild(yeniKart, kart);
-    });
 
-    const sonKartlar = document.querySelectorAll('.kur-kart');
-    sonKartlar.forEach(kart => {
+    // Mevcut kartlar üzerinden dinleyicileri tekrar kur
+    guncelKartlar.forEach(kart => {
         kart.addEventListener('click', () => {
             
             const fiyat = parseFloat(kart.getAttribute('data-fiyat'));
@@ -259,56 +255,86 @@ function kartTiklamaDinleyicileriEkle() {
             const sembol = kart.getAttribute('data-sembol');
             
             const kartVerisi = { fiyat, isim, sembol };
+            let kartIndex = seciliKartlar.findIndex(item => item.sembol === sembol);
 
-            if (kart.classList.contains('secili')) {
-                // Zaten seçiliyse, seçimi kaldır
+            if (kartIndex !== -1) {
+                // Kart zaten seçiliyse: Seçimi kaldır
                 kart.classList.remove('secili');
-                seciliKartlar = seciliKartlar.filter(item => item.sembol !== sembol);
+                seciliKartlar.splice(kartIndex, 1);
             } else if (seciliKartlar.length < 2) {
-                // Seçili değilse ve 2'den az kart seçiliyse, ekle
+                // Seçili değilse ve 2'den az kart seçiliyse: Seçimi ekle
                 kart.classList.add('secili');
                 seciliKartlar.push(kartVerisi);
+            } else {
+                // Zaten 2 kart seçiliyse: Tıklamayı yok say
+                return; 
             }
 
-            // Eğer 2 kart seçildiyse, karşılaştırma grafiğini çiz
+            // Seçim durumu kontrolü
             if (seciliKartlar.length === 2) {
-                // Her iki kart da BTC veya Altın ise Saat, diğer durumlarda Gün aralığı kullan
+                // 2 kart seçiliyse: Karşılaştırma grafiğini çiz
+                
                 const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
                 let zaman = (isHizliVarlik(seciliKartlar[0].sembol) && isHizliVarlik(seciliKartlar[1].sembol)) ? 'Saat' : 'Gün';
                 
                 cizKarsilastirmaGrafik(seciliKartlar[0], seciliKartlar[1], zaman);
-            } else if (seciliKartlar.length === 1) {
-                // 1 kart seçiliyse kullanıcıyı uyar
-                grafikBaslik.textContent = `${kartVerisi.isim} Seçildi. Karşılaştırmak için ikinciyi seçiniz.`;
-                modal.style.display = "block";
                 
-                // Seçili değilken modal açıksa onu hemen kapat
-                if (mevcutGrafik) mevcutGrafik.destroy();
+            } else if (seciliKartlar.length === 1) {
+                // 1 kart seçiliyse: Kullanıcıya ikinciyi seçmesini bildir
+                
+                if (modal.style.display !== "none") {
+                    if (mevcutGrafik) mevcutGrafik.destroy();
+                    modal.style.display = "none";
+                }
+                
+                const seciliIsim = seciliKartlar[0].isim;
+                document.querySelector('header p').textContent = `${seciliIsim} seçildi. Karşılaştırmak için lütfen ikinci bir kart seçin.`;
+                
+            } else if (seciliKartlar.length === 0) {
+                // 0 kart seçiliyse: Varsayılan mesajı göster
+                document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
+                
+                if (modal.style.display !== "none") {
+                    if (mevcutGrafik) mevcutGrafik.destroy();
+                    modal.style.display = "none";
+                }
             }
         });
     });
 }
 
-// --- YENİ ÖZELLİK: TEMA DEĞİŞTİRME MANTIĞI ---
+// --- TEMA DEĞİŞTİRME MANTIĞI ---
 
 document.getElementById('temaDegistirBtn').addEventListener('click', () => {
     const body = document.body;
     const btn = document.getElementById('temaDegistirBtn');
     
+    // Tema değiştirme
     if (body.classList.contains('light')) {
         body.classList.remove('light');
         localStorage.setItem('tema', 'dark');
         btn.textContent = '🌞'; 
-        // Grafik açıksa temayı güncelle
-        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#f0f0f0';
     } else {
         body.classList.add('light');
         localStorage.setItem('tema', 'light');
         btn.textContent = '🌙'; 
-        // Grafik açıksa temayı güncelle
-        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#333';
     }
-    if (mevcutGrafik) mevcutGrafik.update();
+    
+    // Eğer grafik açıksa, rengi tema ile uyumlu hale getir
+    if (mevcutGrafik) {
+        // Grafiği yeniden çizmeden renkleri ve eksen etiketlerini güncelle
+        const isLight = document.body.classList.contains('light');
+        const fontColor = isLight ? '#333' : '#f0f0f0';
+        const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+        
+        mevcutGrafik.options.scales.y.ticks.color = fontColor;
+        mevcutGrafik.options.scales.x.ticks.color = fontColor;
+        mevcutGrafik.options.scales.y.grid.color = gridColor;
+        mevcutGrafik.options.scales.x.grid.color = gridColor;
+        mevcutGrafik.options.plugins.legend.labels.color = fontColor;
+        
+        mevcutGrafik.update();
+    }
 });
 
 // Sayfa yüklendiğinde temayı kontrol et
