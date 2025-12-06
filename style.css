@@ -49,7 +49,7 @@ header p {
     opacity: 0.9;
 }
 
-/* --- Giriş Alanı --- */
+/* --- Giriş Alanı (Görsel Yükleme İçin Yeni Düzen) --- */
 .giris-alani {
     background-color: var(--card-bg);
     padding: 30px;
@@ -60,6 +60,76 @@ header p {
     flex-direction: column;
     align-items: center;
 }
+
+/* Görsel Yükleme Alanı Stilleri */
+#yukleme-alani {
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.buton-yardimci {
+    background-color: #ffc107; /* Sarı renk, dikkat çeksin */
+    color: var(--text-color);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.buton-yardimci:hover {
+    background-color: #e0a800;
+}
+
+#yuklenen-resim-gosterim {
+    padding: 10px 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 50px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.yuklendi-icon {
+    color: var(--secondary-color);
+}
+
+/* Ayırıcı Çizgi */
+.ayirici {
+    margin: 15px 0;
+    width: 100%;
+    color: #999;
+    font-size: 0.9em;
+    position: relative;
+    text-align: center;
+}
+
+.ayirici::before, .ayirici::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #ddd;
+}
+
+.ayirici::before {
+    left: 0;
+}
+
+.ayirici::after {
+    right: 0;
+}
+
 
 #soru-metni {
     width: 100%;
@@ -72,7 +142,7 @@ header p {
     box-sizing: border-box;
 }
 
-/* --- Buton --- */
+/* --- Ana Buton --- */
 .buton {
     background-color: var(--secondary-color);
     color: white;
@@ -98,7 +168,7 @@ header p {
     cursor: not-allowed;
 }
 
-/* --- Sonuç Alanı --- */
+/* --- Sonuç Alanı Stilleri --- (Aynı Kaldı) */
 .sonuc-kutusu {
     text-align: left;
     background-color: var(--card-bg);
@@ -126,7 +196,6 @@ header p {
     padding: 20px 0;
 }
 
-/* Çözüm Adımları Stili */
 .cozum-adimi {
     margin-bottom: 15px;
     padding-left: 15px;
@@ -144,15 +213,14 @@ header p {
     margin: 0;
 }
 
-/* --- Motivasyon Alanı (Eğlenceli Kısım) --- */
 .motivasyon-alani {
     margin-top: 20px;
     padding: 15px;
-    background-color: #fff3cd; /* Sarımsı arka plan */
-    color: #856404; /* Koyu sarı yazı */
+    background-color: #fff3cd; 
+    color: #856404; 
     border: 1px solid #ffeeba;
     border-radius: 8px;
     font-weight: 600;
     font-style: italic;
-    display: none; /* Başlangıçta gizli */
+    display: none; 
 }
