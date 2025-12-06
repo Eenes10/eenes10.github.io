@@ -1,138 +1,160 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trigonometrik Değer Hesaplayıcı</title>
-  <style>
-    :root{ --card-w:380px; }
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(120deg,#d9e8ff 0%,#eef4ff 100%);
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
-    }
-    .container {
-      width: var(--card-w);
-      padding: 28px;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
-      border-radius: 14px;
-      box-shadow: 0 8px 30px rgba(17,24,39,0.08);
-      text-align: center;
-    }
-    h2 {
-      margin: 0 0 16px 0;
-      font-size: 20px;
-      color: #0f172a;
-      font-weight: 600;
-    }
-    select, input[type="number"] {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #e6e9ef;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      font-size: 15px;
-      box-sizing: border-box;
-    }
-    .unit-select {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .unit-select button {
-      flex: 1;
-      padding: 10px 0;
-      border-radius: 10px;
-      border: 0;
-      cursor: pointer;
-      background: #f1f5f9;
-      color: #0f172a;
-      font-weight: 600;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .unit-select button.active{
-      background: linear-gradient(90deg,#6c74ff,#7c86ff);
-      color: white;
-      box-shadow: 0 6px 18px rgba(76,87,255,0.18);
-      transform: translateY(-1px);
-    }
-    .calc {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(90deg,#34d399,#10b981);
-      color: white;
-      border: 0;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(16,185,129,0.12);
-    }
-    .result {
-      margin-top: 16px;
-      padding: 12px;
-      background: #f8fafc;
-      border-radius: 10px;
-      font-size: 15px;
-      min-height: 44px;
-      color: #0f172a;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:6px;
-    }
-    .frac { font-weight:700; }
-    .approx { color:#475569; font-size:14px; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trigonometrik Değer Hesaplayıcı — Eğlenceli</title>
+<style>
+  :root{
+    --card-w:420px;
+    --accent1:#6c74ff;
+    --accent2:#34d399;
+    --bg1:#e6f2ff;
+    --bg2:#bfe0ff;
+    --glass: rgba(255,255,255,0.76);
+  }
+  /* Reset & body */
+  *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial;}
+  html,body{height:100%;margin:0}
+  body{
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    overflow:hidden;
+    color:#07204a;
+  }
 
-    .insta {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 8px 20px rgba(2,6,23,0.12);
-      transition: transform .14s ease, box-shadow .14s ease;
-    }
-    .insta:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(2,6,23,0.16); }
-    .insta img{ width:26px; height:26px; }
-  </style>
+  /* spotlight layer */
+  .spot {
+    position:fixed; left:0; top:0; width:100%; height:100%;
+    pointer-events:none; mix-blend-mode:screen;
+    background: radial-gradient(circle 160px at var(--x,50%) var(--y,50%), rgba(255,255,255,0.92), rgba(255,255,255,0.18) 30%, rgba(200,214,255,0.06) 60%, transparent 70%);
+    transition: background .08s linear;
+    z-index:0;
+    filter: blur(8px);
+  }
+
+  /* container */
+  .card{
+    width:var(--card-w);
+    padding:22px;
+    border-radius:16px;
+    background: var(--glass);
+    backdrop-filter: blur(8px) saturate(120%);
+    box-shadow: 0 20px 50px rgba(13,38,76,0.12);
+    position:relative;
+    z-index:2;
+  }
+  h1{font-size:18px;margin:0 0 12px;text-align:center;font-weight:700}
+  .top-row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .small{font-size:13px;color:#274060}
+
+  /* function buttons */
+  .func-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .func-btn{
+    padding:10px;border-radius:10px;border:0;background:#f1f6ff;cursor:pointer;
+    font-weight:700;box-shadow:0 6px 20px rgba(16,24,64,0.06);transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .func-btn.active{background:linear-gradient(90deg,var(--accent1),#8a90ff);color:white;transform:translateY(-4px);box-shadow:0 12px 30px rgba(76,87,255,0.18)}
+  .func-btn:active{transform:translateY(-1px)}
+
+  /* input with floating label effect */
+  .field{
+    position:relative;margin-bottom:12px;
+  }
+  .field input{
+    width:100%;padding:14px 14px;border-radius:10px;border:1px solid #d6e7ff;background:transparent;font-size:15px;
+  }
+  .field .label{
+    position:absolute;left:14px;top:12px;font-size:13px;color:#445a78;transition:all .16s ease;
+    pointer-events:none;background:transparent;padding:0 4px;
+  }
+  .field.focused .label{transform:translateY(-28px);font-size:12px;color:var(--accent1)}
+  .field input:focus{outline:none;border-color:var(--accent1);box-shadow:0 6px 18px rgba(100,116,255,0.08)}
+
+  /* unit toggle */
+  .unit-row{display:flex;gap:8px;margin-bottom:12px}
+  .unit-btn{flex:1;padding:10px;border-radius:10px;border:0;background:#eef6ff;font-weight:700;cursor:pointer}
+  .unit-btn.active{background:linear-gradient(90deg,var(--accent1),#9aa6ff);color:#fff;box-shadow:0 8px 20px rgba(76,87,255,0.12)}
+
+  /* actions */
+  .actions{display:flex;gap:8px;margin-top:6px}
+  .calc-btn{flex:1;padding:12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),#0fb07b);color:white;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(16,185,129,0.12)}
+  .history-btn{padding:10px;border-radius:10px;border:0;background:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(9,30,70,0.06)}
+
+  /* result */
+  .result{
+    margin-top:14px;border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f7fbff);
+    min-height:64px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .exact{font-weight:800;color:#0b2b52;font-size:15px;}
+  .approx{color:#556b86;font-size:14px;}
+
+  /* result animation */
+  .fade-in{animation:resIn .34s ease both}
+  @keyframes resIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* bottom right instagram */
+  .insta{
+    position:fixed;right:18px;bottom:18px;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#fff7;,#ffffffc9);backdrop-filter:blur(6px);box-shadow:0 10px 28px rgba(2,6,23,0.12);z-index:3;
+  }
+  .insta img{width:28px;height:28px;transition:transform .14s}
+  .insta:hover img{transform:scale(1.08)}
+
+  /* dark mode */
+  .toggle-theme{padding:6px 10px;border-radius:10px;border:0;background:#fff;cursor:pointer;font-weight:700}
+  .dark body{background:linear-gradient(135deg,#071428,#0f2740);color:#cfe9ff}
+  .dark .card{background:rgba(6,12,30,0.7);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+  .dark .func-btn{background:#08112a;color:#cfe9ff}
+  .dark .func-btn.active{box-shadow:0 12px 30px rgba(0,0,0,0.6)}
+  .dark .unit-btn{background:#071428;color:#cfe9ff}
+  .dark .result{background:linear-gradient(180deg,#071a2b,#042033);border:1px solid rgba(255,255,255,0.02)}
+  /* responsive */
+  @media (max-width:460px){:root{--card-w:92vw}.spot{display:none}.insta{right:10px;bottom:10px}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Trigonometrik Değer Hesaplayıcı</h2>
+  <div class="spot" id="spot"></div>
 
-    <select id="func" aria-label="Fonksiyon seç">
-      <option value="sin">sin</option>
-      <option value="cos">cos</option>
-      <option value="tan">tan</option>
-      <option value="cosec">cosec</option>
-      <option value="sec">sec</option>
-      <option value="cot">cot</option>
-    </select>
-
-    <input type="number" id="angle" aria-label="Açı" />
-
-    <div class="unit-select">
-      <button id="degBtn" class="active" type="button">Derece</button>
-      <button id="radBtn" type="button">Radyan</button>
+  <div class="card" role="main" aria-label="Trigonometrik hesaplayıcı">
+    <div class="top-row">
+      <h1>Trigonometrik Değer Hesaplayıcı</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="themeToggle" class="toggle-theme" title="Karanlık / Açık">🌙</button>
+      </div>
     </div>
 
-    <button id="calcBtn" class="calc" type="button">Hesapla</button>
+    <div class="func-row" id="funcRow" aria-hidden="false">
+      <button class="func-btn active" data-f="sin">sin</button>
+      <button class="func-btn" data-f="cos">cos</button>
+      <button class="func-btn" data-f="tan">tan</button>
+      <button class="func-btn" data-f="cosec">cosec</button>
+      <button class="func-btn" data-f="sec">sec</button>
+      <button class="func-btn" data-f="cot">cot</button>
+    </div>
 
-    <div class="result" id="result">
-      <div class="frac" id="frac">—</div>
-      <div class="approx" id="approx">Sonuç burada görüntülenecek.</div>
+    <div class="field" id="field">
+      <label class="label">Açı değeri</label>
+      <input id="angle" type="number" inputmode="decimal" aria-label="Açı değeri" />
+    </div>
+
+    <div class="unit-row">
+      <button class="unit-btn active" id="degBtn">Derece</button>
+      <button class="unit-btn" id="radBtn">Radyan</button>
+    </div>
+
+    <div class="actions">
+      <button class="calc-btn" id="calcBtn">Hesapla ✨</button>
+      <button class="history-btn" id="histBtn" title="Geçmiş">📜</button>
+    </div>
+
+    <div class="result" id="result" aria-live="polite">
+      <div class="exact" id="exact">—</div>
+      <div class="approx" id="approx">Sonuç burada görünecek.</div>
     </div>
   </div>
 
@@ -141,87 +163,244 @@
   </a>
 
 <script>
-(function(){
-  const funcEl = document.getElementById('func');
-  const angleEl = document.getElementById('angle');
-  const degBtn = document.getElementById('degBtn');
-  const radBtn = document.getElementById('radBtn');
-  const calcBtn = document.getElementById('calcBtn');
-  const fracEl = document.getElementById('frac');
-  const approxEl = document.getElementById('approx');
+/* ========= Utilities: safe parser for exact expressions (no eval) ========= */
+// parse expressions like:
+// "1/2", "√2/2", "2/√3", "√6-√2)/4" in form "(√6-√2)/4" or "2-√3"
+function parseExactStringToNumber(s){
+  if(!s || s==='—') return NaN;
+  if(s === 'Tanımsız') return NaN;
 
-  let unit = 'deg';
-
-  degBtn.addEventListener('click', ()=>{
-    unit = 'deg';
-    degBtn.classList.add('active');
-    radBtn.classList.remove('active');
-  });
-  radBtn.addEventListener('click', ()=>{
-    unit = 'rad';
-    radBtn.classList.add('active');
-    degBtn.classList.remove('active');
-  });
-
-  const special = {
-    sin: {0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1',180:'0',270:'-1',360:'0'},
-    cos: {0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0',180:'-1',270:'0',360:'1'},
-    tan: {0:'0',30:'1/√3',45:'1',60:'√3',90:'Tanımsız',180:'0',270:'Tanımsız',360:'0'},
-    cosec: {30:'2',45:'√2',60:'2/√3',90:'1',270:'-1'},
-    sec: {0:'1',30:'2/√3',45:'√2',60:'2',180:'-1',360:'1'},
-    cot: {30:'√3',45:'1',60:'1/√3',90:'0',180:'Tanımsız',360:'Tanımsız'}
-  };
-
-  function toRadians(d){ return d * Math.PI / 180; }
-
-  function computeValue(fn, angleRad){
-    switch(fn){
-      case 'sin': return Math.sin(angleRad);
-      case 'cos': return Math.cos(angleRad);
-      case 'tan': return Math.tan(angleRad);
-      case 'cosec': return 1/Math.sin(angleRad);
-      case 'sec': return 1/Math.cos(angleRad);
-      case 'cot': return 1/Math.tan(angleRad);
+  s = s.replace(/\s+/g,'');
+  // if expression contains '/', split numerator/denominator
+  let numerator = s;
+  let denom = 1;
+  if(s.includes('/')){
+    const parts = s.split('/');
+    numerator = parts.slice(0,parts.length-1).join('/'); // support nested '/'
+    denom = Number(parts[parts.length-1]);
+    if(Number.isNaN(denom)) {
+      // if denom contains √ like '√2', parse it
+      denom = parseTerm(parts[parts.length-1]);
     }
   }
 
-  calcBtn.addEventListener('click', ()=>{
-    let angle = parseFloat(angleEl.value);
-    if(isNaN(angle)){
-      fracEl.textContent = '—';
-      approxEl.textContent = 'Lütfen geçerli bir sayı girin.';
-      return;
+  // remove surrounding parentheses
+  if(numerator.startsWith('(') && numerator.endsWith(')')){
+    numerator = numerator.slice(1,-1);
+  }
+
+  // numerator might be sum/diff of terms like "√6-√2+2"
+  const tokens = numerator.match(/[+-]?[^+-]+/g) || [];
+  let total = 0;
+  for(let token of tokens){
+    total += parseTerm(token);
+  }
+  return total / denom;
+}
+
+function parseTerm(token){
+  token = token.trim();
+  if(token === '') return 0;
+  // handle leading +
+  if(token[0] === '+') token = token.slice(1);
+  // if token contains √
+  if(token.includes('√')){
+    // possible forms: '√2', '2√3', '-√2', '-2√3'
+    token = token.replace(/\(/g,'').replace(/\)/g,'');
+    // capture sign
+    let sign = 1;
+    if(token[0] === '-'){ sign = -1; token = token.slice(1); }
+    if(token[0] === '+'){ token = token.slice(1); }
+    // coefficient before √?
+    const m = token.match(/^(\d*\.?\d*)?√(\d+(\.\d+)?)$/);
+    if(m){
+      const coeff = m[1] ? Number(m[1]) : 1;
+      const rad = Number(m[2]);
+      return sign * coeff * Math.sqrt(rad);
     }
+  }
+  // plain number
+  const n = Number(token);
+  if(!Number.isNaN(n)) return n;
+  // fallback: if token like '2-√3' (shouldn't reach here since split), handle simple '-'
+  // but try to evaluate safe combos:
+  // handle forms like '2-√3' or '2+√3'
+  const parts = token.match(/[+-]?[^+-]+/g);
+  if(parts && parts.length>1){
+    let s = 0;
+    for(const p of parts) s += parseTerm(p);
+    return s;
+  }
+  return 0;
+}
 
-    if(unit === 'rad'){
-      angle = angle * 180 / Math.PI;
-    }
+/* ========= Exact values mapping (strings) =========
+   We include many common angles and their exact representations.
+*/
+const exactValues = {
+  sin: {
+    0:'0', 15:'(√6-√2)/4', 30:'1/2', 45:'√2/2', 60:'√3/2', 75:'(√6+√2)/4',
+    90:'1', 120:'√3/2', 135:'√2/2', 150:'1/2', 180:'0', 270:'-1', 360:'0'
+  },
+  cos: {
+    0:'1', 15:'(√6+√2)/4', 30:'√3/2', 45:'√2/2', 60:'1/2', 75:'(√6-√2)/4',
+    90:'0', 120:'-1/2', 135:'-√2/2', 150:'-√3/2', 180:'-1', 270:'0', 360:'1'
+  },
+  tan: {
+    0:'0', 15:'2-√3', 30:'1/√3', 45:'1', 60:'√3', 75:'2+√3',
+    90:'Tanımsız', 180:'0', 270:'Tanımsız'
+  },
+  cosec: { 30:'2', 45:'√2', 60:'2/√3', 90:'1', 270:'-1' },
+  sec: { 0:'1', 30:'2/√3', 45:'√2', 60:'2', 90:'Tanımsız', 180:'-1' },
+  cot: { 15:'(√6+√2)/4/( (√6-√2)/4 )', 30:'√3', 45:'1', 60:'1/√3', 90:'0', 180:'Tanımsız' }
+};
 
-    let fn = funcEl.value;
-    let key = (Math.round(angle*100)/100).toString();
+/* ========= DOM refs ========= */
+const funcRow = document.getElementById('funcRow');
+const funcButtons = Array.from(document.querySelectorAll('.func-btn'));
+const angleInput = document.getElementById('angle');
+const fieldWrap = document.getElementById('field');
+const degBtn = document.getElementById('degBtn');
+const radBtn = document.getElementById('radBtn');
+const calcBtn = document.getElementById('calcBtn');
+const exactEl = document.getElementById('exact');
+const approxEl = document.getElementById('approx');
+const spot = document.getElementById('spot');
+const themeToggle = document.getElementById('themeToggle');
+const histBtn = document.getElementById('histBtn');
 
-    let exact = special[fn][key];
+/* ========= state ========= */
+let currentFunc = 'sin';
+let unit = 'deg';
+let history = JSON.parse(localStorage.getItem('trig_history_v1')||'[]');
 
-    if(exact){
-      fracEl.textContent = exact;
-      approxEl.textContent = '(' + Number(eval(exact.replace('√', 'Math.sqrt(').replace(/\//g, ')/('))).toFixed(6) + ')';
-      return;
-    }
+/* ========= helpers ========= */
+function setActiveFunc(btn){
+  funcButtons.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFunc = btn.dataset.f;
+}
+funcButtons.forEach(b=> b.addEventListener('click', ()=> setActiveFunc(b) ));
 
-    let rad = toRadians(angle);
-    let val = computeValue(fn, rad);
+/* floating label behaviour */
+angleInput.addEventListener('focus', ()=> fieldWrap.classList.add('focused'));
+angleInput.addEventListener('blur', ()=> { if(!angleInput.value) fieldWrap.classList.remove('focused'); });
 
-    if(!isFinite(val)){
-      fracEl.textContent = 'Tanımsız';
-      approxEl.textContent = 'Bu açı değeri için sonuç tanımsızdır.';
-      return;
-    }
+degBtn.addEventListener('click', ()=> { unit='deg'; degBtn.classList.add('active'); radBtn.classList.remove('active'); });
+radBtn.addEventListener('click', ()=> { unit='rad'; radBtn.classList.add('active'); degBtn.classList.remove('active'); });
 
-    fracEl.textContent = '—';
-    approxEl.textContent = val.toFixed(6);
+/* theme */
+(function initTheme(){
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(prefersDark) document.documentElement.classList.add('dark');
+  themeToggle.addEventListener('click', ()=> {
+    document.documentElement.classList.toggle('dark');
   });
-
 })();
+
+/* spotlight follow */
+document.addEventListener('mousemove',(e)=>{
+  const x = e.clientX + 'px', y = e.clientY + 'px';
+  spot.style.setProperty('--x', x);
+  spot.style.setProperty('--y', y);
+});
+
+/* history modal simple */
+histBtn.addEventListener('click', ()=>{
+  const items = history.slice().reverse().map(h=>`<li>${h}</li>`).join('');
+  alert(items?('Son hesaplar:\\n' + history.slice().reverse().join('\\n')):'Henüz geçmiş yok');
+});
+
+/* ========= core calculation ========= */
+function computeTrigValue(fn, rad){
+  switch(fn){
+    case 'sin': return Math.sin(rad);
+    case 'cos': return Math.cos(rad);
+    case 'tan': return Math.tan(rad);
+    case 'cosec': return 1/Math.sin(rad);
+    case 'sec': return 1/Math.cos(rad);
+    case 'cot': return 1/Math.tan(rad);
+  }
+}
+
+/* display result with animations & safe parsing */
+function showResult(exactStr, approxNum){
+  exactEl.classList.remove('fade-in'); approxEl.classList.remove('fade-in');
+  void exactEl.offsetWidth; // trigger reflow for restart
+  exactEl.textContent = exactStr || '';
+  approxEl.textContent = (approxNum === null) ? 'Tanımsız' : (typeof approxNum === 'number' ? approxNum.toFixed(6) : approxNum);
+  exactEl.classList.add('fade-in'); approxEl.classList.add('fade-in');
+}
+
+/* main handler */
+calcBtn.addEventListener('click', ()=>{
+  const raw = angleInput.value.trim();
+  if(raw === ''){
+    showResult('', 'Lütfen açı girin.');
+    return;
+  }
+  const parsed = Number(raw);
+  if(Number.isNaN(parsed)){
+    showResult('', 'Geçerli bir sayı girin.');
+    return;
+  }
+
+  // convert to degrees for exact-lookup, but preserve original input for numeric calc
+  let degForLookup = (unit === 'deg') ? parsed : (parsed * 180 / Math.PI);
+  // round to nearest 0.0001 to reduce FP issues
+  degForLookup = Math.round(degForLookup * 10000) / 10000;
+
+  // check if we have an exact for integer angles (or known handbook ones like 15,75)
+  const intDeg = Math.round(degForLookup);
+  const isIntegerAngle = Math.abs(intDeg - degForLookup) < 1e-9;
+  const fnMap = exactValues[currentFunc];
+
+  if(isIntegerAngle && fnMap && fnMap[intDeg] !== undefined){
+    const exact = fnMap[intDeg];
+    const approx = parseExactStringToNumber(exact);
+    showResult(exact, approx);
+    pushHistory(`${currentFunc} ${intDeg}${unit==='deg'?'°':''} = ${approx.toFixed(6)}`);
+    return;
+  }
+
+  // if not exact, compute numeric
+  const angleRad = (unit === 'deg') ? parsed * Math.PI / 180 : parsed;
+  const val = computeTrigValue(currentFunc, angleRad);
+
+  if(!isFinite(val)){
+    showResult('', 'Tanımsız');
+    pushHistory(`${currentFunc} ${parsed} ${unit} = Tanımsız`);
+    return;
+  }
+
+  // also try near-special detection: within 1e-4 degree
+  const nearest = Math.round(angleRad * 180 / Math.PI);
+  if(fnMap && fnMap[nearest] !== undefined && Math.abs(nearest - (angleRad*180/Math.PI)) < 1e-4){
+    const exact = fnMap[nearest];
+    const approxFromExact = parseExactStringToNumber(exact);
+    showResult(exact, val);
+    pushHistory(`${currentFunc} ${parsed}${unit==='deg'?'°':''} ≈ ${val.toFixed(6)} (≈ ${approxFromExact.toFixed(6)})`);
+    return;
+  }
+
+  showResult('', val);
+  pushHistory(`${currentFunc} ${parsed}${unit==='deg'?'°':' rad'} = ${val.toFixed(6)}`);
+});
+
+/* history push */
+function pushHistory(text){
+  history = history || [];
+  history.push(text);
+  if(history.length > 50) history.shift();
+  localStorage.setItem('trig_history_v1', JSON.stringify(history));
+}
+
+/* quick keyboard: Enter to calculate */
+angleInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') calcBtn.click(); });
+
+/* initialize: focus/label if input has value */
+if(angleInput.value) fieldWrap.classList.add('focused');
+
 </script>
 </body>
 </html>
