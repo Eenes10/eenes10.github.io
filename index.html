@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sade Trig Hesaplayıcı</title>
+  <title>Trigonometrik Değer Hesaplayıcı</title>
   <style>
     :root{ --card-w:380px; }
     body {
@@ -110,7 +110,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Sade Trig Hesaplayıcı</h2>
+    <h2>Trigonometrik Değer Hesaplayıcı</h2>
 
     <select id="func" aria-label="Fonksiyon seç">
       <option value="sin">sin</option>
@@ -121,7 +121,8 @@
       <option value="cot">cot</option>
     </select>
 
-    <input type="number" id="angle" placeholder="Açı değeri (ör. 33)" aria-label="Açı" />
+    <!-- placeholder kaldırıldı -->
+    <input type="number" id="angle" aria-label="Açı" />
 
     <div class="unit-select">
       <button id="degBtn" class="active" type="button">Derece</button>
@@ -136,7 +137,7 @@
     </div>
   </div>
 
-  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank" aria-label="Instagram">
+  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank">
     <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"/>
   </a>
 
@@ -174,71 +175,15 @@
 
   function toRadians(d){ return d * Math.PI / 180; }
 
-  function computeValue(fn, angleRad){
+  function computeValue(fn, a){
     switch(fn){
-      case 'sin': return Math.sin(angleRad);
-      case 'cos': return Math.cos(angleRad);
-      case 'tan': return Math.tan(angleRad);
-      case 'cosec': return 1/Math.sin(angleRad);
-      case 'sec': return 1/Math.cos(angleRad);
-      case 'cot': return 1/Math.tan(angleRad);
+      case 'sin': return Math.sin(a);
+      case 'cos': return Math.cos(a);
+      case 'tan': return Math.tan(a);
+      case 'cosec': return 1/Math.sin(a);
+      case 'sec': return 1/Math.cos(a);
+      case 'cot': return 1/Math.tan(a);
     }
   }
 
-  function showResult(fracText, approxNum){
-    fracEl.textContent = fracText || '';
-    if(approxNum === null) approxEl.textContent = 'Tanımsız';
-    else approxEl.textContent = approxNum.toFixed(6);
-  }
-
-  calcBtn.addEventListener('click', ()=>{
-    const f = funcEl.value;
-    let raw = angleEl.value.trim();
-
-    if(raw === ''){
-      showResult('', NaN);
-      approxEl.textContent = 'Açı girin.';
-      return;
-    }
-
-    let a = Number(raw);
-    if(Number.isNaN(a)){
-      showResult('', NaN);
-      approxEl.textContent = 'Geçerli bir sayı girin.';
-      return;
-    }
-
-    let degreeEquivalent = unit === 'deg' ? a : (a * 180 / Math.PI);
-    const degRounded = Math.round(degreeEquivalent);
-    const isIntegerAngle = Math.abs(degRounded - degreeEquivalent) < 1e-9;
-
-    if(isIntegerAngle && special[f] && special[f][degRounded] !== undefined){
-      const frac = special[f][degRounded];
-      if(frac === 'Tanımsız') { showResult('', null); return; }
-      const approx = computeValue(f, toRadians(degRounded));
-      showResult(frac, approx);
-      return;
-    }
-
-    let angleRad = unit === 'deg' ? toRadians(a) : a;
-    const value = computeValue(f, angleRad);
-
-    if(!isFinite(value)) { showResult('', null); return; }
-
-    const nearestDeg = Math.round((angleRad * 180 / Math.PI));
-    if(Math.abs(nearestDeg - (angleRad * 180 / Math.PI)) < 1e-7 &&
-       special[f] && special[f][nearestDeg] !== undefined){
-      const frac = special[f][nearestDeg];
-      if(frac !== 'Tanımsız'){
-        showResult(frac, value);
-        return;
-      }
-    }
-
-    showResult('', value);
-  });
-
-})();
-</script>
-</body>
-</html>
+  function showResult(frac,
