@@ -1,93 +1,144 @@
 const soruMetni = document.getElementById('soru-metni');
+const resimInput = document.getElementById('soru-resmi-input');
+const resimSecBtn = document.getElementById('resim-sec-btn');
+const yuklenenResimGosterim = document.getElementById('yuklenen-resim-gosterim');
 const cozBtn = document.getElementById('coz-btn');
 const cozumIcerigi = document.getElementById('cozum-icerigi');
 const motivasyonAlani = document.getElementById('motivasyon-alani');
 
-// Simülasyon Çözüm Kütüphanesi
+let yukluResim = false; // Görsel yüklenip yüklenmediğini tutan değişken
+
+// --- 1. GÖRSEL YÜKLEME İŞLEMLERİ ---
+
+resimSecBtn.addEventListener('click', () => {
+    resimInput.click(); // Gizli input'u tetikle
+});
+
+resimInput.addEventListener('change', (event) => {
+    const dosya = event.target.files[0];
+    if (dosya) {
+        yukluResim = true;
+        // Görsel yüklendiğinde metin girişini temizle ve devre dışı bırak
+        soruMetni.value = ''; 
+        soruMetni.disabled = true;
+
+        // Görsel onay ekranını göster
+        resimSecBtn.style.display = 'none';
+        yuklenenResimGosterim.style.display = 'flex';
+    }
+});
+
+// Metin alanına yazılmaya başlandığında görsel seçimi sıfırla
+soruMetni.addEventListener('input', () => {
+    if (soruMetni.value.length > 0) {
+        // Resim varsa sıfırla
+        if (yukluResim) {
+            resimInput.value = '';
+            yukluResim = false;
+            resimSecBtn.style.display = 'flex';
+            yuklenenResimGosterim.style.display = 'none';
+        }
+    }
+    soruMetni.disabled = false;
+});
+
+
+// --- 2. ÇÖZÜMLEME SİMÜLASYONU VE VERİLER ---
+
 const ornekCozumler = {
     "matematik": {
-        soru_parcasi: ["x² - 5x + 6", "denkleminin kökleri", "ikinci derece"],
+        soru_parcasi: ["denkleminin kökleri", "parabol", "üçgenin alanı"],
         cozum_basligi: "İkinci Dereceden Denklemler Çözümü 📐",
         adımlar: [
-            "**Adım 1: Denklemin Katsayılarını Belirle**",
-            "Denklem: $x^2 - 5x + 6 = 0$. Burada $a=1$, $b=-5$, $c=6$ olarak belirlenir. (Gizli formül: $\\Delta = b^2 - 4ac$)",
-            "**Adım 2: Çarpanlara Ayırma Yöntemi**",
-            "Çarpımları 6, toplamları -5 olan iki sayı bulmalıyız. Bu sayılar -2 ve -3'tür.",
-            "**Adım 3: Çözümü Yaz**",
-            "Denklem $(x-2)(x-3) = 0$ şeklinde çarpanlara ayrılır. Buradan kökler $x_1 = 2$ ve $x_2 = 3$ bulunur.",
-            "**Tebrikler!** Bu denklemin kökleri $x_1=2$ ve $x_2=3$'tür. Çok başarılısın!"
+            "**Adım 1: Analiz (Görsel veya Metin)**",
+            "Soru, $ax^2 + bx + c = 0$ formatında bir denklemin çözümü veya görsel bir parabol grafiği istemektedir.",
+            "**Adım 2: Çarpanlara Ayırma / Diskriminant**",
+            "Diskriminant ($\Delta$) kullanılarak köklerin varlığı belirlenir. (Gizli formül: $\\Delta = b^2 - 4ac$)",
+            "**Adım 3: Kökleri Bul**",
+            "Kökler $x_{1,2} = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ formülüyle bulunur. Örneğin: $x_1=2$ ve $x_2=3$.",
+            "**Tebrikler!** Bu denklemin kökleri başarıyla çözüldü."
         ]
     },
     "edebiyat": {
-        soru_parcasi: ["servet-i fünun", "edebiyat", "şair"],
+        soru_parcasi: ["servet-i fünun", "roman", "şiir"],
         cozum_basligi: "Servet-i Fünun Dönemi Özeti 📜",
         adımlar: [
-            "**Adım 1: Tanım ve Başlangıç**",
-            "Servet-i Fünun (Edebiyat-ı Cedide) dergi etrafında toplanan bir topluluktur ve Batı edebiyatını esas alır.",
+            "**Adım 1: Dönem Tespiti**",
+            "Sorudaki anahtar kelimeler (Tevfik Fikret, Cenap Şahabettin, Mai ve Siyah) dönemi işaret etmektedir.",
             "**Adım 2: Önemli Temsilciler**",
-            "Tevfik Fikret (şiirde usta), Cenap Şahabettin (sembolizm etkisinde), Halit Ziya Uşaklıgil (modern romanın kurucusu) en önemli şair ve yazarlarıdır.",
+            "Batı edebiyatını esas alan topluluğun temel sanatçıları analiz edilir.",
             "**Adım 3: Temel Özellikler**",
-            "Sanat için sanat anlayışı, ağır ve süslü dil, bireysel konular (aşk, doğa, karamsarlık) işlenmiştir.",
-            "**Unutma!** Bu dönem 'sanat için sanat' ilkesini benimsemiştir. Edebiyat bilgin çok yerinde!"
+            "Sanat için sanat anlayışı, ağır ve süslü dil kullanılmıştır.",
+            "**Unutma!** Edebiyat bilgin çok yerinde! Eser adlarını tekrar et."
         ]
     },
     "fen": {
-        soru_parcasi: ["fizik", "hız", "ivme", "hareket"],
-        cozum_basligi: "Hareket Problemi Çözümü 🚀",
+        soru_parcasi: ["fizik", "hız", "ivme", "kimyasal bağ"],
+        cozum_basligi: "Fizik/Kimya Problemi Çözümü 🚀",
         adımlar: [
-            "**Adım 1: Verileri Not Al**",
-            "Sorudaki başlangıç hızı ($v_0$), ivme ($a$) ve geçen zaman ($t$) değerlerini bir yere yaz.",
-            "**Adım 2: Formülü Seç**",
-            "Son hızı ($v$) bulmak için $v = v_0 + a \\cdot t$ formülünü kullanmalısın.",
+            "**Adım 1: Kavramın Tanımlanması**",
+            "Soruda ivme hesaplaması veya iyonik/kovalent bağ gibi temel bir kavram sorgulanmaktadır.",
+            "**Adım 2: Formül/Kural Uygulaması**",
+            "Fizik için $v = v_0 + a \\cdot t$, Kimya için bağ kuralları uygulanır.",
             "**Adım 3: Hesaplama ve Sonuç**",
-            "Değerleri formülde yerine koyarak sonucu bul. (Unutma, her zaman birimi kontrol et!)",
-            "**Aferin!** Fizik zor görünebilir ama formülleri doğru uyguladığında her şey çözülür."
+            "Veriler yerine konur ve kesin sonuç bulunur.",
+            "**Aferin!** Fen zor görünebilir ama formülleri doğru uyguladığında her şey çözülür."
         ]
     }
 };
 
-// Eğlenceli Motivasyon Mesajları
 const motivasyonlar = [
     "İnanılmazsın! Baykuş bile bu kadar hızlı çözemezdi. 🦉",
     "Mola verme zamanı gelmiş olabilir. Beynine biraz pasta ikram et. 🍰",
     "Günde 1 soru çözmek, bir sonraki seviyeye geçmek demektir! Devam et! ⭐",
     "Senin beynin, Bilge Baykuş'un tüm kütüphanesinden daha değerli! 💪",
-    "Bu soruyu çözdün, sırada Everest'e tırmanmak var! (Ya da bir sonraki ünite.) ⛰️"
+    "Bu soruyu çözdün, sırada Everest'e tırmanmak var! ⛰️"
 ];
 
 // Ana Çözümleme Fonksiyonu
 cozBtn.addEventListener('click', () => {
+    
+    // Görsel veya metin girişi kontrolü
     const soru = soruMetni.value.trim().toLowerCase();
     
-    if (soru.length < 10) {
-        alert("Lütfen çözmek istediğin sorunun tamamını yaz.");
+    if (!yukluResim && soru.length < 10) {
+        alert("Lütfen çözmek istediğin sorunun tamamını yaz veya resmini yükle.");
         return;
     }
 
     cozBtn.disabled = true;
-    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Çözümleniyor...';
+    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Görüntü İşleniyor...';
     cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Baykuş tüm bilgeliğini topluyor, biraz bekle...</p>';
     motivasyonAlani.style.display = 'none';
 
     // 2 saniyelik Simülasyon bekleme süresi
     setTimeout(() => {
+        
         let eslesenCozum = null;
-        let konu = "";
+        let cozumKaynagi = yukluResim ? "GÖRSEL ANALİZ EDİLDİ (Simülasyon)" : "METİN ANALİZ EDİLDİ";
 
-        // Soru metni ile simülasyon çözümlerini eşleştirme
-        for (const key in ornekCozumler) {
-            const cozum = ornekCozumler[key];
-            if (cozum.soru_parcasi.some(parca => soru.includes(parca))) {
-                eslesenCozum = cozum;
-                konu = key.toUpperCase();
-                break;
+        // Eğer resim yüklendiyse, rastgele bir konuyu çözülmüş gibi göster
+        if (yukluResim) {
+            const konular = Object.keys(ornekCozumler);
+            const rastgeleKonu = konular[Math.floor(Math.random() * konular.length)];
+            eslesenCozum = ornekCozumler[rastgeleKonu];
+        } 
+        // Eğer metin girildiyse, metin eşleştirmesi yap
+        else {
+            for (const key in ornekCozumler) {
+                const cozum = ornekCozumler[key];
+                if (cozum.soru_parcasi.some(parca => soru.includes(parca))) {
+                    eslesenCozum = cozum;
+                    break;
+                }
             }
         }
 
         // --- Çözüm Sonuçlarını Ekrana Basma ---
         
         if (eslesenCozum) {
-            let htmlCozum = `<h3>${eslesenCozum.cozum_basligi}</h3>`;
+            let htmlCozum = `<p style="font-size: 0.9em; color: gray;">*Kaynak: ${cozumKaynagi}</p>`;
+            htmlCozum += `<h3>${eslesenCozum.cozum_basligi}</h3>`;
             eslesenCozum.adımlar.forEach(adim => {
                 htmlCozum += `<div class="cozum-adimi">${adim}</div>`;
             });
@@ -102,8 +153,8 @@ cozBtn.addEventListener('click', () => {
         } else {
             cozumIcerigi.innerHTML = `
                 <p class="baslangic-mesaj" style="color: red;">
-                    Üzgünüm, Bilge Baykuş bu soruyu henüz kütüphanesine eklememiş. 😅
-                    Lütfen daha spesifik bir matematik, fizik veya edebiyat sorusu dene.
+                    Üzgünüm, sorunun kaynağını bulamadım. 😔
+                    Lütfen resmi daha net çekmeyi veya soruyu daha açık yazmayı dene.
                 </p>
             `;
             motivasyonAlani.style.display = 'none';
@@ -113,8 +164,5 @@ cozBtn.addEventListener('click', () => {
         cozBtn.disabled = false;
         cozBtn.innerHTML = 'Çözümü Getir <i class="fas fa-brain"></i>';
         
-    }, 2000); // 2 Saniye bekletme
+    }, 2500); // 2.5 Saniye bekletme (Resim işleme simülasyonu)
 });
-
-// Başlangıçta matematik denklemleri için LaTeX (simülasyon) gösterme
-cozumIcerigi.innerHTML = `<p class="baslangic-mesaj">Denklem yazarken, örneğin $x^2 + 2x + 1 = 0$ formatını kullanabilirsin!</p>`;
