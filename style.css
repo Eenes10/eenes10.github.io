@@ -1,131 +1,213 @@
-const resimInput = document.getElementById('soru-resmi-input');
-const resimSecBtn = document.getElementById('resim-sec-btn');
-const yuklenenResimGosterim = document.getElementById('yuklenen-resim-gosterim');
-const cozBtn = document.getElementById('coz-btn');
-const cozumIcerigi = document.getElementById('cozum-icerigi');
-const motivasyonAlani = document.getElementById('motivasyon-alani');
+:root {
+    /* Koyu Tema Renkleri */
+    --bg-main: #20232a; /* Çok Koyu Arka Plan */
+    --card-bg: #282c34; /* Daha az koyu kart rengi */
+    --primary-color: #61afef; /* Mavi/Mavi-Yeşil Vurgu */
+    --secondary-color: #98c379; /* Yeşil Buton/Başarı Rengi */
+    --text-color: #c0c0c0; /* Açık Gri Metin */
+    --shadow-dark: 0 4px 15px rgba(0, 0, 0, 0.4);
+    --ana-buton-bg: #ffc107; /* Sarı/Turuncu renk, yüklemeyi vurgular */
+    --ana-buton-hover: #e0a800;
+}
 
-let yukluResim = false; // Görselin yüklü olup olmadığını tutar
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+}
 
-// --- 1. GÖRSEL YÜKLEME İŞLEMLERİ ---
+.container {
+    max-width: 700px;
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+}
 
-resimSecBtn.addEventListener('click', () => {
-    resimInput.click(); // Gizli input'u tetikle
-});
+/* --- Başlık ve Header --- */
+header {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    padding: 30px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-dark);
+    border: 1px solid #3e4451;
+}
 
-resimInput.addEventListener('change', (event) => {
-    const dosya = event.target.files[0];
-    if (dosya) {
-        yukluResim = true;
-        
-        // Görsel onay ekranını göster ve düğmeleri ayarla
-        resimSecBtn.style.display = 'none';
-        yuklenenResimGosterim.style.display = 'flex';
-        cozBtn.disabled = false; // Çözüm düğmesini etkinleştir
+.header-icon {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
 
-        // Başlangıç mesajını sıfırla
-        cozumIcerigi.innerHTML = `<p class="baslangic-mesaj">Resim analiz için hazır. Çözümü getirebilirsin!</p>`;
+header h1 {
+    margin: 0 0 5px 0;
+    font-size: 2.5em;
+    color: white; 
+}
 
-    } else {
-        yukluResim = false;
-        cozBtn.disabled = true;
-    }
-});
+header p {
+    margin: 0;
+    opacity: 0.8;
+}
 
-// --- 2. ÇÖZÜMLEME SİMÜLASYONU VE VERİLER (Sadece Görsel Analiz) ---
+/* --- Giriş Alanı --- */
+.giris-alani {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #3e4451;
+}
 
-const matematikCozumler = {
-    "temel": {
-        cozum_basligi: "Temel Aritmetik Çözüm (Görselden Çözüldü)",
-        adımlar: [
-            "**Adım 1: Görselden Okuma (OCR Simülasyonu)**",
-            "Görseldeki işlem $2+2=?$ olarak tanımlandı.",
-            "**Adım 2: Çözümleme**",
-            "Toplama işlemi gerçekleştirilir.",
-            "**Sonuç:** $\\text{Cevap } 4 \\text{'tür}.$ Fotoğraf çekmek çok kolay!"
-        ]
-    },
-    "ikinci_derece": {
-        cozum_basligi: "İkinci Dereceden Denklemler Çözümü (Görsel Analiz)",
-        adımlar: [
-            "**Adım 1: Görsel Analiz ve Tanımlama**",
-            "Görselde bir denklemin (örn: $x^2 - 5x + 6 = 0$) çözümünün istendiği tespit edildi.",
-            "**Adım 2: Diskriminant Kullanımı**",
-            "Diskriminant $\\Delta = b^2 - 4ac$ hesaplandı. ($\Delta > 0$ olduğu varsayılmıştır)",
-            "**Adım 3: Kökleri Bulma**",
-            "Kökler $x_{1,2} = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ formülüyle bulundu. $\\text{Örn: } x_1=2, x_2=3$",
-            "**Sonuç:** $\\text{Denklemin kökleri başarıyla bulundu. }$ Matematik bilgine hayran kaldık!"
-        ]
-    },
-    "integral": {
-        cozum_basligi: "Belirsiz İntegral Çözümü (Görsel Analiz)",
-        adımlar: [
-            "**Adım 1: Görselden İşlemi Çıkarma**",
-            "Görseldeki ifadenin $\\int x^n dx$ şeklinde bir integral olduğu belirlendi.",
-            "**Adım 2: İntegral Kuralı Uygulama**",
-            "Temel integral formülü $\\frac{x^{n+1}}{n+1} + C$ kuralı uygulandı. (n=2 varsayımı)",
-            "**Adım 3: Nihai Çözüm**",
-            "Final çözümü: $\\frac{x^3}{3} + C$. (C: İntegral sabiti)",
-            "**Sonuç:** $\\text{Çözüm } \\frac{x^3}{3} + C \\text{ olarak belirlenmiştir. }$ Hesaplamaların mükemmel!"
-        ]
-    }
-};
+/* --- Ana Görsel Yükleme Butonu Stili --- */
+.buton-ana {
+    background-color: var(--ana-buton-bg);
+    color: #333;
+    border: none;
+    padding: 15px 30px; 
+    font-size: 1.2em;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
 
-const motivasyonlar = [
-    "Harika bir fotoğraf! Sorun netti, çözüm anında geldi. 📸",
-    "Görsel analiz başarılı! Sırada daha zorlu bir integral var mı? 💪",
-    "Senin beynin, bu soruyu çözen Baykuş'tan bile hızlı çalışıyor! 🚀",
-    "Çözüldü! Bir sonraki soruyu yüklemeye ne dersin? ✨"
-];
+.buton-ana:hover {
+    background-color: var(--ana-buton-hover);
+    transform: translateY(-2px);
+}
+
+#yukleme-alani {
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+#yuklenen-resim-gosterim {
+    padding: 10px 20px;
+    background-color: #2e3e2e; 
+    color: var(--secondary-color);
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.yuklendi-icon {
+    color: var(--secondary-color);
+}
 
 
-// Ana Çözümleme Fonksiyonu
-cozBtn.addEventListener('click', () => {
-    
-    if (!yukluResim) {
-        alert("Lütfen önce sorunun fotoğrafını yükleyin.");
-        return;
-    }
+/* --- Çözümü Getir Butonu --- */
+.buton {
+    background-color: var(--secondary-color);
+    color: var(--bg-main);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    cozBtn.disabled = true;
-    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Görsel Analiz Ediliyor...';
-    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Yapay zeka görseli okuyor ve çözümü yapılandırıyor...</p>';
-    motivasyonAlani.style.display = 'none';
+.buton:hover:not(:disabled) {
+    background-color: #7aa566;
+    transform: translateY(-2px);
+}
 
-    // 2.5 saniyelik Simülasyon bekleme süresi (Görsel işleme izlenimi)
-    setTimeout(() => {
-        
-        // Simülasyon: Yüklü resim varsa, rastgele bir konuyu çözülmüş gibi göster.
-        const konular = Object.keys(matematikCozumler);
-        const rastgeleKonuIndex = Math.floor(Math.random() * konular.length);
-        const rastgeleKonu = konular[rastgeleKonuIndex];
-        const eslesenCozum = matematikCozumler[rastgeleKonu];
+.buton:disabled {
+    background-color: #4a4d52;
+    color: #888;
+    cursor: not-allowed;
+}
 
-        // --- Çözüm Sonuçlarını Ekrana Basma ---
-        
-        let htmlCozum = `<h3>${eslesenCozum.cozum_basligi}</h3>`;
-        eslesenCozum.adımlar.forEach(adim => {
-            htmlCozum += `<div class="cozum-adimi">${adim}</div>`;
-        });
-        
-        cozumIcerigi.innerHTML = htmlCozum;
-        
-        // MathJax'in yeni formülleri işlemesini sağla
-        MathJax.typesetPromise([cozumIcerigi]).then(() => {
-            // LaTeX işlendikten sonra motivasyonu göster
-            const rastgeleMotivasyon = motivasyonlar[Math.floor(Math.random() * motivasyonlar.length)];
-            motivasyonAlani.textContent = rastgeleMotivasyon;
-            motivasyonAlani.style.display = 'block';
-        });
-        
-        // Butonu ve resim yükleme alanını sıfırla (Yeni soru için hazırlık)
-        cozBtn.disabled = true;
-        cozBtn.innerHTML = 'Çözümü Getir <i class="fas fa-brain"></i>';
-        
-        resimInput.value = ''; // Inputu temizle
-        yukluResim = false;
-        resimSecBtn.style.display = 'block';
-        yuklenenResimGosterim.style.display = 'none';
+/* --- Sonuç Alanı --- */
+.sonuc-kutusu {
+    text-align: left;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-dark);
+    margin-top: 30px;
+    border: 1px solid #3e4451;
+}
 
-    }, 2500); // 2.5 Saniye bekletme
-});
+.sonuc-kutusu h2 {
+    color: var(--primary-color);
+    border-bottom: 1px solid #3e4451;
+    padding-bottom: 10px;
+    margin-top: 0;
+    font-size: 1.8em;
+}
+
+#cozum-icerigi {
+    min-height: 80px;
+    padding-top: 10px;
+}
+
+.baslangic-mesaj {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Çözüm Adımları Stili */
+.cozum-adimi {
+    margin-bottom: 20px;
+    padding-left: 15px;
+    border-left: 3px solid var(--primary-color); 
+}
+
+.cozum-adimi strong {
+    color: var(--secondary-color);
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.cozum-adimi p {
+    margin: 0;
+    font-size: 1em;
+}
+
+/* MathJax (LaTeX) çıktılarını okunaklı yapmak */
+.mjx-chtml {
+    color: #fff !important; 
+    font-size: 1.1em !important;
+    overflow-x: auto;
+}
+
+.motivasyon-alani {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #3e4451; 
+    color: #e5c07b; 
+    border: 1px solid #5a6270;
+    border-radius: 6px;
+    font-weight: 600;
+    font-style: italic;
+    display: none; 
+}
