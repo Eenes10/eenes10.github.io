@@ -4,7 +4,7 @@ const modal = document.getElementById('modal');
 const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
 let mevcutGrafik; 
-// Karşılaştırma ile ilgili tüm değişkenler kaldırıldı.
+// KALDIRILDI: let seciliKartlar = []; // Karşılaştırma modu için
 
 // --- API ANAHTARLARI VE URL'LER ---
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
@@ -12,13 +12,14 @@ const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
-    // --- Başlangıç ve Simülasyon Değerleri (API başarısız olursa bunlar kullanılacak) ---
+    // Varsayılan değerler
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
     let tryPerChf = 35.0000; 
     let onsPerUsd = 2000.00;
     let usdPerBtc = 60000.00;
+    let tryPerGramAltin = 2000.00; 
     
     // Değişim yüzdeleri (Simülasyon)
     const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
@@ -28,8 +29,8 @@ async function verileriCek() {
     const DOVIZ_DEGISM_GBP = 0.50;
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
-    
-    // --- 1. Döviz Verisini Çekme (Hata Yönetimi Eklendi) ---
+
+    // --- 1. Döviz Verisini Çekme ---
     try {
         const dovizResponse = await fetch(FIXER_URL);
         const dovizData = await dovizResponse.json();
@@ -49,7 +50,7 @@ async function verileriCek() {
         console.error("Fixer API çekiminde hata:", error);
     }
     
-    // --- 2. Kripto ve Altın Verisini Çekme (Hata Yönetimi Eklendi) ---
+    // --- 2. Kripto ve Altın Verisini Çekme ---
     try {
         const cryptoResponse = await fetch(COINGECKO_URL);
         const cryptoData = await cryptoResponse.json();
@@ -57,26 +58,28 @@ async function verileriCek() {
         if (cryptoData?.['tether-gold']?.usd) {
             onsPerUsd = cryptoData['tether-gold'].usd;
         } 
+
         if (cryptoData?.bitcoin?.usd) {
             usdPerBtc = cryptoData.bitcoin.usd;
         } 
+
     } catch (error) {
         console.error("CoinGecko API çekiminde hata:", error);
     }
     
     // --- 3. Nihai Hesaplamalar ---
     
-    // Simülasyon ya da gerçek USD kuru ile hesaplamalar
     const tryPerBtc = usdPerBtc * tryPerUsd;
     const onsPerTry = onsPerUsd * tryPerUsd;
     const ONS_KARSILIGI_GRAM = 31.1035; 
-    const tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
+    tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
     kurAlani.innerHTML = ''; 
 
     // --- Kartları Oluşturma ---
+    
     kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', tryPerBtc, BTC_DEGISM_YUZDESI); 
     kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
     kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
@@ -85,11 +88,8 @@ async function verileriCek() {
     kurAlani.innerHTML += kartOlustur('İngiliz Sterlini', 'GBP', tryPerGbp, DOVIZ_DEGISM_GBP); 
     kurAlani.innerHTML += kartOlustur('İsviçre Frangı', 'CHF', tryPerChf, DOVIZ_DEGISM_CHF); 
 
-    // Kartlar oluşturulduktan sonra tıklama dinleyicilerini tekrar ekle
+    // Kartlar oluşturulduktan sonra tıklama dinleyicilerini ekle
     kartTiklamaDinleyicileriEkle();
-    
-    // Üstteki başlık mesajı tekil grafiğe göre ayarlandı
-    document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Grafik için bir karta tıklayın.`;
 }
 
 // Kart oluşturma fonksiyonu
@@ -101,7 +101,7 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
-    // data nitelikleri grafiği çizmek için gerekli.
+    // Data nitelikleri grafiği çizmek için korunmuştur.
     return `
         <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
             <h2 class="sembol">${sembol}</h2>
@@ -114,11 +114,10 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     `;
 }
 
-// Veri çekme ve güncelleme
 verileriCek();
 setInterval(verileriCek, 10000); 
 
-// --- MODAL VE GRAFİK İŞLEVLERİ ---
+// --- MODAL VE GRAFİK İŞLEVLERİ (Tekil Grafik) ---
 
 // Modal Kapatma Olayları
 kapatDugmesi.onclick = function() {
@@ -139,9 +138,10 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const simdikiTarih = new Date();
 
     for (let i = 0; i < veriAdedi; i++) {
+        
         fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
         
-        // YUMUŞATMA (Grafik sıçramasını önler)
+        // YUMUŞATMA
         if (i >= veriAdedi * 0.8) {
             const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
             fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
@@ -166,7 +166,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     return { etiketler, veriler };
 }
 
-// Tekil Grafiği Çizen Fonksiyon
+// Tekil Grafiği Çizen Fonksiyon (Basitleştirildi)
 function cizTekilGrafik(kartVerisi, zamanDilimi) {
     
     const veriAdedi = 100;
@@ -180,9 +180,10 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
     const isLight = document.body.classList.contains('light');
     const fontColor = isLight ? '#333' : '#f0f0f0';
     const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    // Tekil grafik için tek bir renk kullanılır
     const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
 
-    grafikBaslik.textContent = `${kartVerisi.isim} Fiyat Grafiği`;
+    grafikBaslik.textContent = `${kartVerisi.isim} Fiyat Grafiği (${zamanDilimi} Bazlı)`;
     
     const ctx = document.getElementById('fiyatGrafik').getContext('2d');
     
@@ -193,8 +194,7 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
             borderColor: cizgiRengi, 
             backgroundColor: `${cizgiRengi}20`,
             tension: 0.2, 
-            pointRadius: 0,
-            yAxisID: 'y1' 
+            pointRadius: 0
         }
     ];
 
@@ -204,11 +204,11 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
             ticks: { color: fontColor },
             grid: { color: gridColor }
         },
-        y1: {
+        y: { // Artık sadece bir Y ekseni (y) var
             type: 'linear',
             position: 'left',
             beginAtZero: false,
-            title: { display: true, text: `Fiyat (${kartVerisi.sembol})`, color: fontColor },
+            title: { display: true, text: `Fiyat (₺)`, color: fontColor },
             ticks: { color: fontColor },
             grid: { color: gridColor }
         }
@@ -236,13 +236,15 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
 // Kartlara tıklama olayını ekleyen fonksiyon (Tekil Grafik Mantığı)
 function kartTiklamaDinleyicileriEkle() {
     
-    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir
-    const kartAlaniClone = kurAlani.cloneNode(true);
-    kurAlani.parentNode.replaceChild(kartAlaniClone, kurAlani);
+    // Tıklama olaylarını tekrar tekrar eklenmesini önler
     const guncelKartlar = document.querySelectorAll('.kur-kart');
-
-    // Mevcut kartlar üzerinden dinleyicileri tekrar kur
     guncelKartlar.forEach(kart => {
+        const yeniKart = kart.cloneNode(true);
+        kart.parentNode.replaceChild(yeniKart, kart);
+    });
+
+    const sonKartlar = document.querySelectorAll('.kur-kart');
+    sonKartlar.forEach(kart => {
         kart.addEventListener('click', () => {
             
             // Eğer daha önce bir grafik çizilmişse yok et
@@ -256,7 +258,7 @@ function kartTiklamaDinleyicileriEkle() {
             
             const kartVerisi = { fiyat, isim, sembol };
             
-            // Hızlı varlıksa Saat, dövizse Gün zaman dilimini kullan
+            // Hızlı varlıksa (Kripto/Altın) Saat, dövizse Gün zaman dilimini kullan
             const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
             let zaman = isHizliVarlik(sembol) ? 'Saat' : 'Gün';
             
@@ -290,9 +292,9 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
         const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
         
         // Eksen renklerini güncelle
-        mevcutGrafik.options.scales.y1.ticks.color = fontColor;
-        mevcutGrafik.options.scales.y1.grid.color = gridColor;
-        mevcutGrafik.options.scales.y1.title.color = fontColor;
+        mevcutGrafik.options.scales.y.ticks.color = fontColor; // y ekseni (y1 yerine y)
+        mevcutGrafik.options.scales.y.grid.color = gridColor;
+        mevcutGrafik.options.scales.y.title.color = fontColor;
 
         mevcutGrafik.options.scales.x.ticks.color = fontColor;
         mevcutGrafik.options.scales.x.grid.color = gridColor;
