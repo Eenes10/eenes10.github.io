@@ -16,6 +16,8 @@ header h1 {
 header p {
     color: #bbb;
     margin-bottom: 30px;
+    /* Karşılaştırma geri bildirimleri için belirgin hale getirildi */
+    font-weight: bold; 
 }
 
 .kart-alanı {
@@ -38,7 +40,7 @@ header p {
     border: 3px solid transparent; /* Varsayılan sınır */
 }
 
-/* YENİ ÖZELLİK: Seçili kart vurgusu (Karşılaştırma modu için) */
+/* Seçili kart vurgusu (Karşılaştırma modu için) */
 .kur-kart.secili {
     border-color: #ffcc00; 
     transform: scale(1.03);
@@ -96,7 +98,7 @@ header p {
 .modal {
     display: none; 
     position: fixed; 
-    z-index: 1000; /* Daha yüksek z-index */
+    z-index: 1000; 
     left: 0;
     top: 0;
     width: 100%; 
@@ -137,7 +139,7 @@ header p {
     cursor: pointer;
 }
 
-/* --- YENİ ÖZELLİK: TEMA DEĞİŞTİRME STİLLERİ --- */
+/* --- TEMA DEĞİŞTİRME STİLLERİ --- */
 
 #tema-degistir-alanı {
     position: absolute;
