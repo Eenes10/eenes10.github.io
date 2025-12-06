@@ -5,21 +5,19 @@ const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
 let mevcutGrafik; 
 
-// --- API ANAHTARLARI VE URL'LER ---
-// Lütfen bu anahtarı kontrol edin ve geçerli değilse yenileyin!
+// API URL'leri ve Anahtarları (Bu kısımlar artık kodda kullanılmamaktadır, ancak tanımlı bırakılmıştır.)
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
-    // Varsayılan, simüle edilmiş değerler (API başarısız olursa bunlar kullanılır)
+    // API çağrıları devre dışı bırakıldığı için SIMÜLASYON değerleri kullanılır.
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
     let tryPerChf = 35.0000; 
     let onsPerUsd = 2000.00;
     let usdPerBtc = 60000.00;
-    let tryPerGramAltin = 2000.00; 
     
     // Değişim yüzdeleri (Simülasyon)
     const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
@@ -30,66 +28,15 @@ async function verileriCek() {
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
 
-    // --- 1. Döviz Verisini Çekme (API Hata Yönetimi Eklendi) ---
-    try {
-        const dovizResponse = await fetch(FIXER_URL);
-        
-        // Response durumu 200 (OK) değilse veya hatalıysa, bu bloku atla
-        if (!dovizResponse.ok) {
-            throw new Error(`Fixer API hatası: ${dovizResponse.status}`);
-        }
-        
-        const dovizData = await dovizResponse.json();
-        
-        if (dovizData?.rates && dovizData.success) {
-            const eurTry = dovizData.rates.TRY;
-            const eurUsd = dovizData.rates.USD;
-            const eurGbp = dovizData.rates.GBP;
-            const eurChf = dovizData.rates.CHF;
-            
-            tryPerUsd = eurTry / eurUsd;
-            tryPerEur = eurTry; 
-            tryPerGbp = eurTry / eurGbp;
-            tryPerChf = eurTry / eurChf;
-        } else {
-            // API başarılı yanıt verse bile içerik hatalıysa varsayılanı kullan
-            console.warn("Fixer API'den beklenmedik veri yapısı geldi. Simülasyon değerleri kullanılıyor.");
-        }
-    } catch (error) {
-        // Ağ hatası (CORS, 404, vb.) durumunda simülasyon değerleri kullanılır.
-        console.error("Fixer API çekiminde kritik hata. Simülasyon değerleri kullanılıyor:", error);
-    }
+    // *** API ÇEKİM KISIMLARI YORUM SATIRI OLDUĞU İÇİN KESİNLİKLE ATLANIYOR ***
+
+    // --- Nihai Hesaplamalar ---
     
-    // --- 2. Kripto ve Altın Verisini Çekme (API Hata Yönetimi Eklendi) ---
-    try {
-        const cryptoResponse = await fetch(COINGECKO_URL);
-
-        // Response durumu 200 (OK) değilse veya hatalıysa, bu bloku atla
-        if (!cryptoResponse.ok) {
-            throw new Error(`CoinGecko API hatası: ${cryptoResponse.status}`);
-        }
-
-        const cryptoData = await cryptoResponse.json();
-        
-        if (cryptoData?.['tether-gold']?.usd) {
-            // Tether Gold (XAUT) ons fiyatını verir.
-            onsPerUsd = cryptoData['tether-gold'].usd; 
-        } 
-
-        if (cryptoData?.bitcoin?.usd) {
-            usdPerBtc = cryptoData.bitcoin.usd;
-        } 
-
-    } catch (error) {
-        console.error("CoinGecko API çekiminde kritik hata. Simülasyon değerleri kullanılıyor:", error);
-    }
-    
-    // --- 3. Nihai Hesaplamalar ---
-    
+    // Simülasyon için Dolar/Ons değerleri kullanılarak hesaplama yapılır.
     const tryPerBtc = usdPerBtc * tryPerUsd;
     const onsPerTry = onsPerUsd * tryPerUsd;
     const ONS_KARSILIGI_GRAM = 31.1035; 
-    tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
+    const tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
@@ -109,21 +56,7 @@ async function verileriCek() {
     kartTiklamaDinleyicileriEkle();
 }
 
-// ... (Kalan tüm fonksiyonlar: kartOlustur, verileriCek çağrıları, Modal/Kapatma olayları, gecmisVeriSimulasyonu, cizTekilGrafik, kartTiklamaDinleyicileriEkle, Tema Değiştirme Mantığı) ...
-// Kalan kodunuzda herhangi bir değişiklik yapılmadı.
-// Sadece 'verileriCek' fonksiyonu yukarıdaki gibi güncellenmiştir.
-verileriCek();
-setInterval(verileriCek, 10000); 
-
-// Modal Kapatma Olayları
-kapatDugmesi.onclick = function() {
-  modal.style.display = "none";
-}
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
+// Kart oluşturma fonksiyonu
 function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const minD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
     const maxD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
@@ -132,7 +65,6 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
-    // Data nitelikleri grafiği çizmek için korunmuştur.
     return `
         <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
             <h2 class="sembol">${sembol}</h2>
@@ -143,6 +75,21 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
             </div>
         </div>
     `;
+}
+
+verileriCek();
+setInterval(verileriCek, 10000); 
+
+// --- MODAL VE GRAFİK İŞLEVLERİ (Tekil Grafik) ---
+
+// Modal Kapatma Olayları
+kapatDugmesi.onclick = function() {
+  modal.style.display = "none";
+}
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
 }
 
 // Geçmiş fiyat verilerini simüle eden fonksiyon
@@ -251,7 +198,7 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
 // Kartlara tıklama olayını ekleyen fonksiyon (Tekil Grafik Mantığı)
 function kartTiklamaDinleyicileriEkle() {
     
-    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir
+    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir (Stabilite için kritik)
     const guncelKartlar = document.querySelectorAll('.kur-kart');
     guncelKartlar.forEach(kart => {
         const yeniKart = kart.cloneNode(true);
