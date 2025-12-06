@@ -3,6 +3,8 @@ const kurAlani = document.getElementById('kur-kartlari');
 // --- API ANAHTARLARI VE URL'LER ---
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
+
+// CoinGecko API'si (Altın ve BTC için)
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
@@ -127,22 +129,44 @@ window.onclick = function(event) {
 }
 
 
-// Geçmiş fiyat verilerini simüle eden fonksiyon
-function gecmisVeriSimulasyonu(fiyat, zamanDilimi) {
-    // 30 yerine 100 veri noktası kullanılarak aralık genişletildi
-    const veriAdedi = 100; 
+// Geçmiş fiyat verilerini simüle eden fonksiyon (Tarih etiketli ve yumuşak geçişli)
+function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const veriler = [];
-    let baslangicFiyati = fiyat * (1 - Math.random() * 0.05); 
+    const etiketler = [];
+    
+    // Başlangıç fiyatını rastgele ayarla
+    let fiyatSim = fiyat * (1 - Math.random() * 0.05); 
+    
+    const simdikiTarih = new Date();
 
     for (let i = 0; i < veriAdedi; i++) {
-        baslangicFiyati += (Math.random() - 0.5) * (fiyat * 0.005); 
-        veriler.push(parseFloat(baslangicFiyati.toFixed(4)));
-    }
+        
+        // 1. Rastgele Değişim: Fiyata küçük bir rastgele adım uygula
+        fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
+        
+        // 2. YUMUŞATMA: Son %20'lik dilimde güncel fiyata yakınsa
+        if (i >= veriAdedi * 0.8) {
+            const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
+            fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
+        }
 
-    const etiketler = Array.from({ length: veriAdedi }, (_, i) => {
-        return `${i + 1}. ${zamanDilimi}`;
-    });
+        veriler.push(parseFloat(fiyatSim.toFixed(4)));
+
+        // Etiket hesaplama (Gerçekçi Tarih Olarak)
+        let tarih = new Date(simdikiTarih);
+        
+        if (zamanDilimi === 'Gün') {
+            // İleriden geriye doğru sayarak doğru tarihi hesapla
+            tarih.setDate(simdikiTarih.getDate() - (veriAdedi - 1 - i));
+            etiketler.push(`${tarih.getDate()} ${tarih.toLocaleString('tr-TR', { month: 'short' })}`);
+        } else if (zamanDilimi === 'Saat') {
+            // İleriden geriye doğru sayarak doğru saati hesapla
+            tarih.setHours(simdikiTarih.getHours() - (veriAdedi - 1 - i));
+            etiketler.push(`${tarih.getHours().toString().padStart(2, '0')}:${tarih.getMinutes().toString().padStart(2, '0')}`);
+        }
+    }
     
+    // Son noktayı kesin olarak güncel fiyata eşitle (Yumuşatma yapıldığı için sıçrama yapmaz)
     veriler[veriAdedi - 1] = parseFloat(fiyat.toFixed(4));
     
     return { etiketler, veriler };
@@ -151,7 +175,9 @@ function gecmisVeriSimulasyonu(fiyat, zamanDilimi) {
 // Chart.js ile grafiği çizen fonksiyon
 function cizGrafik(isim, fiyat, zamanDilimi) {
     
-    const { etiketler, veriler } = gecmisVeriSimulasyonu(fiyat, zamanDilimi);
+    // Veri adedi 100 olarak sabitlendi (daha geniş aralık için)
+    const veriAdedi = 100;
+    const { etiketler, veriler } = gecmisVeriSimulasyonu(fiyat, veriAdedi, zamanDilimi);
     
     if (mevcutGrafik) {
         mevcutGrafik.destroy();
