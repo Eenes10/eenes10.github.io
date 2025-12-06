@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📸 Mat-Çözücü: Nihai Yapay Zeka Asistanı</title>
+    <title>✨ Trigonometri Eğlencesi: Özel Açılar</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -12,38 +12,88 @@
 <body>
     <div class="container">
         <header>
-            <i class="fas fa-brain header-icon"></i>
-            <h1>Nihai Yapay Zeka Matematik Çözücü 🧠</h1>
-            <p>Bütün matematik sorularını (temel, lise, üniversite) fotoğraf ile çöz.</p>
+            <i class="fas fa-magic header-icon"></i>
+            <h1>Trigonometri Sihirbazı ✨</h1>
+            <p>Sin, Cos, Tan ve Cot değerleri, estetik bir tabloda ve kolayca öğrenilebilir şekilde seninle!</p>
         </header>
 
-        <div class="giris-alani">
-            <div id="yukleme-alani">
-                <input type="file" id="soru-resmi-input" accept="image/*" style="display: none;">
-                
-                <button id="resim-sec-btn" class="buton-ana">
-                    <i class="fas fa-upload"></i> Sorunun Fotoğrafını Yükle
-                </button>
-                
-                <div id="yuklenen-resim-gosterim" style="display: none;">
-                    <i class="fas fa-check-circle yuklendi-icon"></i> Görsel Analiz için Hazır!
-                </div>
-            </div>
-            
-            <button id="coz-btn" class="buton" style="margin-top: 20px;" disabled>
-                Çözümü Başlat <i class="fas fa-magic"></i>
-            </button>
+        <div class="aciklama-kutusu">
+            <i class="fas fa-lightbulb"></i>
+            <p>Bu özel açılar, **Birim Çember** üzerindeki kilit noktalardır. Bu değerleri bilmek, trigonometrinin temelidir.</p>
         </div>
 
-        <div id="sonuc-kutusu" class="sonuc-kutusu">
-            <h2>Adım Adım Çözüm (Nihai Analiz)</h2>
-            <div id="cozum-icerigi">
-                <p class="baslangic-mesaj">Yapay zeka, yüklediğin fotoğrafı bekliyor. Tüm matematik dünyası burada çözülür.</p>
-            </div>
-            <div id="motivasyon-alani" class="motivasyon-alani"></div>
+        <div class="tablo-kapsayici">
+            <h2>Özel Açı Değerleri (0° - 90°)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Açı $\alpha$</th>
+                        <th>Radyan</th>
+                        <th>$\sin(\alpha)$</th>
+                        <th>$\cos(\alpha)$</th>
+                        <th>$\tan(\alpha)$</th>
+                        <th>$\cot(\alpha)$</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="vurgu-satir">
+                        <td>$0^\circ$</td>
+                        <td>$0$</td>
+                        <td>$0$</td>
+                        <td>$1$</td>
+                        <td>$0$</td>
+                        <td>Tanımsız</td>
+                    </tr>
+                    <tr>
+                        <td>$30^\circ$</td>
+                        <td>$\frac{\pi}{6}$</td>
+                        <td>$\frac{1}{2}$</td>
+                        <td>$\frac{\sqrt{3}}{2}$</td>
+                        <td>$\frac{1}{\sqrt{3}}$</td>
+                        <td>$\sqrt{3}$</td>
+                    </tr>
+                    <tr class="vurgu-satir">
+                        <td>$45^\circ$</td>
+                        <td>$\frac{\pi}{4}$</td>
+                        <td>$\frac{\sqrt{2}}{2}$</td>
+                        <td>$\frac{\sqrt{2}}{2}$</td>
+                        <td>$1$</td>
+                        <td>$1$</td>
+                    </tr>
+                    <tr>
+                        <td>$60^\circ$</td>
+                        <td>$\frac{\pi}{3}$</td>
+                        <td>$\frac{\sqrt{3}}{2}$</td>
+                        <td>$\frac{1}{2}$</td>
+                        <td>$\sqrt{3}$</td>
+                        <td>$\frac{1}{\sqrt{3}}$</td>
+                    </tr>
+                    <tr class="vurgu-satir">
+                        <td>$90^\circ$</td>
+                        <td>$\frac{\pi}{2}$</td>
+                        <td>$1$</td>
+                        <td>$0$</td>
+                        <td>Tanımsız</td>
+                        <td>$0$</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        
+        <div class="aciklama-kutusu ileri-bilgi">
+            <i class="fas fa-infinity"></i>
+            <p>Diğer açılar $\left(120^\circ, 210^\circ, \text{vb.}\right)$ bu temel değerlerin işaret değiştirmiş halleridir. Kural: $\sin(\alpha) = \sin(180^\circ - \alpha)$</p>
+        </div>
+
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // MathJax'in HTML yüklendikten hemen sonra tüm LaTeX ifadelerini işlemesini sağlar.
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
 </body>
 </html>
