@@ -19,8 +19,10 @@ function getIcon(sembol) {
     }
 }
 
+// API ÇAĞRISI İÇERMEYEN, SADECE SİMÜLASYON VERİ ÇEKİMİ
 async function verileriCek() {
-    // API çağrıları devre dışı bırakıldığı için SIMÜLASYON değerleri kullanılır.
+    
+    // Sabit Simülasyon değerleri
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
@@ -72,7 +74,7 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     const ikon = getIcon(sembol);
 
-    // Simülasyon Bilgisi (Estetik amaçlı ve Image'daki ikinci satırı temsil eder)
+    // Simülasyon Bilgisi (Estetik amaçlı)
     const simulasyonBilgisi = `Geçmiş Veri Simülasyonu: ₺ ${ (fiyat * 0.05).toFixed(2) }`;
     
     return `
@@ -98,9 +100,10 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
 }
 
 verileriCek();
+// 10 saniyede bir simülasyon verilerini güncelle
 setInterval(verileriCek, 10000); 
 
-// --- MODAL VE GRAFİK İŞLEVLERİ ---
+// --- MODAL VE GRAFİK İŞLEVLERİ (Aynı Kaldı) ---
 
 // Modal Kapatma Olayları
 kapatDugmesi.onclick = function() {
@@ -160,7 +163,6 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
     }
     
     const isLight = document.body.classList.contains('light');
-    // CSS değişkenlerini direkt kullan
     const fontColor = getComputedStyle(document.body).getPropertyValue('--text-color');
     const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
     const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; 
@@ -270,7 +272,6 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
     // Grafik açıksa renkleri güncelle
     if (mevcutGrafik) {
         const isLight = document.body.classList.contains('light');
-        // Güncel CSS değişkenlerini al
         const fontColor = getComputedStyle(document.body).getPropertyValue('--text-color');
         const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
         const cizgiRengi = isLight ? '#007bff' : '#00bcd4'; 
