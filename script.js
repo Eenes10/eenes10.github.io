@@ -4,7 +4,7 @@ const modal = document.getElementById('modal');
 const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
 let mevcutGrafik; 
-// KALDIRILDI: let seciliKartlar = []; // Karşılaştırma modu için
+// KALDIRILDI: Karşılaştırma için kullanılan 'seciliKartlar' kaldırıldı.
 
 // --- API ANAHTARLARI VE URL'LER ---
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
@@ -166,7 +166,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     return { etiketler, veriler };
 }
 
-// Tekil Grafiği Çizen Fonksiyon (Basitleştirildi)
+// Tekil Grafiği Çizen Fonksiyon
 function cizTekilGrafik(kartVerisi, zamanDilimi) {
     
     const veriAdedi = 100;
@@ -180,7 +180,6 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
     const isLight = document.body.classList.contains('light');
     const fontColor = isLight ? '#333' : '#f0f0f0';
     const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-    // Tekil grafik için tek bir renk kullanılır
     const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
 
     grafikBaslik.textContent = `${kartVerisi.isim} Fiyat Grafiği (${zamanDilimi} Bazlı)`;
@@ -204,7 +203,7 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
             ticks: { color: fontColor },
             grid: { color: gridColor }
         },
-        y: { // Artık sadece bir Y ekseni (y) var
+        y: { // Tek eksenli grafik
             type: 'linear',
             position: 'left',
             beginAtZero: false,
@@ -236,7 +235,7 @@ function cizTekilGrafik(kartVerisi, zamanDilimi) {
 // Kartlara tıklama olayını ekleyen fonksiyon (Tekil Grafik Mantığı)
 function kartTiklamaDinleyicileriEkle() {
     
-    // Tıklama olaylarını tekrar tekrar eklenmesini önler
+    // Olay dinleyicilerini sıfırlamak için kart alanını klonla ve değiştir
     const guncelKartlar = document.querySelectorAll('.kur-kart');
     guncelKartlar.forEach(kart => {
         const yeniKart = kart.cloneNode(true);
@@ -292,7 +291,7 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
         const cizgiRengi = isLight ? '#007bff' : '#ffcc00'; 
         
         // Eksen renklerini güncelle
-        mevcutGrafik.options.scales.y.ticks.color = fontColor; // y ekseni (y1 yerine y)
+        mevcutGrafik.options.scales.y.ticks.color = fontColor;
         mevcutGrafik.options.scales.y.grid.color = gridColor;
         mevcutGrafik.options.scales.y.title.color = fontColor;
 
