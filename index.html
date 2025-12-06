@@ -1,99 +1,199 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ Trigonometri Eğlencesi: Özel Açılar</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> 
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Renkli Trig Hesaplayıcı</title>
+  <style>
+    :root{
+      font-family: 'Poppins', sans-serif;
+    }
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      margin:0;
+      background:linear-gradient(135deg,#7dd3fc,#c084fc,#f9a8d4);
+      animation:bgmove 12s infinite alternate;
+    }
+    @keyframes bgmove{
+      0%{background-position:0% 50%;}
+      100%{background-position:100% 50%;}
+    }
+    .card{
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(14px);
+      padding:28px;
+      border-radius:20px;
+      box-shadow:0 10px 35px rgba(0,0,0,0.15);
+      width:380px;
+      animation:float 4s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-8px);}
+    }
+    h1{
+      text-align:center;
+      margin:0 0 18px;
+      font-size:22px;
+      color:#1e293b;
+      font-weight:700;
+    }
+    label{display:block;margin:12px 0 6px;font-size:14px;color:#334155;font-weight:600;}
+    select,input[type="number"]{
+      width:100%;padding:12px;border-radius:10px;border:1px solid #d6d6d6;font-size:15px;
+      background:white;
+      transition:0.2s;
+    }
+    select:focus,input:focus{
+      border-color:#818cf8;
+      box-shadow:0 0 0 3px #a5b4fc55;
+    }
+    .row{display:flex;gap:8px;margin-top:6px;}
+    .modebtn{
+      flex:1;
+      padding:10px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      background:#e2e8f0;
+      transition:0.2s;
+    }
+    .modebtn.active{
+      background:#818cf8;
+      color:white;
+      box-shadow:0 4px 12px rgba(129,140,248,0.45);
+    }
+    #calc{
+      margin-top:16px;width:100%;padding:12px;border-radius:12px;border:0;
+      background:#16a34a;color:white;font-weight:700;font-size:16px;cursor:pointer;
+      transition:0.25s;box-shadow:0 4px 14px rgba(22,163,74,0.4);
+    }
+    #calc:hover{
+      background:#15803d;
+    }
+    .result{
+      margin-top:16px;padding:14px;border-radius:12px;background:#eef2ff;border:2px dashed #c7d2fe;
+      animation:fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);}
+    }
+    .error{color:#b91c1c;font-weight:700;margin-top:10px;}
+    .small{font-size:13px;color:#475569;}
+    footer{text-align:center;margin-top:12px;font-size:12px;color:#475569;}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <i class="fas fa-magic header-icon"></i>
-            <h1>Trigonometri Sihirbazı ✨</h1>
-            <p>Sin, Cos, Tan ve Cot değerleri, estetik bir tabloda ve kolayca öğrenilebilir şekilde seninle!</p>
-        </header>
+  <div class="card">
+    <h1>🎉 Renkli Trig Hesaplayıcı 🎉</h1>
 
-        <div class="aciklama-kutusu">
-            <i class="fas fa-lightbulb"></i>
-            <p>Bu özel açılar, **Birim Çember** üzerindeki kilit noktalardır. Bu değerleri bilmek, trigonometrinin temelidir.</p>
-        </div>
+    <label>Fonksiyon seç</label>
+    <select id="func">
+      <option value="sin">sin</option>
+      <option value="cos">cos</option>
+      <option value="tan">tan</option>
+      <option value="cot">cotan</option>
+    </select>
 
-        <div class="tablo-kapsayici">
-            <h2>Özel Açı Değerleri (0° - 90°)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Açı $\alpha$</th>
-                        <th>Radyan</th>
-                        <th>$\sin(\alpha)$</th>
-                        <th>$\cos(\alpha)$</th>
-                        <th>$\tan(\alpha)$</th>
-                        <th>$\cot(\alpha)$</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="vurgu-satir">
-                        <td>$0^\circ$</td>
-                        <td>$0$</td>
-                        <td>$0$</td>
-                        <td>$1$</td>
-                        <td>$0$</td>
-                        <td>Tanımsız</td>
-                    </tr>
-                    <tr>
-                        <td>$30^\circ$</td>
-                        <td>$\frac{\pi}{6}$</td>
-                        <td>$\frac{1}{2}$</td>
-                        <td>$\frac{\sqrt{3}}{2}$</td>
-                        <td>$\frac{1}{\sqrt{3}}$</td>
-                        <td>$\sqrt{3}$</td>
-                    </tr>
-                    <tr class="vurgu-satir">
-                        <td>$45^\circ$</td>
-                        <td>$\frac{\pi}{4}$</td>
-                        <td>$\frac{\sqrt{2}}{2}$</td>
-                        <td>$\frac{\sqrt{2}}{2}$</td>
-                        <td>$1$</td>
-                        <td>$1$</td>
-                    </tr>
-                    <tr>
-                        <td>$60^\circ$</td>
-                        <td>$\frac{\pi}{3}$</td>
-                        <td>$\frac{\sqrt{3}}{2}$</td>
-                        <td>$\frac{1}{2}$</td>
-                        <td>$\sqrt{3}$</td>
-                        <td>$\frac{1}{\sqrt{3}}$</td>
-                    </tr>
-                    <tr class="vurgu-satir">
-                        <td>$90^\circ$</td>
-                        <td>$\frac{\pi}{2}$</td>
-                        <td>$1$</td>
-                        <td>$0$</td>
-                        <td>Tanımsız</td>
-                        <td>$0$</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="aciklama-kutusu ileri-bilgi">
-            <i class="fas fa-infinity"></i>
-            <p>Diğer açılar $\left(120^\circ, 210^\circ, \text{vb.}\right)$ bu temel değerlerin işaret değiştirmiş halleridir. Kural: $\sin(\alpha) = \sin(180^\circ - \alpha)$</p>
-        </div>
+    <label>Açı değeri</label>
+    <input id="angle" type="number" step="any" placeholder="ör. 30" />
 
+    <label>Birimi seç</label>
+    <div class="row">
+      <button type="button" id="degBtn" class="modebtn active">Derece</button>
+      <button type="button" id="radBtn" class="modebtn">Radyan</button>
     </div>
 
-    <script>
-        // MathJax'in HTML yüklendikten hemen sonra tüm LaTeX ifadelerini işlemesini sağlar.
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.MathJax) {
-                MathJax.typesetPromise();
-            }
-        });
-    </script>
+    <button id="calc">Hesapla ✨</button>
+
+    <div id="output" class="result small">Sonuç burada görünecek.</div>
+
+    <footer>Hesaplamalar JavaScript Math ile yapılır.</footer>
+  </div>
+
+  <script>
+    const funcEl = document.getElementById('func');
+    const angleEl = document.getElementById('angle');
+    const degBtn = document.getElementById('degBtn');
+    const radBtn = document.getElementById('radBtn');
+    const calcBtn = document.getElementById('calc');
+    const output = document.getElementById('output');
+
+    let mode = 'deg';
+
+    function setMode(m){
+      mode = m;
+      if(m==='deg'){
+        degBtn.classList.add('active');
+        radBtn.classList.remove('active');
+      } else {
+        radBtn.classList.add('active');
+        degBtn.classList.remove('active');
+      }
+    }
+
+    degBtn.onclick = ()=> setMode('deg');
+    radBtn.onclick = ()=> setMode('rad');
+
+    function toRadians(v){ return v * Math.PI / 180; }
+
+    function compute(){
+      const fn = funcEl.value;
+      const raw = angleEl.value.trim();
+      if(!raw){       // check exact special angles
+      const specials = {
+        sin:{0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1',180:'0',270:'-1',360:'0'},
+        cos:{0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0',180:'-1',270:'0',360:'1'},
+        tan:{0:'0',30:'1/√3',45:'1',60:'√3',90:'Tanımsız',180:'0',270:'Tanımsız',360:'0'},
+        cot:{0:'Tanımsız',30:'√3',45:'1',60:'1/√3',90:'0',180:'Tanımsız',270:'0',360:'Tanımsız'}
+      };
+
+      let special = null;
+      if(mode==='deg' && specials[fn][a] !== undefined){ special = specials[fn][a]; }
+
+      output.innerHTML = `
+        <strong>Fonksiyon:</strong> ${fn}<br>
+        <strong>Açı:</strong> ${a} ${mode==='deg'?'°':'rad'}<br><br>
+        ${special ? `<strong>Özel Değer:</strong> ${special}<br>(Tablodaki kesin değer)<br><br>` : ''}
+        <strong>Ondalıklı Sonuç:</strong> <span style="font-family:monospace;font-size:16px;">${val}</span>
+      `; = '<div class="error">Lütfen açı gir!</div>'; return; }
+      const a = Number(raw);
+      if(Number.isNaN(a)){ output.innerHTML = '<div class="error">Geçersiz sayı!</div>'; return; }
+
+      let rad = (mode==='deg') ? toRadians(a) : a;
+      let val;
+
+      try{
+        if(fn==='sin') val = Math.sin(rad);
+        else if(fn==='cos') val = Math.cos(rad);
+        else if(fn==='tan'){
+          if(Math.abs(Math.cos(rad))<1e-14){ output.innerHTML='<div class="error">tan tanımsız!</div>'; return; }
+          val = Math.tan(rad);
+        }
+        else if(fn==='cot'){
+          if(Math.abs(Math.tan(rad))<1e-14){ output.innerHTML='<div class="error">cot tanımsız!</div>'; return; }
+          val = 1/Math.tan(rad);
+        }
+      }catch(e){
+        output.innerHTML = '<div class="error">Hata: '+e.message+'</div>';
+        return;
+      }
+
+      output.innerHTML = `
+        <strong>Fonksiyon:</strong> ${fn}<br>
+        <strong>Açı:</strong> ${a} ${mode==='deg'?'°':'rad'}<br><br>
+        <strong>Sonuç:</strong> <span style="font-family:monospace;font-size:16px;">${val}</span>
+      `;
+    }
+
+    calcBtn.onclick = compute;
+    angleEl.onkeydown = e => { if(e.key==='Enter') compute(); };
+
+    angleEl.value = 30;
+  </script>
 </body>
 </html>
