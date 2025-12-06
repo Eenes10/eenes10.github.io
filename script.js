@@ -4,7 +4,7 @@ const modal = document.getElementById('modal');
 const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
 const grafikBaslik = document.getElementById('grafik-baslik');
 let mevcutGrafik; 
-// seciliKartlar değişkeni ve karşılaştırma mantığı kaldırıldı.
+// Karşılaştırma ile ilgili tüm değişkenler kaldırıldı.
 
 // --- API ANAHTARLARI VE URL'LER ---
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
@@ -77,7 +77,6 @@ async function verileriCek() {
     kurAlani.innerHTML = ''; 
 
     // --- Kartları Oluşturma ---
-    // data-fiyat, data-isim, data-sembol nitelikleri grafiği çizmek için geri eklendi.
     kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', tryPerBtc, BTC_DEGISM_YUZDESI); 
     kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
     kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
@@ -102,7 +101,7 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
-    // cursor: pointer stilinin çalışması için data niteliklerini geri ekledik
+    // data nitelikleri grafiği çizmek için gerekli.
     return `
         <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
             <h2 class="sembol">${sembol}</h2>
@@ -167,7 +166,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     return { etiketler, veriler };
 }
 
-// Tekil Grafiği Çizen Fonksiyon (Basitleştirildi)
+// Tekil Grafiği Çizen Fonksiyon
 function cizTekilGrafik(kartVerisi, zamanDilimi) {
     
     const veriAdedi = 100;
