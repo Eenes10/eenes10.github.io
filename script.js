@@ -1,10 +1,14 @@
+// Global değişkenler
 const kurAlani = document.getElementById('kur-kartlari');
+const modal = document.getElementById('modal');
+const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
+const grafikBaslik = document.getElementById('grafik-baslik');
+let mevcutGrafik; 
+let seciliKartlar = []; // Karşılaştırma modu için
 
 // --- API ANAHTARLARI VE URL'LER ---
 const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
 const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
-
-// CoinGecko API'si (Altın ve BTC için)
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
@@ -26,7 +30,7 @@ async function verileriCek() {
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
 
-    // --- 1. Döviz Verisini Çekme (USD, EUR, GBP, CHF) ---
+    // --- 1. Döviz Verisini Çekme ---
     try {
         const dovizResponse = await fetch(FIXER_URL);
         const dovizData = await dovizResponse.json();
@@ -46,7 +50,7 @@ async function verileriCek() {
         console.error("Fixer API çekiminde hata:", error);
     }
     
-    // --- 2. Kripto ve Altın Verisini Çekme (BTC/USD ve XAU/USD) ---
+    // --- 2. Kripto ve Altın Verisini Çekme ---
     try {
         const cryptoResponse = await fetch(COINGECKO_URL);
         const cryptoData = await cryptoResponse.json();
@@ -97,8 +101,9 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
     const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
     
+    // Data nitelikleri eklenmiştir.
     return `
-        <div class="kur-kart">
+        <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
             <h2 class="sembol">${sembol}</h2>
             <h3 class="isim">${isim}</h3>
             <div class="fiyat-alanı">
@@ -112,39 +117,35 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
 verileriCek();
 setInterval(verileriCek, 10000); 
 
-// --- GRAFİK MODAL VE ETKİLEŞİM İŞLEMLERİ ---
+// --- MODAL, GRAFİK VE YENİ ÖZELLİKLER ---
 
-const modal = document.getElementById('modal');
-const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
-const grafikBaslik = document.getElementById('grafik-baslik');
-let mevcutGrafik; 
-
+// Modal Kapatma Olayları
 kapatDugmesi.onclick = function() {
   modal.style.display = "none";
+  seciliKartlar = []; 
+  document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
 }
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
+    seciliKartlar = [];
+    document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
   }
 }
-
 
 // Geçmiş fiyat verilerini simüle eden fonksiyon (Tarih etiketli ve yumuşak geçişli)
 function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const veriler = [];
     const etiketler = [];
     
-    // Başlangıç fiyatını rastgele ayarla
     let fiyatSim = fiyat * (1 - Math.random() * 0.05); 
-    
     const simdikiTarih = new Date();
 
     for (let i = 0; i < veriAdedi; i++) {
         
-        // 1. Rastgele Değişim: Fiyata küçük bir rastgele adım uygula
         fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
         
-        // 2. YUMUŞATMA: Son %20'lik dilimde güncel fiyata yakınsa
+        // YUMUŞATMA
         if (i >= veriAdedi * 0.8) {
             const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
             fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
@@ -156,88 +157,81 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
         let tarih = new Date(simdikiTarih);
         
         if (zamanDilimi === 'Gün') {
-            // İleriden geriye doğru sayarak doğru tarihi hesapla
             tarih.setDate(simdikiTarih.getDate() - (veriAdedi - 1 - i));
             etiketler.push(`${tarih.getDate()} ${tarih.toLocaleString('tr-TR', { month: 'short' })}`);
         } else if (zamanDilimi === 'Saat') {
-            // İleriden geriye doğru sayarak doğru saati hesapla
             tarih.setHours(simdikiTarih.getHours() - (veriAdedi - 1 - i));
             etiketler.push(`${tarih.getHours().toString().padStart(2, '0')}:${tarih.getMinutes().toString().padStart(2, '0')}`);
         }
     }
     
-    // Son noktayı kesin olarak güncel fiyata eşitle (Yumuşatma yapıldığı için sıçrama yapmaz)
     veriler[veriAdedi - 1] = parseFloat(fiyat.toFixed(4));
     
     return { etiketler, veriler };
 }
 
-// Chart.js ile grafiği çizen fonksiyon
-function cizGrafik(isim, fiyat, zamanDilimi) {
+// Karşılaştırmalı Grafiği Çizen Fonksiyon
+function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
     
-    // Veri adedi 100 olarak sabitlendi (daha geniş aralık için)
-    const veriAdedi = 100;
-    const { etiketler, veriler } = gecmisVeriSimulasyonu(fiyat, veriAdedi, zamanDilimi);
+    const veriAdedi = 100; // Sabit aralık
+    const veri1 = gecmisVeriSimulasyonu(kart1.fiyat, veriAdedi, zamanDilimi);
+    const veri2 = gecmisVeriSimulasyonu(kart2.fiyat, veriAdedi, zamanDilimi);
     
     if (mevcutGrafik) {
         mevcutGrafik.destroy();
     }
+    
+    // Açık/Koyu tema ayarları
+    const isLight = document.body.classList.contains('light');
+    const primaryColor = isLight ? '#007bff' : '#ffcc00';
+    const secondaryColor = isLight ? '#28a745' : '#17a2b8';
+    const fontColor = isLight ? '#333' : '#f0f0f0';
+    const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
-    grafikBaslik.textContent = `${isim} Fiyat Geçmişi (Son ${etiketler.length} ${zamanDilimi})`;
+    grafikBaslik.textContent = `${kart1.isim} vs ${kart2.isim} Karşılaştırması`;
     
     const ctx = document.getElementById('fiyatGrafik').getContext('2d');
     
     mevcutGrafik = new Chart(ctx, {
         type: 'line', 
         data: {
-            labels: etiketler,
-            datasets: [{
-                label: `${isim} Fiyatı (₺)`,
-                data: veriler,
-                borderColor: '#ffcc00', 
-                backgroundColor: 'rgba(255, 204, 0, 0.2)',
-                tension: 0.2, 
-                pointRadius: 0 
-            }]
+            labels: veri1.etiketler,
+            datasets: [
+                {
+                    label: `${kart1.isim} (₺)`,
+                    data: veri1.veriler,
+                    borderColor: primaryColor, 
+                    backgroundColor: `${primaryColor}20`, // %20 Opak
+                    tension: 0.2, 
+                    pointRadius: 0
+                },
+                {
+                    label: `${kart2.isim} (₺)`,
+                    data: veri2.veriler,
+                    borderColor: secondaryColor, 
+                    backgroundColor: `${secondaryColor}20`,
+                    tension: 0.2, 
+                    pointRadius: 0
+                }
+            ]
         },
         options: {
             responsive: true,
             scales: {
                 y: {
                     beginAtZero: false,
-                    title: {
-                        display: true,
-                        text: 'Fiyat (₺)',
-                        color: '#f0f0f0'
-                    },
-                    ticks: {
-                        color: '#f0f0f0'
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    }
+                    title: { display: true, text: 'Fiyat (₺)', color: fontColor },
+                    ticks: { color: fontColor },
+                    grid: { color: gridColor }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: zamanDilimi,
-                        color: '#f0f0f0'
-                    },
-                    ticks: {
-                        color: '#f0f0f0'
-                    },
-                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    }
+                    title: { display: true, text: zamanDilimi, color: fontColor },
+                    ticks: { color: fontColor },
+                    grid: { color: gridColor }
                 }
             },
             plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        color: '#f0f0f0' 
-                    }
-                }
+                legend: { display: true, labels: { color: fontColor } }
             }
         }
     });
@@ -245,7 +239,8 @@ function cizGrafik(isim, fiyat, zamanDilimi) {
     modal.style.display = "block";
 }
 
-// Kartlara tıklama olayını ekleyen fonksiyon
+
+// Kartlara tıklama olayını ekleyen fonksiyon (Karşılaştırma mantığı)
 function kartTiklamaDinleyicileriEkle() {
     
     // Tıklama olaylarını tekrar tekrar eklenmesini önler
@@ -257,21 +252,69 @@ function kartTiklamaDinleyicileriEkle() {
 
     const sonKartlar = document.querySelectorAll('.kur-kart');
     sonKartlar.forEach(kart => {
-        const sembol = kart.querySelector('.sembol').textContent;
-        const isim = kart.querySelector('.isim').textContent;
-        
-        const fiyatMetni = kart.querySelector('.fiyat').textContent
-                               .replace('₺ ', '')
-                               .replace(/\./g, '') 
-                               .replace(',', '.'); 
-        const fiyat = parseFloat(fiyatMetni);
-
         kart.addEventListener('click', () => {
-            let zaman = 'Gün';
-            if (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') {
-                zaman = 'Saat'; 
+            
+            const fiyat = parseFloat(kart.getAttribute('data-fiyat'));
+            const isim = kart.getAttribute('data-isim');
+            const sembol = kart.getAttribute('data-sembol');
+            
+            const kartVerisi = { fiyat, isim, sembol };
+
+            if (kart.classList.contains('secili')) {
+                // Zaten seçiliyse, seçimi kaldır
+                kart.classList.remove('secili');
+                seciliKartlar = seciliKartlar.filter(item => item.sembol !== sembol);
+            } else if (seciliKartlar.length < 2) {
+                // Seçili değilse ve 2'den az kart seçiliyse, ekle
+                kart.classList.add('secili');
+                seciliKartlar.push(kartVerisi);
             }
-            cizGrafik(isim, fiyat, zaman);
+
+            // Eğer 2 kart seçildiyse, karşılaştırma grafiğini çiz
+            if (seciliKartlar.length === 2) {
+                // Her iki kart da BTC veya Altın ise Saat, diğer durumlarda Gün aralığı kullan
+                const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
+                let zaman = (isHizliVarlik(seciliKartlar[0].sembol) && isHizliVarlik(seciliKartlar[1].sembol)) ? 'Saat' : 'Gün';
+                
+                cizKarsilastirmaGrafik(seciliKartlar[0], seciliKartlar[1], zaman);
+            } else if (seciliKartlar.length === 1) {
+                // 1 kart seçiliyse kullanıcıyı uyar
+                grafikBaslik.textContent = `${kartVerisi.isim} Seçildi. Karşılaştırmak için ikinciyi seçiniz.`;
+                modal.style.display = "block";
+                
+                // Seçili değilken modal açıksa onu hemen kapat
+                if (mevcutGrafik) mevcutGrafik.destroy();
+            }
         });
     });
 }
+
+// --- YENİ ÖZELLİK: TEMA DEĞİŞTİRME MANTIĞI ---
+
+document.getElementById('temaDegistirBtn').addEventListener('click', () => {
+    const body = document.body;
+    const btn = document.getElementById('temaDegistirBtn');
+    
+    if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        localStorage.setItem('tema', 'dark');
+        btn.textContent = '🌞'; 
+        // Grafik açıksa temayı güncelle
+        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#f0f0f0';
+    } else {
+        body.classList.add('light');
+        localStorage.setItem('tema', 'light');
+        btn.textContent = '🌙'; 
+        // Grafik açıksa temayı güncelle
+        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#333';
+    }
+    if (mevcutGrafik) mevcutGrafik.update();
+});
+
+// Sayfa yüklendiğinde temayı kontrol et
+(function kontrolTemayi() {
+    if (localStorage.getItem('tema') === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('temaDegistirBtn').textContent = '🌙';
+    }
+})();
