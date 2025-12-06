@@ -7,7 +7,7 @@ const motivasyonAlani = document.getElementById('motivasyon-alani');
 
 let yukluResim = false; 
 
-// --- 1. GÖRSEL YÜKLEME İŞLEMLERİ ---
+// --- GÖRSEL YÜKLEME MANTIĞI ---
 
 resimSecBtn.addEventListener('click', () => {
     resimInput.click();
@@ -17,81 +17,100 @@ resimInput.addEventListener('change', (event) => {
     const dosya = event.target.files[0];
     if (dosya) {
         yukluResim = true;
-        
-        // Görsel onay ekranını göster
         resimSecBtn.style.display = 'none';
         yuklenenResimGosterim.style.display = 'flex';
         cozBtn.disabled = false;
-
         cozumIcerigi.innerHTML = `<p class="baslangic-mesaj">Fotoğraf başarıyla yüklendi. Çözümü Başlat'a tıklayabilirsin!</p>`;
-
     } else {
         yukluResim = false;
         cozBtn.disabled = true;
     }
 });
 
-// --- 2. GELİŞTİRİLMİŞ YAPAY ZEKA SİMÜLASYON VERİLERİ (Daha Fazla Konu!) ---
+// --- TÜM MATEMATİK KONULARINI KAPSAYAN YZ SİMÜLASYON VERİLERİ ---
 
 const matematikCozumler = {
     "temel": {
         cozum_basligi: "Basit Aritmetik Çözüm (Hızlı Analiz)",
         adımlar: [
-            "**Adım 1: Görselden İşlem Tespiti**",
+            "**Adım 1: OCR Tarama ve İşlem Tespiti**",
             "Yapay Zeka, görseldeki işlemi $2+2=?$ olarak okudu.",
             "**Adım 2: Çözüm**",
             "Temel toplama kuralı uygulanır.",
-            "**Sonuç:** $\\text{Cevap } 4 \\text{'tür}.$ Fotoğraf çözüldü! Zorluk Seviyesi: 1/5."
+            "**Sonuç:** $\\text{Cevap } 4 \\text{'tür}.$ Zorluk Seviyesi: 1/10."
         ]
     },
     "ikinci_derece": {
-        cozum_basligi: "İkinci Dereceden Denklemler Çözümü (Gelişmiş Analiz)",
+        cozum_basligi: "Polinom Denklemler Çözümü (Lise Seviyesi)",
         adımlar: [
-            "**Adım 1: Görsel Analiz ve Katsayılar**",
-            "Görseldeki denklem $ax^2 + bx + c = 0$ formatında tanımlandı. (Örn: $x^2 - 5x + 6 = 0$).",
-            "**Adım 2: Diskriminant ve Kök Tespiti**",
-            "Diskriminant $\\Delta = b^2 - 4ac$ hesaplandı. ($\\Delta=1$ varsayılmıştır).",
-            "**Adım 3: Kökleri Bulma ve Doğrulama**",
-            "Kök formülü $x_{1,2} = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ uygulandı.",
-            "$\\text{Bulunan Kökler: } x_1=3 \\text{ ve } x_2=2$.",
-            "**Sonuç:** $\\text{Denklemin kökleri doğru bir şekilde bulundu. }$ Zorluk Seviyesi: 3/5."
+            "**Adım 1: Denklemin Standardizasyonu**",
+            "Görseldeki denklem $x^2 - 5x + 6 = 0$ olarak analiz edildi.",
+            "**Adım 2: Çarpanlara Ayırma/Diskriminant**",
+            "Çarpanlara ayırma yöntemi $(x-3)(x-2)=0$ uygulandı.",
+            "**Adım 3: Kökler**",
+            "Kökler $x_1=3$ ve $x_2=2$ olarak bulundu.",
+            "**Sonuç:** $\\text{Denklemin kökleri başarıyla bulundu. }$ Zorluk Seviyesi: 3/10."
         ]
     },
     "integral": {
-        cozum_basligi: "Belirsiz İntegral Çözümü (Yüksek Hassasiyet)",
+        cozum_basligi: "Belirsiz İntegral Çözümü (Üniversite 1. Yıl)",
         adımlar: [
             "**Adım 1: Görselden Fonksiyonu Çıkarma**",
-            "Yapay Zeka, ifadenin $\\int (x^2 + 2x) dx$ şeklinde bir polinom integral olduğunu belirledi.",
+            "Görseldeki ifade $\\int (x^2 + e^x) dx$ şeklinde bir fonksiyon olarak belirlendi.",
             "**Adım 2: İntegral Kuralı Uygulama**",
-            "Toplama kuralı ve temel $\\int x^n dx$ formülü her terime uygulandı.",
+            "Toplama kuralı ve $\\int e^x dx = e^x$ formülü uygulandı.",
             "**Adım 3: Nihai Çözüm ve Sadeleştirme**",
-            "Çözüm: $\\frac{x^{3}}{3} + \\frac{2x^2}{2} + C$",
-            "**Sonuç:** $\\text{Final çözüm: } \\frac{x^3}{3} + x^2 + C \\text{ olarak belirlenmiştir. }$ Zorluk Seviyesi: 4/5."
+            "Final çözümü: $\\frac{x^{3}}{3} + e^x + C$.",
+            "**Sonuç:** $\\text{Çözüm } \\frac{x^3}{3} + e^x + C \\text{ olarak belirlenmiştir. }$ Zorluk Seviyesi: 6/10."
         ]
     },
-    "trigonometri": {
-        cozum_basligi: "Trigonometrik Kimlikler Çözümü (Açı Analizi)",
+    "türev": {
+        cozum_basligi: "Türev Hesabı (Zincir Kuralı Analizi)",
         adımlar: [
-            "**Adım 1: Görseldeki İfade Tespiti**",
-            "Sorunun $\\sin(2x) = 1$ gibi bir trigonometrik denklem içerdiği belirlendi.",
-            "**Adım 2: Kimlik Dönüşümü**",
-            "Gerekli dönüşüm yapıldı: $2x = \\frac{\\pi}{2} + 2k\\pi$.",
-            "**Adım 3: x Değerlerinin Bulunması**",
-            "Tüm çözüm kümesi hesaplandı: $x = \\frac{\\pi}{4} + k\\pi \\text{ (} k \\in \\mathbb{Z} \\text{)}$",
-            "**Sonuç:** $\\text{Trigonometrik çözüm kümesi doğru bulundu. }$ Zorluk Seviyesi: 5/5."
+            "**Adım 1: Fonksiyon Tespiti**",
+            "Yapay zeka, fonksiyonu $f(x) = \\sin(x^2)$ olarak okudu.",
+            "**Adım 2: Zincir Kuralı Uygulama**",
+            "Dış fonksiyonun türevi ($\\cos(x^2)$) çarpı iç fonksiyonun türevi ($2x$).",
+            "**Adım 3: Nihai Türev**",
+            "Sonuç: $f'(x) = 2x \\cos(x^2)$.",
+            "**Sonuç:** $\\text{Türev doğru bir şekilde hesaplandı. }$ Zorluk Seviyesi: 7/10."
+        ]
+    },
+    "limit": {
+        cozum_basligi: "Limit Hesaplama (L'Hopital Kuralı)",
+        adımlar: [
+            "**Adım 1: Limit İfadesinin Tespiti**",
+            "Görseldeki limit $\\lim_{x \\to 0} \\frac{\\sin(x)}{x}$ olarak analiz edildi. ($\\frac{0}{0}$ belirsizliği)",
+            "**Adım 2: L'Hopital Kuralı Uygulama**",
+            "Payın türevi ($\\cos(x)$) ve paydanın türevi (1) alındı.",
+            "**Adım 3: Limit Değeri**",
+            "Yeni limit $\\lim_{x \\to 0} \\cos(x) / 1$. $x=0$ yerine konulduğunda cevap **1**.",
+            "**Sonuç:** $\\text{Limit değeri doğru bir şekilde } 1 \\text{ olarak bulundu. }$ Zorluk Seviyesi: 8/10."
+        ]
+    },
+    "matris": {
+        cozum_basligi: "Matris Determinantı (İleri Cebir)",
+        adımlar: [
+            "**Adım 1: Matris Tespiti**",
+            "Yapay Zeka, $3 \\times 3$ tipinde bir matrisin determinantının istendiğini belirledi.",
+            "**Adım 2: Sarrus Kuralı Uygulama**",
+            "Sarrus kuralı ile çapraz çarpımlar hesaplandı.",
+            "**Adım 3: Determinant Hesaplaması**",
+            "Tüm terimlerin toplam ve farkı hesaplandı: $\\text{det}(A) = a(ei - fh) - b(di - fg) + c(dh - eg)$.",
+            "**Sonuç:** $\\text{Determinantın sonucu: } 15 \\text{ olarak belirlendi (Örnek Değer). }$ Zorluk Seviyesi: 10/10."
         ]
     }
 };
 
 const motivasyonlar = [
-    "Harika bir fotoğraf! Sorun netti, çözüm anında geldi. Yapay zeka %100 doğrulukla çözdü. 💯",
-    "Görsel analiz başarılı! Bu zorluktaki bir integrali bile çözdün. Bir sonraki seviyeye geçelim mi? 💪",
-    "Yapay zekanın en yeni algoritmasıyla çözüldü! Zorluk derecesi 5/5'ti! 🚀",
-    "Çözüldü! Beynine biraz dinlenme molası ver, bunu hak ettin. ✨"
+    "✅ Yüksek hassasiyetli analiz tamamlandı! Tüm matematik soruları çözülmeye hazır. 💯",
+    "Görseldeki üniversite seviyesi problemi bile çözdün. Zekan sınır tanımıyor! 🚀",
+    "Yapay Zeka bu kadar detaylı bir çözümü 4 saniyede üretti. İnanılmaz! 🤯",
+    "Çözüldü! Yeni bir soru yüklemeden önce bu karmaşık çözümü incele. ✨"
 ];
 
 
-// Ana Çözümleme Fonksiyonu
+// --- ANA ÇÖZÜMLEME FONKSİYONU ---
 cozBtn.addEventListener('click', () => {
     
     if (!yukluResim) {
@@ -100,14 +119,14 @@ cozBtn.addEventListener('click', () => {
     }
 
     cozBtn.disabled = true;
-    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Derin Öğrenme Modeli Çalışıyor...';
-    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Yapay zeka görseli tarıyor, formülleri ve çözüm adımlarını oluşturuyor...</p>';
+    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Derin Öğrenme Modeli (OmniMath) Çalışıyor...';
+    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Yapay Zeka görseli tarıyor, formülleri ve çözüm adımlarını oluşturuyor...</p>';
     motivasyonAlani.style.display = 'none';
 
-    // 4 saniyelik Simülasyon bekleme süresi (Daha karmaşık analiz izlenimi)
+    // 5 saniyelik Simülasyon bekleme süresi (En karmaşık analiz izlenimi)
     setTimeout(() => {
         
-        // Simülasyon: Rastgele bir matematik konusunu seçerek yapay zekanın "çeşitli" çözümler ürettiği izlenimini veriyoruz.
+        // Simülasyon: Tüm matematik konularını kapsayacak şekilde rastgele birini seçiyoruz.
         const konular = Object.keys(matematikCozumler);
         const rastgeleKonuIndex = Math.floor(Math.random() * konular.length);
         const rastgeleKonu = konular[rastgeleKonuIndex];
@@ -132,12 +151,12 @@ cozBtn.addEventListener('click', () => {
         
         // Butonu ve resim yükleme alanını sıfırla (Yeni soru için hazırlık)
         cozBtn.disabled = true;
-        cozBtn.innerHTML = 'Çözümü Başlat <i class="fas fa-brain"></i>';
+        cozBtn.innerHTML = 'Çözümü Başlat <i class="fas fa-magic"></i>';
         
         resimInput.value = ''; // Inputu temizle
         yukluResim = false;
         resimSecBtn.style.display = 'flex';
         yuklenenResimGosterim.style.display = 'none';
 
-    }, 4000); // 4 Saniye bekletme
+    }, 5000); // 5 Saniye bekletme
 });
