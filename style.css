@@ -1,206 +1,320 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #1a1a2e; /* Koyu arka plan */
-    color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-    transition: background-color 0.3s, color 0.3s;
+// Global değişkenler
+const kurAlani = document.getElementById('kur-kartlari');
+const modal = document.getElementById('modal');
+const kapatDugmesi = document.getElementsByClassName("kapat-dugmesi")[0];
+const grafikBaslik = document.getElementById('grafik-baslik');
+let mevcutGrafik; 
+let seciliKartlar = []; // Karşılaştırma modu için
+
+// --- API ANAHTARLARI VE URL'LER ---
+const FIXER_API_KEY = '9086e6e2f4c8476edd902703c0e82a1e'; 
+const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&base=EUR&symbols=TRY,USD,GBP,CHF`; 
+const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
+
+async function verileriCek() {
+    // Varsayılan değerler
+    let tryPerUsd = 33.2000; 
+    let tryPerEur = 36.1000; 
+    let tryPerGbp = 40.5000; 
+    let tryPerChf = 35.0000; 
+    let onsPerUsd = 2000.00;
+    let usdPerBtc = 60000.00;
+    let tryPerGramAltin = 2000.00; 
+    
+    // Değişim yüzdeleri (Simülasyon)
+    const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
+    const ALTIN_DEGISM_YUZDESI_CEYREK = 0.90;
+    const DOVIZ_DEGISM_USD = 0.35;
+    const DOVIZ_DEGISM_EUR = -0.15;
+    const DOVIZ_DEGISM_GBP = 0.50;
+    const DOVIZ_DEGISM_CHF = -0.05;
+    const BTC_DEGISM_YUZDESI = 1.50;
+
+    // --- 1. Döviz Verisini Çekme ---
+    try {
+        const dovizResponse = await fetch(FIXER_URL);
+        const dovizData = await dovizResponse.json();
+        
+        if (dovizData?.rates && dovizData.success) {
+            const eurTry = dovizData.rates.TRY;
+            const eurUsd = dovizData.rates.USD;
+            const eurGbp = dovizData.rates.GBP;
+            const eurChf = dovizData.rates.CHF;
+            
+            tryPerUsd = eurTry / eurUsd;
+            tryPerEur = eurTry; 
+            tryPerGbp = eurTry / eurGbp;
+            tryPerChf = eurTry / eurChf;
+        } 
+    } catch (error) {
+        console.error("Fixer API çekiminde hata:", error);
+    }
+    
+    // --- 2. Kripto ve Altın Verisini Çekme ---
+    try {
+        const cryptoResponse = await fetch(COINGECKO_URL);
+        const cryptoData = await cryptoResponse.json();
+        
+        if (cryptoData?.['tether-gold']?.usd) {
+            onsPerUsd = cryptoData['tether-gold'].usd;
+        } 
+
+        if (cryptoData?.bitcoin?.usd) {
+            usdPerBtc = cryptoData.bitcoin.usd;
+        } 
+
+    } catch (error) {
+        console.error("CoinGecko API çekiminde hata:", error);
+    }
+    
+    // --- 3. Nihai Hesaplamalar ---
+    
+    const tryPerBtc = usdPerBtc * tryPerUsd;
+    const onsPerTry = onsPerUsd * tryPerUsd;
+    const ONS_KARSILIGI_GRAM = 31.1035; 
+    tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
+    const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
+    
+    // Ekranı temizle
+    kurAlani.innerHTML = ''; 
+
+    // --- Kartları Oluşturma ---
+    
+    kurAlani.innerHTML += kartOlustur('Bitcoin', 'BTC', tryPerBtc, BTC_DEGISM_YUZDESI); 
+    kurAlani.innerHTML += kartOlustur('Gram Altın', 'XAU', tryPerGramAltin, ALTIN_DEGISM_YUZDESI_GRAM); 
+    kurAlani.innerHTML += kartOlustur('Çeyrek Altın', 'ÇYRK', tryPerCeyrekAltin, ALTIN_DEGISM_YUZDESI_CEYREK); 
+    kurAlani.innerHTML += kartOlustur('Amerikan Doları', 'USD', tryPerUsd, DOVIZ_DEGISM_USD); 
+    kurAlani.innerHTML += kartOlustur('Euro', 'EUR', tryPerEur, DOVIZ_DEGISM_EUR); 
+    kurAlani.innerHTML += kartOlustur('İngiliz Sterlini', 'GBP', tryPerGbp, DOVIZ_DEGISM_GBP); 
+    kurAlani.innerHTML += kartOlustur('İsviçre Frangı', 'CHF', tryPerChf, DOVIZ_DEGISM_CHF); 
+
+    // Kartlar oluşturulduktan sonra tıklama dinleyicilerini ekle
+    kartTiklamaDinleyicileriEkle();
 }
 
-header h1 {
-    color: #ffcc00; /* Sarı başlık */
-    margin-bottom: 5px;
+// Kart oluşturma fonksiyonu
+function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
+    const minD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
+    const maxD = (sembol === 'BTC' || sembol === 'XAU' || sembol === 'ÇYRK') ? 2 : 4;
+    
+    const formatliFiyat = fiyat.toLocaleString('tr-TR', { minimumFractionDigits: minD, maximumFractionDigits: maxD });
+    const degisimSinifi = degisimYuzdesi >= 0 ? 'pozitif' : 'negatif';
+    const degisimMetni = degisimYuzdesi.toFixed(2) + '%';
+    
+    // Data nitelikleri eklenmiştir.
+    return `
+        <div class="kur-kart" data-fiyat="${fiyat}" data-isim="${isim}" data-sembol="${sembol}">
+            <h2 class="sembol">${sembol}</h2>
+            <h3 class="isim">${isim}</h3>
+            <div class="fiyat-alanı">
+                <span class="fiyat">₺ ${formatliFiyat}</span>
+                <span class="degisim ${degisimSinifi}">${degisimMetni}</span>
+            </div>
+        </div>
+    `;
 }
 
-header p {
-    color: #bbb;
-    margin-bottom: 30px;
+verileriCek();
+setInterval(verileriCek, 10000); 
+
+// --- MODAL, GRAFİK VE YENİ ÖZELLİKLER ---
+
+// Modal Kapatma Olayları
+kapatDugmesi.onclick = function() {
+  modal.style.display = "none";
+  seciliKartlar = []; 
+  document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+}
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+    seciliKartlar = [];
+    document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+  }
 }
 
-.kart-alanı {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 0 10px;
+// Geçmiş fiyat verilerini simüle eden fonksiyon (Tarih etiketli ve yumuşak geçişli)
+function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
+    const veriler = [];
+    const etiketler = [];
+    
+    let fiyatSim = fiyat * (1 - Math.random() * 0.05); 
+    const simdikiTarih = new Date();
+
+    for (let i = 0; i < veriAdedi; i++) {
+        
+        fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
+        
+        // YUMUŞATMA
+        if (i >= veriAdedi * 0.8) {
+            const yakinlasmaFaktoru = (i - veriAdedi * 0.8) / (veriAdedi * 0.2);
+            fiyatSim = fiyatSim * (1 - yakinlasmaFaktoru) + fiyat * yakinlasmaFaktoru;
+        }
+
+        veriler.push(parseFloat(fiyatSim.toFixed(4)));
+
+        // Etiket hesaplama (Gerçekçi Tarih Olarak)
+        let tarih = new Date(simdikiTarih);
+        
+        if (zamanDilimi === 'Gün') {
+            tarih.setDate(simdikiTarih.getDate() - (veriAdedi - 1 - i));
+            etiketler.push(`${tarih.getDate()} ${tarih.toLocaleString('tr-TR', { month: 'short' })}`);
+        } else if (zamanDilimi === 'Saat') {
+            tarih.setHours(simdikiTarih.getHours() - (veriAdedi - 1 - i));
+            etiketler.push(`${tarih.getHours().toString().padStart(2, '0')}:${tarih.getMinutes().toString().padStart(2, '0')}`);
+        }
+    }
+    
+    veriler[veriAdedi - 1] = parseFloat(fiyat.toFixed(4));
+    
+    return { etiketler, veriler };
 }
 
-.kur-kart {
-    background-color: #2a2a4a; /* Koyu mor kart */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    width: 280px;
-    transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
-    text-align: left;
-    cursor: pointer; 
-    border: 3px solid transparent; /* Varsayılan sınır */
+// Karşılaştırmalı Grafiği Çizen Fonksiyon
+function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
+    
+    const veriAdedi = 100; // Sabit aralık
+    const veri1 = gecmisVeriSimulasyonu(kart1.fiyat, veriAdedi, zamanDilimi);
+    const veri2 = gecmisVeriSimulasyonu(kart2.fiyat, veriAdedi, zamanDilimi);
+    
+    if (mevcutGrafik) {
+        mevcutGrafik.destroy();
+    }
+    
+    // Açık/Koyu tema ayarları
+    const isLight = document.body.classList.contains('light');
+    const primaryColor = isLight ? '#007bff' : '#ffcc00';
+    const secondaryColor = isLight ? '#28a745' : '#17a2b8';
+    const fontColor = isLight ? '#333' : '#f0f0f0';
+    const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+
+    grafikBaslik.textContent = `${kart1.isim} vs ${kart2.isim} Karşılaştırması`;
+    
+    const ctx = document.getElementById('fiyatGrafik').getContext('2d');
+    
+    mevcutGrafik = new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: veri1.etiketler,
+            datasets: [
+                {
+                    label: `${kart1.isim} (₺)`,
+                    data: veri1.veriler,
+                    borderColor: primaryColor, 
+                    backgroundColor: `${primaryColor}20`, // %20 Opak
+                    tension: 0.2, 
+                    pointRadius: 0
+                },
+                {
+                    label: `${kart2.isim} (₺)`,
+                    data: veri2.veriler,
+                    borderColor: secondaryColor, 
+                    backgroundColor: `${secondaryColor}20`,
+                    tension: 0.2, 
+                    pointRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: { display: true, text: 'Fiyat (₺)', color: fontColor },
+                    ticks: { color: fontColor },
+                    grid: { color: gridColor }
+                },
+                x: {
+                    title: { display: true, text: zamanDilimi, color: fontColor },
+                    ticks: { color: fontColor },
+                    grid: { color: gridColor }
+                }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: fontColor } }
+            }
+        }
+    });
+
+    modal.style.display = "block";
 }
 
-/* YENİ ÖZELLİK: Seçili kart vurgusu (Karşılaştırma modu için) */
-.kur-kart.secili {
-    border-color: #ffcc00; 
-    transform: scale(1.03);
+
+// Kartlara tıklama olayını ekleyen fonksiyon (Karşılaştırma mantığı)
+function kartTiklamaDinleyicileriEkle() {
+    
+    // Tıklama olaylarını tekrar tekrar eklenmesini önler
+    const guncelKartlar = document.querySelectorAll('.kur-kart');
+    guncelKartlar.forEach(kart => {
+        const yeniKart = kart.cloneNode(true);
+        kart.parentNode.replaceChild(yeniKart, kart);
+    });
+
+    const sonKartlar = document.querySelectorAll('.kur-kart');
+    sonKartlar.forEach(kart => {
+        kart.addEventListener('click', () => {
+            
+            const fiyat = parseFloat(kart.getAttribute('data-fiyat'));
+            const isim = kart.getAttribute('data-isim');
+            const sembol = kart.getAttribute('data-sembol');
+            
+            const kartVerisi = { fiyat, isim, sembol };
+
+            if (kart.classList.contains('secili')) {
+                // Zaten seçiliyse, seçimi kaldır
+                kart.classList.remove('secili');
+                seciliKartlar = seciliKartlar.filter(item => item.sembol !== sembol);
+            } else if (seciliKartlar.length < 2) {
+                // Seçili değilse ve 2'den az kart seçiliyse, ekle
+                kart.classList.add('secili');
+                seciliKartlar.push(kartVerisi);
+            }
+
+            // Eğer 2 kart seçildiyse, karşılaştırma grafiğini çiz
+            if (seciliKartlar.length === 2) {
+                // Her iki kart da BTC veya Altın ise Saat, diğer durumlarda Gün aralığı kullan
+                const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
+                let zaman = (isHizliVarlik(seciliKartlar[0].sembol) && isHizliVarlik(seciliKartlar[1].sembol)) ? 'Saat' : 'Gün';
+                
+                cizKarsilastirmaGrafik(seciliKartlar[0], seciliKartlar[1], zaman);
+            } else if (seciliKartlar.length === 1) {
+                // 1 kart seçiliyse kullanıcıyı uyar
+                grafikBaslik.textContent = `${kartVerisi.isim} Seçildi. Karşılaştırmak için ikinciyi seçiniz.`;
+                modal.style.display = "block";
+                
+                // Seçili değilken modal açıksa onu hemen kapat
+                if (mevcutGrafik) mevcutGrafik.destroy();
+            }
+        });
+    });
 }
 
-.kur-kart:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-}
+// --- YENİ ÖZELLİK: TEMA DEĞİŞTİRME MANTIĞI ---
 
-.sembol {
-    font-size: 2em;
-    font-weight: bold;
-    color: #ffcc00; 
-    margin-bottom: 5px;
-}
+document.getElementById('temaDegistirBtn').addEventListener('click', () => {
+    const body = document.body;
+    const btn = document.getElementById('temaDegistirBtn');
+    
+    if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        localStorage.setItem('tema', 'dark');
+        btn.textContent = '🌞'; 
+        // Grafik açıksa temayı güncelle
+        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#f0f0f0';
+    } else {
+        body.classList.add('light');
+        localStorage.setItem('tema', 'light');
+        btn.textContent = '🌙'; 
+        // Grafik açıksa temayı güncelle
+        if (mevcutGrafik) mevcutGrafik.options.scales.y.ticks.color = '#333';
+    }
+    if (mevcutGrafik) mevcutGrafik.update();
+});
 
-.isim {
-    font-size: 1em;
-    color: #bbb;
-    margin-bottom: 15px;
-}
-
-.fiyat-alanı {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fiyat {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #f0f0f0;
-}
-
-.degisim {
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 0.9em;
-}
-
-.pozitif {
-    background-color: #4CAF50; /* Yeşil */
-    color: white;
-}
-
-.negatif {
-    background-color: #f44336; /* Kırmızı */
-    color: white;
-}
-
-/* --- Grafik Modal (Pop-up) Stilleri --- */
-
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1000; /* Daha yüksek z-index */
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgba(0,0,0,0.8); 
-}
-
-.modal-icerik {
-    background-color: #2a2a4a; 
-    margin: 10% auto; 
-    padding: 20px;
-    border: 1px solid #444;
-    border-radius: 12px;
-    width: 80%; 
-    max-width: 700px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    color: #f0f0f0;
-}
-
-#grafik-baslik {
-    margin-top: 0;
-    border-bottom: 1px solid #3a3a5a;
-    padding-bottom: 10px;
-}
-
-.kapat-dugmesi {
-    color: #f0f0f0;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.kapat-dugmesi:hover,
-.kapat-dugmesi:focus {
-    color: #ffcc00;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* --- YENİ ÖZELLİK: TEMA DEĞİŞTİRME STİLLERİ --- */
-
-#tema-degistir-alanı {
-    position: absolute;
-    top: 25px;
-    right: 30px;
-}
-
-#temaDegistirBtn {
-    background: none;
-    border: 2px solid #ffcc00;
-    color: #ffcc00;
-    font-size: 1.2em;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-#temaDegistirBtn:hover {
-    background-color: #ffcc0020;
-}
-
-/* Açık Tema Stilleri */
-body.light {
-    background-color: #f4f7f6; 
-    color: #333;
-}
-
-body.light header h1 {
-    color: #007bff; 
-}
-
-body.light header p {
-    color: #555;
-}
-
-body.light .kur-kart {
-    background-color: #ffffff; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-body.light .sembol {
-    color: #007bff;
-}
-
-body.light .fiyat {
-    color: #333;
-}
-
-body.light .modal-icerik {
-    background-color: #ffffff;
-    color: #333;
-    border: 1px solid #ddd;
-}
-
-body.light .kapat-dugmesi {
-    color: #333;
-}
-
-body.light #temaDegistirBtn {
-    border-color: #007bff;
-    color: #007bff;
-}
-body.light #temaDegistirBtn:hover {
-    background-color: #007bff20;
-}
+// Sayfa yüklendiğinde temayı kontrol et
+(function kontrolTemayi() {
+    if (localStorage.getItem('tema') === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('temaDegistirBtn').textContent = '🌙';
+    }
+})();
