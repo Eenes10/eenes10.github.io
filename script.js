@@ -12,14 +12,13 @@ const FIXER_URL = `https://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}&
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether-gold&vs_currencies=usd';
 
 async function verileriCek() {
-    // Varsayılan değerler
+    // --- Başlangıç ve Simülasyon Değerleri (API başarısız olursa bunlar kullanılacak) ---
     let tryPerUsd = 33.2000; 
     let tryPerEur = 36.1000; 
     let tryPerGbp = 40.5000; 
     let tryPerChf = 35.0000; 
     let onsPerUsd = 2000.00;
     let usdPerBtc = 60000.00;
-    let tryPerGramAltin = 2000.00; 
     
     // Değişim yüzdeleri (Simülasyon)
     const ALTIN_DEGISM_YUZDESI_GRAM = 1.15; 
@@ -29,8 +28,9 @@ async function verileriCek() {
     const DOVIZ_DEGISM_GBP = 0.50;
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
+    let apiBasarili = false; 
 
-    // --- 1. Döviz Verisini Çekme ---
+    // --- 1. Döviz Verisini Çekme (Hata Yönetimi Eklendi) ---
     try {
         const dovizResponse = await fetch(FIXER_URL);
         const dovizData = await dovizResponse.json();
@@ -45,12 +45,13 @@ async function verileriCek() {
             tryPerEur = eurTry; 
             tryPerGbp = eurTry / eurGbp;
             tryPerChf = eurTry / eurChf;
+            apiBasarili = true; 
         } 
     } catch (error) {
         console.error("Fixer API çekiminde hata:", error);
     }
     
-    // --- 2. Kripto ve Altın Verisini Çekme ---
+    // --- 2. Kripto ve Altın Verisini Çekme (Hata Yönetimi Eklendi) ---
     try {
         const cryptoResponse = await fetch(COINGECKO_URL);
         const cryptoData = await cryptoResponse.json();
@@ -58,21 +59,20 @@ async function verileriCek() {
         if (cryptoData?.['tether-gold']?.usd) {
             onsPerUsd = cryptoData['tether-gold'].usd;
         } 
-
         if (cryptoData?.bitcoin?.usd) {
             usdPerBtc = cryptoData.bitcoin.usd;
         } 
-
     } catch (error) {
         console.error("CoinGecko API çekiminde hata:", error);
     }
     
     // --- 3. Nihai Hesaplamalar ---
     
+    // Eğer döviz API başarısız olduysa, BTC ve Altın için simülasyon USD kurunu kullan
     const tryPerBtc = usdPerBtc * tryPerUsd;
     const onsPerTry = onsPerUsd * tryPerUsd;
     const ONS_KARSILIGI_GRAM = 31.1035; 
-    tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
+    const tryPerGramAltin = onsPerTry / ONS_KARSILIGI_GRAM;
     const tryPerCeyrekAltin = tryPerGramAltin * 1.754; 
     
     // Ekranı temizle
@@ -123,12 +123,14 @@ kapatDugmesi.onclick = function() {
   modal.style.display = "none";
   seciliKartlar = []; 
   document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+  document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
 }
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
     seciliKartlar = [];
     document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+    document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
   }
 }
 
@@ -141,7 +143,6 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     const simdikiTarih = new Date();
 
     for (let i = 0; i < veriAdedi; i++) {
-        
         fiyatSim += (Math.random() - 0.5) * (fiyat * 0.005);
         
         // YUMUŞATMA (Grafik sıçramasını önler)
@@ -180,6 +181,7 @@ function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
         mevcutGrafik.destroy();
     }
     
+    // Tema renklerini al
     const isLight = document.body.classList.contains('light');
     const primaryColor = isLight ? '#007bff' : '#ffcc00';
     const secondaryColor = isLight ? '#28a745' : '#17a2b8';
@@ -250,6 +252,12 @@ function kartTiklamaDinleyicileriEkle() {
     guncelKartlar.forEach(kart => {
         kart.addEventListener('click', () => {
             
+            // Modal açıksa, kapat (Yeni bir seçim başlarken temizlik)
+            if (modal.style.display !== "none") {
+                modal.style.display = "none";
+                if (mevcutGrafik) mevcutGrafik.destroy();
+            }
+            
             const fiyat = parseFloat(kart.getAttribute('data-fiyat'));
             const isim = kart.getAttribute('data-isim');
             const sembol = kart.getAttribute('data-sembol');
@@ -266,7 +274,7 @@ function kartTiklamaDinleyicileriEkle() {
                 kart.classList.add('secili');
                 seciliKartlar.push(kartVerisi);
             } else {
-                // Zaten 2 kart seçiliyse: Tıklamayı yok say
+                // Zaten 2 kart seçiliyse: 3. tıklamayı yoksay
                 return; 
             }
 
@@ -280,12 +288,7 @@ function kartTiklamaDinleyicileriEkle() {
                 cizKarsilastirmaGrafik(seciliKartlar[0], seciliKartlar[1], zaman);
                 
             } else if (seciliKartlar.length === 1) {
-                // 1 kart seçiliyse: Kullanıcıya ikinciyi seçmesini bildir
-                
-                if (modal.style.display !== "none") {
-                    if (mevcutGrafik) mevcutGrafik.destroy();
-                    modal.style.display = "none";
-                }
+                // 1 kart seçiliyse: Kullanıcıya ikinciyi seçmesini bildir (sadece ana başlık altında)
                 
                 const seciliIsim = seciliKartlar[0].isim;
                 document.querySelector('header p').textContent = `${seciliIsim} seçildi. Karşılaştırmak için lütfen ikinci bir kart seçin.`;
@@ -293,11 +296,6 @@ function kartTiklamaDinleyicileriEkle() {
             } else if (seciliKartlar.length === 0) {
                 // 0 kart seçiliyse: Varsayılan mesajı göster
                 document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
-                
-                if (modal.style.display !== "none") {
-                    if (mevcutGrafik) mevcutGrafik.destroy();
-                    modal.style.display = "none";
-                }
             }
         });
     });
@@ -322,7 +320,6 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
     
     // Eğer grafik açıksa, rengi tema ile uyumlu hale getir
     if (mevcutGrafik) {
-        // Grafiği yeniden çizmeden renkleri ve eksen etiketlerini güncelle
         const isLight = document.body.classList.contains('light');
         const fontColor = isLight ? '#333' : '#f0f0f0';
         const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
