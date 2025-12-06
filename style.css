@@ -132,7 +132,7 @@ header p {
 }
 
 .kapat-dugmesi:hover,
-.kapat-dugmesi:focus {
+.kapatDugmesi:focus {
     color: #ffcc00;
     text-decoration: none;
     cursor: pointer;
