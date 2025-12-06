@@ -10,7 +10,7 @@ let yukluResim = false;
 // --- 1. GÖRSEL YÜKLEME İŞLEMLERİ ---
 
 resimSecBtn.addEventListener('click', () => {
-    resimInput.click(); // Gerçek dosya inputunu tetikle
+    resimInput.click();
 });
 
 resimInput.addEventListener('change', (event) => {
@@ -21,9 +21,8 @@ resimInput.addEventListener('change', (event) => {
         // Görsel onay ekranını göster
         resimSecBtn.style.display = 'none';
         yuklenenResimGosterim.style.display = 'flex';
-        cozBtn.disabled = false; // Çözüm düğmesini etkinleştir
+        cozBtn.disabled = false;
 
-        // Başlangıç mesajını hazırla
         cozumIcerigi.innerHTML = `<p class="baslangic-mesaj">Fotoğraf başarıyla yüklendi. Çözümü Başlat'a tıklayabilirsin!</p>`;
 
     } else {
@@ -32,51 +31,63 @@ resimInput.addEventListener('change', (event) => {
     }
 });
 
-// --- 2. ÇÖZÜMLEME SİMÜLASYONU VE VERİLER (Yapay Zeka Analizi) ---
+// --- 2. GELİŞTİRİLMİŞ YAPAY ZEKA SİMÜLASYON VERİLERİ (Daha Fazla Konu!) ---
 
-// Görseldeki matematiksel içeriğe göre simüle edilecek çözümler
 const matematikCozumler = {
     "temel": {
-        cozum_basligi: "Basit Aritmetik Çözüm (Görsel Analiz)",
+        cozum_basligi: "Basit Aritmetik Çözüm (Hızlı Analiz)",
         adımlar: [
             "**Adım 1: Görselden İşlem Tespiti**",
             "Yapay Zeka, görseldeki işlemi $2+2=?$ olarak okudu.",
             "**Adım 2: Çözüm**",
             "Temel toplama kuralı uygulanır.",
-            "**Sonuç:** $\\text{Cevap } 4 \\text{'tür}.$ Fotoğraf çözüldü!"
+            "**Sonuç:** $\\text{Cevap } 4 \\text{'tür}.$ Fotoğraf çözüldü! Zorluk Seviyesi: 1/5."
         ]
     },
     "ikinci_derece": {
-        cozum_basligi: "İkinci Dereceden Denklemler Çözümü (Görsel Analiz)",
+        cozum_basligi: "İkinci Dereceden Denklemler Çözümü (Gelişmiş Analiz)",
         adımlar: [
-            "**Adım 1: Görsel Analiz ve Tanımlama**",
-            "Görseldeki denklemin (örn: $x^2 - 5x + 6 = 0$) çözümünün istendiği tespit edildi.",
-            "**Adım 2: Diskriminant Kullanımı**",
-            "Diskriminant $\\Delta = b^2 - 4ac$ hesaplandı. (Varsayım: $\\Delta > 0$)",
-            "**Adım 3: Kökleri Bulma**",
-            "Kökler $x_{1,2} = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ formülüyle bulundu. $\\text{Örn: } x_1=2, x_2=3$",
-            "**Sonuç:** $\\text{Denklemin kökleri başarıyla bulundu. }$ Zor soruları bile çözüyorsun!"
+            "**Adım 1: Görsel Analiz ve Katsayılar**",
+            "Görseldeki denklem $ax^2 + bx + c = 0$ formatında tanımlandı. (Örn: $x^2 - 5x + 6 = 0$).",
+            "**Adım 2: Diskriminant ve Kök Tespiti**",
+            "Diskriminant $\\Delta = b^2 - 4ac$ hesaplandı. ($\\Delta=1$ varsayılmıştır).",
+            "**Adım 3: Kökleri Bulma ve Doğrulama**",
+            "Kök formülü $x_{1,2} = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ uygulandı.",
+            "$\\text{Bulunan Kökler: } x_1=3 \\text{ ve } x_2=2$.",
+            "**Sonuç:** $\\text{Denklemin kökleri doğru bir şekilde bulundu. }$ Zorluk Seviyesi: 3/5."
         ]
     },
     "integral": {
-        cozum_basligi: "Belirsiz İntegral Çözümü (Görsel Analiz)",
+        cozum_basligi: "Belirsiz İntegral Çözümü (Yüksek Hassasiyet)",
         adımlar: [
-            "**Adım 1: Görselden İşlemi Çıkarma**",
-            "Yapay Zeka, ifadenin $\\int x^n dx$ şeklinde bir integral olduğunu belirledi.",
+            "**Adım 1: Görselden Fonksiyonu Çıkarma**",
+            "Yapay Zeka, ifadenin $\\int (x^2 + 2x) dx$ şeklinde bir polinom integral olduğunu belirledi.",
             "**Adım 2: İntegral Kuralı Uygulama**",
-            "Temel integral formülü $\\frac{x^{n+1}}{n+1} + C$ kuralı uygulandı. (n=2 varsayımı)",
-            "**Adım 3: Nihai Çözüm**",
-            "Final çözümü: $\\frac{x^3}{3} + C$.",
-            "**Sonuç:** $\\text{Çözüm } \\frac{x^3}{3} + C \\text{ olarak belirlenmiştir. }$ Matematiğin bu kısmı artık senin için çok kolay!"
+            "Toplama kuralı ve temel $\\int x^n dx$ formülü her terime uygulandı.",
+            "**Adım 3: Nihai Çözüm ve Sadeleştirme**",
+            "Çözüm: $\\frac{x^{3}}{3} + \\frac{2x^2}{2} + C$",
+            "**Sonuç:** $\\text{Final çözüm: } \\frac{x^3}{3} + x^2 + C \\text{ olarak belirlenmiştir. }$ Zorluk Seviyesi: 4/5."
+        ]
+    },
+    "trigonometri": {
+        cozum_basligi: "Trigonometrik Kimlikler Çözümü (Açı Analizi)",
+        adımlar: [
+            "**Adım 1: Görseldeki İfade Tespiti**",
+            "Sorunun $\\sin(2x) = 1$ gibi bir trigonometrik denklem içerdiği belirlendi.",
+            "**Adım 2: Kimlik Dönüşümü**",
+            "Gerekli dönüşüm yapıldı: $2x = \\frac{\\pi}{2} + 2k\\pi$.",
+            "**Adım 3: x Değerlerinin Bulunması**",
+            "Tüm çözüm kümesi hesaplandı: $x = \\frac{\\pi}{4} + k\\pi \\text{ (} k \\in \\mathbb{Z} \\text{)}$",
+            "**Sonuç:** $\\text{Trigonometrik çözüm kümesi doğru bulundu. }$ Zorluk Seviyesi: 5/5."
         ]
     }
 };
 
 const motivasyonlar = [
-    "Harika bir fotoğraf! Sorun netti, çözüm anında geldi. 📸",
-    "Görsel analiz başarılı! Bir sonraki soruyu yüklemeye ne dersin? 💪",
-    "Yapay zekanın bile zorlandığı bir soru olmalıydı ama çözüldü! 🚀",
-    "Çözüldü! Beynine biraz dinlenme molası ver. ✨"
+    "Harika bir fotoğraf! Sorun netti, çözüm anında geldi. Yapay zeka %100 doğrulukla çözdü. 💯",
+    "Görsel analiz başarılı! Bu zorluktaki bir integrali bile çözdün. Bir sonraki seviyeye geçelim mi? 💪",
+    "Yapay zekanın en yeni algoritmasıyla çözüldü! Zorluk derecesi 5/5'ti! 🚀",
+    "Çözüldü! Beynine biraz dinlenme molası ver, bunu hak ettin. ✨"
 ];
 
 
@@ -89,14 +100,14 @@ cozBtn.addEventListener('click', () => {
     }
 
     cozBtn.disabled = true;
-    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Analiz Ediyor...';
-    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Yapay zeka görseli okuyor, formülleri çözümlüyor...</p>';
+    cozBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Derin Öğrenme Modeli Çalışıyor...';
+    cozumIcerigi.innerHTML = '<p class="baslangic-mesaj">Yapay zeka görseli tarıyor, formülleri ve çözüm adımlarını oluşturuyor...</p>';
     motivasyonAlani.style.display = 'none';
 
-    // 3 saniyelik Simülasyon bekleme süresi (Görsel işleme izlenimi)
+    // 4 saniyelik Simülasyon bekleme süresi (Daha karmaşık analiz izlenimi)
     setTimeout(() => {
         
-        // Simülasyon: Rastgele bir matematik konusunu çözülmüş gibi göster.
+        // Simülasyon: Rastgele bir matematik konusunu seçerek yapay zekanın "çeşitli" çözümler ürettiği izlenimini veriyoruz.
         const konular = Object.keys(matematikCozumler);
         const rastgeleKonuIndex = Math.floor(Math.random() * konular.length);
         const rastgeleKonu = konular[rastgeleKonuIndex];
@@ -128,5 +139,5 @@ cozBtn.addEventListener('click', () => {
         resimSecBtn.style.display = 'flex';
         yuklenenResimGosterim.style.display = 'none';
 
-    }, 3000); // 3 Saniye bekletme
+    }, 4000); // 4 Saniye bekletme
 });
