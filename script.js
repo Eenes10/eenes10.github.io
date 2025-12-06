@@ -28,8 +28,7 @@ async function verileriCek() {
     const DOVIZ_DEGISM_GBP = 0.50;
     const DOVIZ_DEGISM_CHF = -0.05;
     const BTC_DEGISM_YUZDESI = 1.50;
-    let apiBasarili = false; 
-
+    
     // --- 1. Döviz Verisini Çekme (Hata Yönetimi Eklendi) ---
     try {
         const dovizResponse = await fetch(FIXER_URL);
@@ -45,7 +44,6 @@ async function verileriCek() {
             tryPerEur = eurTry; 
             tryPerGbp = eurTry / eurGbp;
             tryPerChf = eurTry / eurChf;
-            apiBasarili = true; 
         } 
     } catch (error) {
         console.error("Fixer API çekiminde hata:", error);
@@ -68,7 +66,7 @@ async function verileriCek() {
     
     // --- 3. Nihai Hesaplamalar ---
     
-    // Eğer döviz API başarısız olduysa, BTC ve Altın için simülasyon USD kurunu kullan
+    // Simülasyon ya da gerçek USD kuru ile hesaplamalar
     const tryPerBtc = usdPerBtc * tryPerUsd;
     const onsPerTry = onsPerUsd * tryPerUsd;
     const ONS_KARSILIGI_GRAM = 31.1035; 
@@ -113,6 +111,7 @@ function kartOlustur(isim, sembol, fiyat, degisimYuzdesi) {
     `;
 }
 
+// Veri çekme ve güncelleme
 verileriCek();
 setInterval(verileriCek, 10000); 
 
@@ -123,6 +122,7 @@ kapatDugmesi.onclick = function() {
   modal.style.display = "none";
   seciliKartlar = []; 
   document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+  // Kapatıldığında varsayılan başlık mesajını geri yükle
   document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
 }
 window.onclick = function(event) {
@@ -130,6 +130,7 @@ window.onclick = function(event) {
     modal.style.display = "none";
     seciliKartlar = [];
     document.querySelectorAll('.kur-kart').forEach(k => k.classList.remove('secili'));
+    // Kapatıldığında varsayılan başlık mesajını geri yükle
     document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
   }
 }
@@ -170,7 +171,7 @@ function gecmisVeriSimulasyonu(fiyat, veriAdedi = 100, zamanDilimi = 'Gün') {
     return { etiketler, veriler };
 }
 
-// Karşılaştırmalı Grafiği Çizen Fonksiyon
+// Karşılaştırmalı Grafiği Çizen Fonksiyon (Çift Y Ekseni Desteği Eklendi)
 function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
     
     const veriAdedi = 100;
@@ -183,53 +184,100 @@ function cizKarsilastirmaGrafik(kart1, kart2, zamanDilimi) {
     
     // Tema renklerini al
     const isLight = document.body.classList.contains('light');
-    const primaryColor = isLight ? '#007bff' : '#ffcc00';
-    const secondaryColor = isLight ? '#28a745' : '#17a2b8';
     const fontColor = isLight ? '#333' : '#f0f0f0';
     const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+    const primaryColor = isLight ? '#007bff' : '#ffcc00';
+    const secondaryColor = isLight ? '#28a745' : '#17a2b8';
+    const secondaryAxisColor = isLight ? '#dc3545' : '#17a2b8'; 
 
     grafikBaslik.textContent = `${kart1.isim} vs ${kart2.isim} Karşılaştırması`;
     
     const ctx = document.getElementById('fiyatGrafik').getContext('2d');
     
+    // --- ÇİFT EKSEN MANTIĞI ---
+    
+    // Fiyat farkı oranını kontrol et. Oran > 1000 ise Çift Eksen kullan
+    const fiyatOrani = Math.max(kart1.fiyat, kart2.fiyat) / Math.min(kart1.fiyat, kart2.fiyat);
+    const ciftEksenGerekli = fiyatOrani > 1000;
+    
+    // Hangi varlığın Y2 (sağ eksen) kullanacağını belirle (düşük fiyatlı olan)
+    let kart1Y2Kullan = false;
+    let kart2Y2Kullan = false;
+
+    if (ciftEksenGerekli) {
+        if (kart1.fiyat < kart2.fiyat) {
+            kart1Y2Kullan = true;
+        } else {
+            kart2Y2Kullan = true;
+        }
+    }
+    
+    // Dataset'leri oluştururken hangi eksene atanacağını belirle
+    const datasets = [
+        {
+            label: `${kart1.isim} (₺)`,
+            data: veri1.veriler,
+            borderColor: primaryColor, 
+            backgroundColor: `${primaryColor}20`,
+            tension: 0.2, 
+            pointRadius: 0,
+            yAxisID: kart1Y2Kullan ? 'y2' : 'y1' 
+        },
+        {
+            label: `${kart2.isim} (₺)`,
+            data: veri2.veriler,
+            borderColor: secondaryColor, 
+            backgroundColor: `${secondaryColor}20`,
+            tension: 0.2, 
+            pointRadius: 0,
+            yAxisID: kart2Y2Kullan ? 'y2' : 'y1' 
+        }
+    ];
+
+    // Scales (Eksenler) ayarını oluştur
+    const scales = {
+        x: {
+            title: { display: true, text: zamanDilimi, color: fontColor },
+            ticks: { color: fontColor },
+            grid: { color: gridColor }
+        },
+        // Sol Ekseni (y1) tanımla
+        y1: {
+            type: 'linear',
+            position: 'left',
+            beginAtZero: false,
+            title: { display: true, text: 'Fiyat (₺)', color: fontColor },
+            ticks: { color: fontColor },
+            grid: { color: gridColor }
+        }
+    };
+
+    // Eğer çift eksen gerekiyorsa, Sağ Ekseni (y2) ekle
+    if (ciftEksenGerekli) {
+        scales.y2 = {
+            type: 'linear',
+            position: 'right', 
+            beginAtZero: false,
+            title: { display: true, text: 'Fiyat (₺)', color: secondaryAxisColor },
+            ticks: { color: secondaryAxisColor },
+            grid: { drawOnChartArea: false } 
+        };
+        // Başlıkta çift eksen kullanıldığına dair uyarı
+        document.querySelector('header p').textContent = `⚠️ Çift Y ekseni kullanılıyor (Fiyat farkı çok büyük).`;
+    } else {
+        // Tek eksen kullanılıyorsa varsayılan mesajı göster
+        document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
+    }
+    
     mevcutGrafik = new Chart(ctx, {
         type: 'line', 
         data: {
             labels: veri1.etiketler,
-            datasets: [
-                {
-                    label: `${kart1.isim} (₺)`,
-                    data: veri1.veriler,
-                    borderColor: primaryColor, 
-                    backgroundColor: `${primaryColor}20`,
-                    tension: 0.2, 
-                    pointRadius: 0
-                },
-                {
-                    label: `${kart2.isim} (₺)`,
-                    data: veri2.veriler,
-                    borderColor: secondaryColor, 
-                    backgroundColor: `${secondaryColor}20`,
-                    tension: 0.2, 
-                    pointRadius: 0
-                }
-            ]
+            datasets: datasets 
         },
         options: {
             responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    title: { display: true, text: 'Fiyat (₺)', color: fontColor },
-                    ticks: { color: fontColor },
-                    grid: { color: gridColor }
-                },
-                x: {
-                    title: { display: true, text: zamanDilimi, color: fontColor },
-                    ticks: { color: fontColor },
-                    grid: { color: gridColor }
-                }
-            },
+            scales: scales, 
             plugins: {
                 legend: { display: true, labels: { color: fontColor } }
             }
@@ -269,6 +317,10 @@ function kartTiklamaDinleyicileriEkle() {
                 // Kart zaten seçiliyse: Seçimi kaldır
                 kart.classList.remove('secili');
                 seciliKartlar.splice(kartIndex, 1);
+                // Seçim kalktığı için başlık mesajını varsayılana çevir
+                if (seciliKartlar.length === 0) {
+                    document.querySelector('header p').textContent = `Veriler her 10 saniyede bir güncellenir. Karşılaştırma için 2 karta tıklayın!`;
+                }
             } else if (seciliKartlar.length < 2) {
                 // Seçili değilse ve 2'den az kart seçiliyse: Seçimi ekle
                 kart.classList.add('secili');
@@ -283,6 +335,7 @@ function kartTiklamaDinleyicileriEkle() {
                 // 2 kart seçiliyse: Karşılaştırma grafiğini çiz
                 
                 const isHizliVarlik = (s) => s === 'BTC' || s === 'XAU' || s === 'ÇYRK';
+                // İkisi de hızlı varlıksa Saat, değilse Gün zaman dilimini kullan
                 let zaman = (isHizliVarlik(seciliKartlar[0].sembol) && isHizliVarlik(seciliKartlar[1].sembol)) ? 'Saat' : 'Gün';
                 
                 cizKarsilastirmaGrafik(seciliKartlar[0], seciliKartlar[1], zaman);
@@ -323,10 +376,19 @@ document.getElementById('temaDegistirBtn').addEventListener('click', () => {
         const isLight = document.body.classList.contains('light');
         const fontColor = isLight ? '#333' : '#f0f0f0';
         const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+        const secondaryAxisColor = isLight ? '#dc3545' : '#17a2b8'; 
         
-        mevcutGrafik.options.scales.y.ticks.color = fontColor;
+        // Eksen renklerini güncelle
+        mevcutGrafik.options.scales.y1.ticks.color = fontColor;
+        mevcutGrafik.options.scales.y1.grid.color = gridColor;
+        mevcutGrafik.options.scales.y1.title.color = fontColor;
+
+        if (mevcutGrafik.options.scales.y2) {
+             mevcutGrafik.options.scales.y2.ticks.color = secondaryAxisColor;
+             mevcutGrafik.options.scales.y2.title.color = secondaryAxisColor;
+        }
+
         mevcutGrafik.options.scales.x.ticks.color = fontColor;
-        mevcutGrafik.options.scales.y.grid.color = gridColor;
         mevcutGrafik.options.scales.x.grid.color = gridColor;
         mevcutGrafik.options.plugins.legend.labels.color = fontColor;
         
