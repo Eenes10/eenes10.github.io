@@ -106,14 +106,13 @@
     }
     .insta:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(2,6,23,0.16); }
     .insta img{ width:26px; height:26px; }
-    .note{ font-size:13px;color:#64748b }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Sade Trig Hesaplayıcı</h2>
 
-    <select id="func">
+    <select id="func" aria-label="Fonksiyon seç">
       <option value="sin">sin</option>
       <option value="cos">cos</option>
       <option value="tan">tan</option>
@@ -122,7 +121,7 @@
       <option value="cot">cot</option>
     </select>
 
-    <input type="number" id="angle" placeholder="Açı değeri (ör. 33)" />
+    <input type="number" id="angle" placeholder="Açı değeri (ör. 33)" aria-label="Açı" />
 
     <div class="unit-select">
       <button id="degBtn" class="active" type="button">Derece</button>
@@ -135,10 +134,9 @@
       <div class="frac" id="frac"></div>
       <div class="approx" id="approx">Sonuç burada görüntülenecek.</div>
     </div>
-    <div class="note">Özel açılar için hem kesir/kök hem yaklaşık değer gösterilir.</div>
   </div>
 
-  <a class="insta" href="https://instagram.com/" target="_blank">
+  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank" aria-label="Instagram">
     <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"/>
   </a>
 
