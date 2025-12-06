@@ -16,7 +16,6 @@ header h1 {
 header p {
     color: #bbb;
     margin-bottom: 30px;
-    /* Karşılaştırma geri bildirimleri için belirgin hale getirildi */
     font-weight: bold; 
 }
 
