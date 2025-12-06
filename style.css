@@ -35,14 +35,15 @@ header p {
     width: 280px;
     transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
     text-align: left;
-    cursor: pointer; 
-    border: 3px solid transparent; /* Varsayılan sınır */
+    /* ÖNEMLİ: Karşılaştırma kaldırıldığı için tıklama imleci kaldırıldı */
+    cursor: default; 
+    border: 3px solid transparent; 
 }
 
-/* Seçili kart vurgusu (Karşılaştırma modu için) */
+/* Seçili kart vurgusu artık kullanılmayacak */
 .kur-kart.secili {
-    border-color: #ffcc00; 
-    transform: scale(1.03);
+    border-color: transparent; 
+    transform: none;
 }
 
 .kur-kart:hover {
@@ -92,7 +93,7 @@ header p {
     color: white;
 }
 
-/* --- Grafik Modal (Pop-up) Stilleri --- */
+/* --- Grafik Modal (Kaldırılabilir ama yapıyı koruduk) Stilleri --- */
 
 .modal {
     display: none; 
@@ -132,7 +133,7 @@ header p {
 }
 
 .kapat-dugmesi:hover,
-.kapatDugmesi:focus {
+.kapat-dugmesi:focus {
     color: #ffcc00;
     text-decoration: none;
     cursor: pointer;
