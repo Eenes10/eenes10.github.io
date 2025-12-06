@@ -121,7 +121,6 @@
       <option value="cot">cot</option>
     </select>
 
-    <!-- placeholder kaldırıldı -->
     <input type="number" id="angle" aria-label="Açı" />
 
     <div class="unit-select">
@@ -132,12 +131,12 @@
     <button id="calcBtn" class="calc" type="button">Hesapla</button>
 
     <div class="result" id="result">
-      <div class="frac" id="frac"></div>
+      <div class="frac" id="frac">—</div>
       <div class="approx" id="approx">Sonuç burada görüntülenecek.</div>
     </div>
   </div>
 
-  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank">
+  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank" aria-label="Instagram">
     <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"/>
   </a>
 
@@ -175,15 +174,54 @@
 
   function toRadians(d){ return d * Math.PI / 180; }
 
-  function computeValue(fn, a){
+  function computeValue(fn, angleRad){
     switch(fn){
-      case 'sin': return Math.sin(a);
-      case 'cos': return Math.cos(a);
-      case 'tan': return Math.tan(a);
-      case 'cosec': return 1/Math.sin(a);
-      case 'sec': return 1/Math.cos(a);
-      case 'cot': return 1/Math.tan(a);
+      case 'sin': return Math.sin(angleRad);
+      case 'cos': return Math.cos(angleRad);
+      case 'tan': return Math.tan(angleRad);
+      case 'cosec': return 1/Math.sin(angleRad);
+      case 'sec': return 1/Math.cos(angleRad);
+      case 'cot': return 1/Math.tan(angleRad);
     }
   }
 
-  function showResult(frac,
+  calcBtn.addEventListener('click', ()=>{
+    let angle = parseFloat(angleEl.value);
+    if(isNaN(angle)){
+      fracEl.textContent = '—';
+      approxEl.textContent = 'Lütfen geçerli bir sayı girin.';
+      return;
+    }
+
+    if(unit === 'rad'){
+      angle = angle * 180 / Math.PI;
+    }
+
+    let fn = funcEl.value;
+    let key = (Math.round(angle*100)/100).toString();
+
+    let exact = special[fn][key];
+
+    if(exact){
+      fracEl.textContent = exact;
+      approxEl.textContent = '(' + Number(eval(exact.replace('√', 'Math.sqrt(').replace(/\//g, ')/('))).toFixed(6) + ')';
+      return;
+    }
+
+    let rad = toRadians(angle);
+    let val = computeValue(fn, rad);
+
+    if(!isFinite(val)){
+      fracEl.textContent = 'Tanımsız';
+      approxEl.textContent = 'Bu açı değeri için sonuç tanımsızdır.';
+      return;
+    }
+
+    fracEl.textContent = '—';
+    approxEl.textContent = val.toFixed(6);
+  });
+
+})();
+</script>
+</body>
+</html>
