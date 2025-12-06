@@ -38,8 +38,6 @@ header p {
     border: 3px solid transparent; /* Varsayılan sınır */
 }
 
-/* KALDIRILDI: .kur-kart.secili stili kaldırıldı. */
-
 .kur-kart:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
