@@ -46,8 +46,6 @@
   .calc-btn{flex:1;padding:12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),#0fb07b);color:white;font-weight:800;cursor:pointer}
 
   @media (max-width:860px){:root{--card-w:94vw}.main{grid-template-columns:1fr}.plot-card canvas{height:200px}}
-  /* floating install button */
-  .install-btn{position:fixed;bottom:20px;right:20px;padding:12px 20px;border:none;border-radius:12px;background:#6c74ff;color:white;font-size:15px;cursor:pointer;box-shadow:0 0 12px rgba(108,116,255,.6);display:none;z-index:9999}
 </style>
 </head>
 <body>
@@ -57,8 +55,7 @@
   <div class="container">
     <header>
       <div style="display:flex;align-items:center;gap:12px">
-        <!-- simple round svg icon in header -->
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#6c74ff"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#6c74ff"/></svg>
         <h1>Trigonometrik Değer Hesaplayıcı</h1>
       </div>
       <div class="controls">
@@ -67,7 +64,13 @@
       </div>
     </header>
 
-    <div class="func-row" id="funcRow" style="margin:12px 0;display:flex;gap:8px">
+    <!-- Social + Install Buttons -->
+    <div style="display:flex; gap:10px; margin:10px 0 0 0;">
+      <button id="installBtnTop" class="btn">⬇️ Uygulamayı İndir</button>
+      <a href="https://instagram.com" target="_blank" class="btn" style="text-decoration:none;">📸 Instagram</a>
+    </div>
+
+    <div class="func-row" id="funcRow">
       <button class="btn active" data-f="sin">sin</button>
       <button class="btn" data-f="cos">cos</button>
       <button class="btn" data-f="tan">tan</button>
@@ -78,9 +81,9 @@
 
     <div class="main">
       <div class="plot-card">
-        <canvas id="plotCanvas" width="800" height="320" aria-label="Trigonometrik fonksiyon grafiği"></canvas>
-        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-          <label style="font-weight:700">Açı:</label>
+        <canvas id="plotCanvas" width="800" height="320"></canvas>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <label>Açı:</label>
           <input id="angle" type="number" value="30" />
           <button id="degBtn" class="btn active">°</button>
           <button id="radBtn" class="btn">rad</button>
@@ -92,7 +95,7 @@
         <div class="actions" style="display:flex;gap:8px">
           <button id="calcBtn" class="calc-btn">Hesapla ✨</button>
         </div>
-        <div class="result" id="result" style="margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f7fbff);min-height:72px">
+        <div class="result" id="result">
           <div class="exact" id="exact">—</div>
           <div class="approx" id="approx">Sonuç burada görünecek.</div>
         </div>
@@ -100,150 +103,43 @@
     </div>
   </div>
 
-  <!-- floating install button (also used as direct APK download fallback) -->
-  <button id="installBtnFloating" class="install-btn">📥 Uygulamayı İndir</button>
-
 <script>
-// ---------- Minimal exact parser (same as before) ----------
-function parseTerm(token){
-  token = token.trim(); if(token === '') return 0; if(token[0] === '+') token = token.slice(1);
-  if(token.includes('√')){ token = token.replace(/\(/g,'').replace(/\)/g,''); let sign = 1; if(token[0] === '-'){ sign=-1; token=token.slice(1);} if(token[0]==='+') token=token.slice(1); const m = token.match(/^(\d*\.?\d*)?√(\d+(?:\.\d+)?)$/); if(m){ const coeff = m[1] ? Number(m[1]) : 1; const rad = Number(m[2]); return sign * coeff * Math.sqrt(rad); } }
-  const n = Number(token); if(!Number.isNaN(n)) return n; const parts = token.match(/[+-]?[^+-]+/g); if(parts && parts.length>1){ let s=0; for(const p of parts) s+=parseTerm(p); return s; } return 0;
-}
-function parseExactStringToNumber(s){
-  if(!s || s==='—') return NaN;
-  if(s === 'Tanımsız') return NaN;
-  s = s.replace(/\s+/g,'');
-  let numerator = s; let denom = 1;
-  if(s.includes('/')){ const parts = s.split('/'); numerator = parts.slice(0,parts.length-1).join('/'); denom = Number(parts[parts.length-1]); if(Number.isNaN(denom)) denom = parseTerm(parts[parts.length-1]); }
-  if(numerator.startsWith('(') && numerator.endsWith(')')) numerator = numerator.slice(1,-1);
-  const tokens = numerator.match(/[+-]?[^+-]+/g) || []; let total = 0; for(let token of tokens) total += parseTerm(token);
-  return total / denom;
-}
+// === PWA INSTALL ===
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+const installBtnTop = document.getElementById("installBtnTop");
+const floatingBtn = document.getElementById("installBtnFloating");
 
-// ---------- exact values map ----------
-const exactValues = {
-  sin: {0:'0',15:'(√6-√2)/4',30:'1/2',45:'√2/2',60:'√3/2',90:'1',180:'0',270:'-1',360:'0'},
-  cos: {0:'1',15:'(√6+√2)/4',30:'√3/2',45:'√2/2',60:'1/2',75:'(√6-√2)/4',90:'0',180:'-1',360:'1'},
-  tan: {0:'0',15:'2-√3',30:'1/√3',45:'1',60:'√3',90:'Tanımsız',180:'0',270:'Tanımsız'}
-};
-
-// ---------- DOM refs ----------
-const plotCanvas = document.getElementById('plotCanvas');
-const ctx = plotCanvas.getContext('2d');
-const funcButtons = Array.from(document.querySelectorAll('.func-row .btn'));
-const angleInput = document.getElementById('angle');
-const angleRange = document.getElementById('angleRange');
-const degBtn = document.getElementById('degBtn');
-const radBtn = document.getElementById('radBtn');
-const calcBtn = document.getElementById('calcBtn');
-const exactEl = document.getElementById('exact');
-const approxEl = document.getElementById('approx');
-const installBtn = document.getElementById('installBtn');
-const installBtnFloating = document.getElementById('installBtnFloating');
-
-let currentFunc = 'sin';
-let unit = 'deg';
-let history = JSON.parse(localStorage.getItem('trig_history_v2')||'[]');
-
-// ---------- UI helpers ----------
-funcButtons.forEach(b=>b.addEventListener('click', ()=>{ funcButtons.forEach(x=>x.classList.remove('active')); b.classList.add('active'); currentFunc = b.dataset.f; drawPlot(); }));
-degBtn.addEventListener('click', ()=>{ unit='deg'; degBtn.classList.add('active'); radBtn.classList.remove('active'); syncInputs(); drawPlot(); });
-radBtn.addEventListener('click', ()=>{ unit='rad'; radBtn.classList.add('active'); degBtn.classList.remove('active'); syncInputs(); drawPlot(); });
-angleInput.addEventListener('input', ()=>{ syncRange(); drawPlot(); });
-angleRange.addEventListener('input', ()=>{ syncInputs(true); drawPlot(); });
-function syncRange(){ const val = angleInput.value || 0; angleRange.value = (unit==='deg')?val: (Number(val)*(180/Math.PI)); }
-function syncInputs(fromRange){ if(fromRange){ const v = Number(angleRange.value); angleInput.value = (unit==='deg')? v : (v*Math.PI/180); } else { syncRange(); } }
-
-// ---------- compute ----------
-function computeTrigValue(fn, rad){ switch(fn){ case 'sin': return Math.sin(rad); case 'cos': return Math.cos(rad); case 'tan': return Math.tan(rad); case 'cosec': return 1/Math.sin(rad); case 'sec': return 1/Math.cos(rad); case 'cot': return 1/Math.tan(rad); } }
-function showResult(exactStr, approxNum){ exactEl.textContent = exactStr || ''; approxEl.textContent = (approxNum===null)? 'Tanımsız' : (typeof approxNum==='number'? approxNum.toFixed(6): approxNum); }
-
-calcBtn.addEventListener('click', ()=>{
-  const raw = (angleInput.value||'').toString().trim(); if(raw===''){ showResult('', 'Lütfen açı girin.'); return; }
-  const parsed = Number(raw); if(Number.isNaN(parsed)){ showResult('', 'Geçerli bir sayı girin.'); return; }
-  let degForLookup = (unit==='deg')? parsed : (parsed*180/Math.PI);
-  degForLookup = Math.round(degForLookup*10000)/10000;
-  const intDeg = Math.round(degForLookup); const isIntegerAngle = Math.abs(intDeg - degForLookup) < 1e-9;
-  const fnMap = exactValues[currentFunc];
-  if(isIntegerAngle && fnMap && fnMap[intDeg] !== undefined){ const exact = fnMap[intDeg]; const approx = parseExactStringToNumber(exact); showResult(exact, approx); history.push(`${currentFunc} ${intDeg}° = ${approx.toFixed(6)}`); localStorage.setItem('trig_history_v2', JSON.stringify(history)); return; }
-  const angleRad = (unit==='deg')? parsed*Math.PI/180 : parsed;
-  const val = computeTrigValue(currentFunc, angleRad);
-  if(!isFinite(val)){ showResult('', 'Tanımsız'); history.push(`${currentFunc} ${parsed} ${unit} = Tanımsız`); localStorage.setItem('trig_history_v2', JSON.stringify(history)); return; }
-  showResult('', val); history.push(`${currentFunc} ${parsed} ${unit} = ${val.toFixed(6)}`); localStorage.setItem('trig_history_v2', JSON.stringify(history));
-});
-
-// ---------- drawing ----------
-function drawPlot(){
-  const DPR = window.devicePixelRatio || 1;
-  const w = plotCanvas.clientWidth; const h = 240;
-  plotCanvas.width = Math.round(w * DPR); plotCanvas.height = Math.round(h * DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  ctx.clearRect(0,0,w,h);
-  const padding = 32; const W = w - padding*2; const H = 200; const cx = padding; const cy = padding + H/2;
-  ctx.strokeStyle = 'rgba(10,20,40,0.06)'; ctx.lineWidth = 1;
-  for(let x=0;x<=W;x+=20){ ctx.beginPath(); ctx.moveTo(cx+x,padding); ctx.lineTo(cx+x,padding+H); ctx.stroke(); }
-  for(let y=0;y<=H;y+=20){ ctx.beginPath(); ctx.moveTo(cx,padding+y); ctx.lineTo(cx+W,padding+y); ctx.stroke(); }
-  ctx.strokeStyle = 'rgba(10,20,40,0.18)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+W,cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx+W/2,padding); ctx.lineTo(cx+W/2,padding+H); ctx.stroke();
-  const domainMin = -2*Math.PI, domainMax = 2*Math.PI;
-  const xToPx = x => cx + ((x - domainMin) / (domainMax - domainMin)) * W;
-  const yToPx = y => cy - y * (H/2);
-  ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(108,116,255,0.92)';
-  const steps = 800;
-  for(let i=0;i<=steps;i++){ const t = domainMin + (i/steps)*(domainMax-domainMin); let y = computeTrigValue(currentFunc,t); if(!isFinite(y)){ ctx.moveTo(xToPx(t), yToPx(0)); continue; } const px = xToPx(t), py = yToPx(Math.max(-3,Math.min(3,y))); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); }
-  ctx.stroke();
-  const angleVal = Number(angleInput.value) || 0; const angleRad = (unit==='deg')? angleVal*Math.PI/180 : angleVal; const markerX = xToPx(angleRad);
-  const markerY = yToPx(Math.max(-3,Math.min(3, computeTrigValue(currentFunc, angleRad))));
-  ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(markerX, markerY, 6, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#274060'; ctx.font = '12px Inter, system-ui'; ctx.fillText('-2π', cx+2, padding+H+14); ctx.fillText('0', cx+W/2-6, padding+H+14); ctx.fillText('2π', cx+W-22, padding+H+14);
-}
-window.addEventListener('resize', drawPlot);
-drawPlot();
-
-// ---------- simple spotlight (mouse) ----------
-const spot = document.getElementById('spot');
-document.addEventListener('mousemove', (e)=>{ spot.style.setProperty('--x', e.clientX+'px'); spot.style.setProperty('--y', e.clientY+'px'); });
-
-// ---------- theme toggle ----------
-(function initTheme(){ const stored = localStorage.getItem('trig_theme'); const isDark = (stored==='dark') || (stored===null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); if(isDark) document.documentElement.classList.add('dark'); const themeToggle = document.getElementById('themeToggle'); function update(){ themeToggle.textContent = document.documentElement.classList.contains('dark')? '☀️ Açık':'🌙 Karanlık'; } update(); themeToggle.addEventListener('click', ()=>{ document.documentElement.classList.toggle('dark'); localStorage.setItem('trig_theme', document.documentElement.classList.contains('dark')?'dark':'light'); update(); }); })();
-
-// ---------- install handling: beforeinstallprompt (browser-driven) ----------
-// This shows the install button when browser fires beforeinstallprompt (Chrome/Edge).
-// Additionally we provide a floating APK fallback that triggers a direct download if you host an APK at /download/TrigCalc.apk
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (installBtn) installBtn.style.display = 'inline-flex';
-  if (installBtnFloating) installBtnFloating.style.display = 'inline-flex';
+  installBtn.style.display = "inline-flex";
+  if (floatingBtn) floatingBtn.style.display = "inline-flex";
 });
-installBtn.addEventListener('click', async () => {
+
+// Install button (footer)
+installBtn.addEventListener("click", () => {
+    if (!window.deferredPrompt) return;
+    window.deferredPrompt.prompt();
+    window.deferredPrompt.userChoice;
+});
+
+// Install button (top)
+installBtnTop.addEventListener("click", () => {
+    if (!window.deferredPrompt) return;
+    window.deferredPrompt.prompt();
+    window.deferredPrompt.userChoice;
+});("click", async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
-  const choice = await deferredPrompt.userChoice;
-  if (choice.outcome === 'accepted') installBtn.style.display = 'none';
+  const res = await deferredPrompt.userChoice;
+  if (res.outcome === "accepted") installBtn.style.display = "none";
+installBtnTop.style.display = "none";
   deferredPrompt = null;
 });
-
-// ---------- floating button fallback: direct download of APK (optional) ----------
-installBtnFloating.addEventListener('click', ()=> {
-  // If you host an APK at /download/TrigCalc.apk this will download it.
-  // Otherwise it will attempt to trigger the browser's install prompt if available.
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    return;
-  }
-  const a = document.createElement('a');
-  a.href = '/download/TrigCalc.apk'; // <-- PUT YOUR APK HERE if you want direct download fallback
-  a.download = 'TrigCalc.apk';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-});
-
-// ---------- service worker registration ----------
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/service-worker.js').catch(()=>{}); }
-
 </script>
+
+<button id="installBtnFloating" class="btn" style="position:fixed; bottom:20px; right:20px; padding:12px 20px; border:none; border-radius:12px; background:#6c74ff; color:white; font-size:15px; cursor:pointer; box-shadow:0 0 12px rgba(108,116,255,.6); display:none; z-index:9999;">📥 Uygulamayı İndir</button>
+
 </body>
 </html>
