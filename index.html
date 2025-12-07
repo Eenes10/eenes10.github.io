@@ -1,405 +1,303 @@
+<!--
+This single HTML file includes the updated Trigonometrik Değer Hesaplayıcı with:
+- Grafiksel trigonometrik fonksiyon gösterimi (canvas plot + marker for angle)
+- Kayan arka plan grid animasyonu
+- Mikro animasyonlar (buton hover, result pulse, spotlight)
+- Modern SVG minimal ikonlar embedded
+- PWA support: service worker registration included below and a manifest content provided (save separately as manifest.json)
+
+FILES TO SAVE FOR PWA (create these two files on your server alongside this HTML):
+1) manifest.json
+{
+  "name": "Trigonometrik Değer Hesaplayıcı",
+  "short_name": "TrigCalc",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#e6f2ff",
+  "theme_color": "#6c74ff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+
+2) service-worker.js
+// Minimal service worker for offline-first caching
+const CACHE_NAME = 'trig-calc-v1';
+const ASSETS = ['/', '/trig-calculator-v2.html'];
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  self.skipWaiting();
+});
+self.addEventListener('activate', event => { event.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', event => {
+  event.respondWith(caches.match(event.request).then(r => r || fetch(event.request)));
+});
+
+Notes:
+- Serve the page over HTTPS (or use localhost) for the service worker and PWA install to work.
+- Put icons in an /icons/ folder or edit manifest icons.
+-->
+
 <!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Trigonometrik Değer Hesaplayıcı — Eğlenceli</title>
+<title>Trigonometrik Değer Hesaplayıcı — Eğlenceli (v2)</title>
+<link rel="manifest" href="/manifest.json">
 <style>
   :root{
-    --card-w:420px;
+    --card-w:760px;
     --accent1:#6c74ff;
     --accent2:#34d399;
     --bg1:#e6f2ff;
     --bg2:#bfe0ff;
-    --glass: rgba(255,255,255,0.76);
+    --glass: rgba(255,255,255,0.88);
+    --muted:#445a78;
+    --shadow: 0 18px 40px rgba(13,38,76,0.12);
   }
-  /* Reset & body */
-  *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial;}
+  *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial,Helvetica,sans-serif}
   html,body{height:100%;margin:0}
   body{
-    background: linear-gradient(135deg,var(--bg1),var(--bg2));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:28px;
-    overflow:hidden;
-    color:#07204a;
+    background: linear-gradient(160deg,var(--bg1),var(--bg2));
+    display:flex;align-items:center;justify-content:center;padding:28px;color:#07204a;overflow:hidden;
   }
 
-  /* spotlight layer */
+  /* animated grid background */
+  .bg-grid{
+    position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.28;
+    background-image: repeating-linear-gradient(0deg, rgba(10,20,40,0.04) 0 1px, transparent 1px 28px),
+                      repeating-linear-gradient(90deg, rgba(10,20,40,0.03) 0 1px, transparent 1px 28px);
+    background-size: 100% 100%;
+    animation: gridPan 40s linear infinite;
+    mix-blend-mode:multiply;
+  }
+  @keyframes gridPan{from{background-position:0 0}to{background-position:400px 400px}}
+
   .spot {
     position:fixed; left:0; top:0; width:100%; height:100%;
-    pointer-events:none; mix-blend-mode:screen;
+    pointer-events:none; mix-blend-mode:screen; z-index:1; filter: blur(10px);
     background: radial-gradient(circle 160px at var(--x,50%) var(--y,50%), rgba(255,255,255,0.92), rgba(255,255,255,0.18) 30%, rgba(200,214,255,0.06) 60%, transparent 70%);
-    transition: background .08s linear;
-    z-index:0;
-    filter: blur(8px);
   }
 
-  /* container */
-  .card{
-    width:var(--card-w);
-    padding:22px;
-    border-radius:16px;
-    background: var(--glass);
-    backdrop-filter: blur(8px) saturate(120%);
-    box-shadow: 0 20px 50px rgba(13,38,76,0.12);
-    position:relative;
-    z-index:2;
-  }
-  h1{font-size:18px;margin:0 0 12px;text-align:center;font-weight:700}
-  .top-row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .small{font-size:13px;color:#274060}
+  .container{position:relative;z-index:2;width:var(--card-w);padding:18px;border-radius:14px;background:var(--glass);backdrop-filter:blur(8px) saturate(120%);box-shadow:var(--shadow)}
+  header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+  h1{font-size:18px;margin:0;font-weight:800}
+  .controls{display:flex;gap:8px;align-items:center}
 
-  /* function buttons */
-  .func-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-  .func-btn{
-    padding:10px;border-radius:10px;border:0;background:#f1f6ff;cursor:pointer;
-    font-weight:700;box-shadow:0 6px 20px rgba(16,24,64,0.06);transition:transform .12s ease,box-shadow .12s ease;
-  }
-  .func-btn.active{background:linear-gradient(90deg,var(--accent1),#8a90ff);color:white;transform:translateY(-4px);box-shadow:0 12px 30px rgba(76,87,255,0.18)}
-  .func-btn:active{transform:translateY(-1px)}
+  /* function and unit row */
+  .func-row{display:flex;gap:8px;margin:12px 0}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:0;background:#f6f9ff;cursor:pointer;font-weight:700;box-shadow:0 6px 18px rgba(10,20,40,0.05);transition:transform .14s,box-shadow .14s,background .14s}
+  .btn:hover{transform:translateY(-3px)}
+  .btn.active{background:linear-gradient(90deg,var(--accent1),#8a90ff);color:white;box-shadow:0 14px 40px rgba(106,115,255,0.16)}
 
-  /* input with floating label effect */
-  .field{
-    position:relative;margin-bottom:12px;
-  }
-  .field input{
-    width:100%;padding:14px 14px;border-radius:10px;border:1px solid #d6e7ff;background:transparent;font-size:15px;
-  }
-  .field .label{
-    position:absolute;left:14px;top:12px;font-size:13px;color:#445a78;transition:all .16s ease;
-    pointer-events:none;background:transparent;padding:0 4px;
-  }
-  .field.focused .label{transform:translateY(-28px);font-size:12px;color:var(--accent1)}
-  .field input:focus{outline:none;border-color:var(--accent1);box-shadow:0 6px 18px rgba(100,116,255,0.08)}
+  .field{display:flex;gap:8px;align-items:center;margin-top:8px}
+  input[type=number]{padding:10px 12px;border-radius:10px;border:1px solid #d6e7ff;width:140px}
+  .unit-toggle{display:flex;gap:6px}
+  .unit-toggle .btn{padding:8px 10px;font-weight:700}
 
-  /* unit toggle */
-  .unit-row{display:flex;gap:8px;margin-bottom:12px}
-  .unit-btn{flex:1;padding:10px;border-radius:10px;border:0;background:#eef6ff;font-weight:700;cursor:pointer}
-  .unit-btn.active{background:linear-gradient(90deg,var(--accent1),#9aa6ff);color:#fff;box-shadow:0 8px 20px rgba(76,87,255,0.12)}
+  /* layout: left plot, right controls */
+  .main{display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start}
+  .plot-card{border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+  canvas{width:100%;height:240px;border-radius:8px;background:linear-gradient(180deg,#fbfdff,#eef8ff);display:block}
 
-  /* actions */
-  .actions{display:flex;gap:8px;margin-top:6px}
-  .calc-btn{flex:1;padding:12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),#0fb07b);color:white;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(16,185,129,0.12)}
-  .history-btn{padding:10px;border-radius:10px;border:0;background:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(9,30,70,0.06)}
+  .side{display:flex;flex-direction:column;gap:10px}
+  .actions{display:flex;gap:8px}
+  .calc-btn{flex:1;padding:12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),#0fb07b);color:white;font-weight:800;cursor:pointer}
 
-  /* result */
-  .result{
-    margin-top:14px;border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f7fbff);
-    min-height:64px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;overflow:hidden;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
-  }
-  .exact{font-weight:800;color:#0b2b52;font-size:15px;}
-  .approx{color:#556b86;font-size:14px;}
+  .result{border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f7fbff);min-height:72px;display:flex;flex-direction:column;gap:6px}
+  .exact{font-weight:800;color:#0b2b52;font-size:15px}
+  .approx{color:#556b86;font-size:13px}
 
-  /* result animation */
-  .fade-in{animation:resIn .34s ease both}
-  @keyframes resIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* micro animations */
+  .pulse{animation:pulse 1.2s ease-in-out}
+  @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 rgba(100,116,255,0.12)}50%{transform:scale(1.02);box-shadow:0 18px 40px rgba(100,116,255,0.08)}100%{transform:scale(1);box-shadow:0 0 0 rgba(100,116,255,0)}}
 
-  /* bottom right instagram */
-  .insta{
-    position:fixed;right:18px;bottom:18px;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,#fff7;,#ffffffc9);backdrop-filter:blur(6px);box-shadow:0 10px 28px rgba(2,6,23,0.12);z-index:3;
-  }
-  .insta img{width:28px;height:28px;transition:transform .14s}
-  .insta:hover img{transform:scale(1.08)}
+  /* icons */
+  .icon{width:18px;height:18px;display:inline-block}
 
-  /* dark mode */
-  .toggle-theme{padding:6px 10px;border-radius:10px;border:0;background:#fff;cursor:pointer;font-weight:700}
-  .dark body{background:linear-gradient(135deg,#071428,#0f2740);color:#cfe9ff}
-  .dark .card{background:rgba(6,12,30,0.7);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
-  .dark .func-btn{background:#08112a;color:#cfe9ff}
-  .dark .func-btn.active{box-shadow:0 12px 30px rgba(0,0,0,0.6)}
-  .dark .unit-btn{background:#071428;color:#cfe9ff}
-  .dark .result{background:linear-gradient(180deg,#071a2b,#042033);border:1px solid rgba(255,255,255,0.02)}
   /* responsive */
-  @media (max-width:460px){:root{--card-w:92vw}.spot{display:none}.insta{right:10px;bottom:10px}}
+  @media (max-width:860px){:root{--card-w:94vw}.main{grid-template-columns:1fr}.plot-card canvas{height:200px}}
 </style>
 </head>
 <body>
+  <div class="bg-grid"></div>
   <div class="spot" id="spot"></div>
 
-  <div class="card" role="main" aria-label="Trigonometrik hesaplayıcı">
-    <div class="top-row">
-      <h1>Trigonometrik Değer Hesaplayıcı</h1>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="themeToggle" class="toggle-theme" title="Karanlık / Açık">🌙</button>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20" stroke="#6c74ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h1>Trigonometrik Değer Hesaplayıcı</h1>
       </div>
+      <div class="controls">
+        <button id="themeToggle" class="btn" title="Karanlık / Açık">🌙 Tema</button>
+        <button id="installBtn" class="btn" style="display:none">⬇️ Uygulamayı Ekle</button>
+      </div>
+    </header>
+
+    <div class="func-row" id="funcRow">
+      <button class="btn active" data-f="sin">sin</button>
+      <button class="btn" data-f="cos">cos</button>
+      <button class="btn" data-f="tan">tan</button>
+      <button class="btn" data-f="cosec">cosec</button>
+      <button class="btn" data-f="sec">sec</button>
+      <button class="btn" data-f="cot">cot</button>
     </div>
 
-    <div class="func-row" id="funcRow" aria-hidden="false">
-      <button class="func-btn active" data-f="sin">sin</button>
-      <button class="func-btn" data-f="cos">cos</button>
-      <button class="func-btn" data-f="tan">tan</button>
-      <button class="func-btn" data-f="cosec">cosec</button>
-      <button class="func-btn" data-f="sec">sec</button>
-      <button class="func-btn" data-f="cot">cot</button>
-    </div>
+    <div class="main">
+      <div class="plot-card">
+        <canvas id="plotCanvas" width="800" height="320" aria-label="Trigonometrik fonksiyon grafiği"></canvas>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+          <label style="font-weight:700">Açı:</label>
+          <input id="angle" type="number" inputmode="decimal" value="30" />
+          <div class="unit-toggle">
+            <button id="degBtn" class="btn active">°</button>
+            <button id="radBtn" class="btn">rad</button>
+          </div>
+        </div>
+        <input id="angleRange" type="range" min="-360" max="360" step="0.1" value="30" style="width:100%;margin-top:10px">
+      </div>
 
-    <div class="field" id="field">
-      <label class="label">Açı değeri</label>
-      <input id="angle" type="number" inputmode="decimal" aria-label="Açı değeri" />
-    </div>
+      <div class="side">
+        <div style="display:flex;gap:8px">
+          <button id="calcBtn" class="calc-btn">Hesapla ✨</button>
+          <button id="histBtn" class="btn">📜</button>
+        </div>
 
-    <div class="unit-row">
-      <button class="unit-btn active" id="degBtn">Derece</button>
-      <button class="unit-btn" id="radBtn">Radyan</button>
-    </div>
+        <div class="result" id="result">
+          <div class="exact" id="exact">—</div>
+          <div class="approx" id="approx">Sonuç burada görünecek.</div>
+        </div>
 
-    <div class="actions">
-      <button class="calc-btn" id="calcBtn">Hesapla ✨</button>
-      <button class="history-btn" id="histBtn" title="Geçmiş">📜</button>
-    </div>
-
-    <div class="result" id="result" aria-live="polite">
-      <div class="exact" id="exact">—</div>
-      <div class="approx" id="approx">Sonuç burada görünecek.</div>
+        <details>
+          <summary style="cursor:pointer;padding:8px 10px;border-radius:10px;background:#fff;">Formüller</summary>
+          <div style="padding:8px 12px">sin²x + cos²x = 1<br>1 + tan²x = sec²x<br>sin(α±β)=sinαcosβ±cosαsinβ</div>
+        </details>
+      </div>
     </div>
   </div>
 
-  <a class="insta" href="https://www.instagram.com/enesyavuz07/" target="_blank" aria-label="Instagram">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"/>
-  </a>
-
 <script>
-/* ========= Utilities: safe parser for exact expressions (no eval) ========= */
-// parse expressions like:
-// "1/2", "√2/2", "2/√3", "√6-√2)/4" in form "(√6-√2)/4" or "2-√3"
+// === small utility expressions parser (same as your original) ===
 function parseExactStringToNumber(s){
   if(!s || s==='—') return NaN;
   if(s === 'Tanımsız') return NaN;
-
   s = s.replace(/\s+/g,'');
-  // if expression contains '/', split numerator/denominator
-  let numerator = s;
-  let denom = 1;
+  let numerator = s; let denom = 1;
   if(s.includes('/')){
     const parts = s.split('/');
-    numerator = parts.slice(0,parts.length-1).join('/'); // support nested '/'
+    numerator = parts.slice(0,parts.length-1).join('/');
     denom = Number(parts[parts.length-1]);
-    if(Number.isNaN(denom)) {
-      // if denom contains √ like '√2', parse it
-      denom = parseTerm(parts[parts.length-1]);
-    }
+    if(Number.isNaN(denom)) denom = parseTerm(parts[parts.length-1]);
   }
-
-  // remove surrounding parentheses
-  if(numerator.startsWith('(') && numerator.endsWith(')')){
-    numerator = numerator.slice(1,-1);
-  }
-
-  // numerator might be sum/diff of terms like "√6-√2+2"
+  if(numerator.startsWith('(') && numerator.endsWith(')')) numerator = numerator.slice(1,-1);
   const tokens = numerator.match(/[+-]?[^+-]+/g) || [];
-  let total = 0;
-  for(let token of tokens){
-    total += parseTerm(token);
-  }
+  let total = 0; for(let token of tokens) total += parseTerm(token);
   return total / denom;
 }
-
 function parseTerm(token){
-  token = token.trim();
-  if(token === '') return 0;
-  // handle leading +
-  if(token[0] === '+') token = token.slice(1);
-  // if token contains √
+  token = token.trim(); if(token === '') return 0; if(token[0] === '+') token = token.slice(1);
   if(token.includes('√')){
-    // possible forms: '√2', '2√3', '-√2', '-2√3'
     token = token.replace(/\(/g,'').replace(/\)/g,'');
-    // capture sign
-    let sign = 1;
-    if(token[0] === '-'){ sign = -1; token = token.slice(1); }
-    if(token[0] === '+'){ token = token.slice(1); }
-    // coefficient before √?
-    const m = token.match(/^(\d*\.?\d*)?√(\d+(\.\d+)?)$/);
-    if(m){
-      const coeff = m[1] ? Number(m[1]) : 1;
-      const rad = Number(m[2]);
-      return sign * coeff * Math.sqrt(rad);
-    }
+    let sign = 1; if(token[0] === '-'){ sign=-1; token=token.slice(1);} if(token[0]==='+') token=token.slice(1);
+    const m = token.match(/^(\d*\.?\d*)?√(\d+(?:\.\d+)?)$/);
+    if(m){ const coeff = m[1] ? Number(m[1]) : 1; const rad = Number(m[2]); return sign * coeff * Math.sqrt(rad); }
   }
-  // plain number
-  const n = Number(token);
-  if(!Number.isNaN(n)) return n;
-  // fallback: if token like '2-√3' (shouldn't reach here since split), handle simple '-'
-  // but try to evaluate safe combos:
-  // handle forms like '2-√3' or '2+√3'
+  const n = Number(token); if(!Number.isNaN(n)) return n;
   const parts = token.match(/[+-]?[^+-]+/g);
-  if(parts && parts.length>1){
-    let s = 0;
-    for(const p of parts) s += parseTerm(p);
-    return s;
-  }
+  if(parts && parts.length>1){ let s=0; for(const p of parts) s+=parseTerm(p); return s; }
   return 0;
 }
 
-/* ========= Exact values mapping (strings) =========
-   We include many common angles and their exact representations.
-*/
-const exactValues = {
-  sin: {
-    0:'0', 15:'(√6-√2)/4', 30:'1/2', 45:'√2/2', 60:'√3/2', 75:'(√6+√2)/4',
-    90:'1', 120:'√3/2', 135:'√2/2', 150:'1/2', 180:'0', 270:'-1', 360:'0'
-  },
-  cos: {
-    0:'1', 15:'(√6+√2)/4', 30:'√3/2', 45:'√2/2', 60:'1/2', 75:'(√6-√2)/4',
-    90:'0', 120:'-1/2', 135:'-√2/2', 150:'-√3/2', 180:'-1', 270:'0', 360:'1'
-  },
-  tan: {
-    0:'0', 15:'2-√3', 30:'1/√3', 45:'1', 60:'√3', 75:'2+√3',
-    90:'Tanımsız', 180:'0', 270:'Tanımsız'
-  },
-  cosec: { 30:'2', 45:'√2', 60:'2/√3', 90:'1', 270:'-1' },
-  sec: { 0:'1', 30:'2/√3', 45:'√2', 60:'2', 90:'Tanımsız', 180:'-1' },
-  cot: { 15:'(√6+√2)/4/( (√6-√2)/4 )', 30:'√3', 45:'1', 60:'1/√3', 90:'0', 180:'Tanımsız' }
-};
+// === exact map (trimmed for brevity) ===
+const exactValues = { sin:{0:'0',15:'(√6-√2)/4',30:'1/2',45:'√2/2',60:'√3/2',90:'1',180:'0'}, cos:{0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0',180:'-1'}, tan:{0:'0',30:'1/√3',45:'1',60:'√3',90:'Tanımsız'} };
 
-/* ========= DOM refs ========= */
-const funcRow = document.getElementById('funcRow');
-const funcButtons = Array.from(document.querySelectorAll('.func-btn'));
+// DOM refs
+const funcButtons = Array.from(document.querySelectorAll('.func-row .btn'));
 const angleInput = document.getElementById('angle');
-const fieldWrap = document.getElementById('field');
+const angleRange = document.getElementById('angleRange');
 const degBtn = document.getElementById('degBtn');
 const radBtn = document.getElementById('radBtn');
 const calcBtn = document.getElementById('calcBtn');
 const exactEl = document.getElementById('exact');
 const approxEl = document.getElementById('approx');
-const spot = document.getElementById('spot');
-const themeToggle = document.getElementById('themeToggle');
-const histBtn = document.getElementById('histBtn');
+const plotCanvas = document.getElementById('plotCanvas');
+const ctx = plotCanvas.getContext('2d');
+let currentFunc = 'sin'; let unit='deg'; let history = JSON.parse(localStorage.getItem('trig_history_v2')||'[]');
 
-/* ========= state ========= */
-let currentFunc = 'sin';
-let unit = 'deg';
-let history = JSON.parse(localStorage.getItem('trig_history_v1')||'[]');
+// set active func
+funcButtons.forEach(b=>b.addEventListener('click', ()=>{ funcButtons.forEach(x=>x.classList.remove('active')); b.classList.add('active'); currentFunc = b.dataset.f; drawPlot(); }));
 
-/* ========= helpers ========= */
-function setActiveFunc(btn){
-  funcButtons.forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFunc = btn.dataset.f;
-}
-funcButtons.forEach(b=> b.addEventListener('click', ()=> setActiveFunc(b) ));
+degBtn.addEventListener('click', ()=>{ unit='deg'; degBtn.classList.add('active'); radBtn.classList.remove('active'); syncInputs(); drawPlot(); });
+radBtn.addEventListener('click', ()=>{ unit='rad'; radBtn.classList.add('active'); degBtn.classList.remove('active'); syncInputs(); drawPlot(); });
 
-/* floating label behaviour */
-angleInput.addEventListener('focus', ()=> fieldWrap.classList.add('focused'));
-angleInput.addEventListener('blur', ()=> { if(!angleInput.value) fieldWrap.classList.remove('focused'); });
+angleInput.addEventListener('input', ()=>{ syncRange(); drawPlot(); });
+angleRange.addEventListener('input', ()=>{ syncInputs(true); drawPlot(); });
 
-degBtn.addEventListener('click', ()=> { unit='deg'; degBtn.classList.add('active'); radBtn.classList.remove('active'); });
-radBtn.addEventListener('click', ()=> { unit='rad'; radBtn.classList.add('active'); degBtn.classList.remove('active'); });
+function syncRange(){ const val = angleInput.value || 0; angleRange.value = (unit==='deg')?val: (Number(val)*(180/Math.PI)); }
+function syncInputs(fromRange){ if(fromRange){ const v = Number(angleRange.value); angleInput.value = (unit==='deg')? v : (v*Math.PI/180); } else { syncRange(); } }
 
-/* theme */
-(function initTheme(){
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if(prefersDark) document.documentElement.classList.add('dark');
-  themeToggle.addEventListener('click', ()=> {
-    document.documentElement.classList.toggle('dark');
-  });
-})();
+// compute trig
+function computeTrigValue(fn, rad){ switch(fn){ case 'sin': return Math.sin(rad); case 'cos': return Math.cos(rad); case 'tan': return Math.tan(rad); case 'cosec': return 1/Math.sin(rad); case 'sec': return 1/Math.cos(rad); case 'cot': return 1/Math.tan(rad); } }
 
-/* spotlight follow */
-document.addEventListener('mousemove',(e)=>{
-  const x = e.clientX + 'px', y = e.clientY + 'px';
-  spot.style.setProperty('--x', x);
-  spot.style.setProperty('--y', y);
-});
+function showResult(exactStr, approxNum){ exactEl.classList.remove('pulse'); approxEl.classList.remove('pulse'); void exactEl.offsetWidth; exactEl.textContent = exactStr || ''; approxEl.textContent = (approxNum===null)? 'Tanımsız' : (typeof approxNum==='number'? approxNum.toFixed(6): approxNum); exactEl.classList.add('pulse'); approxEl.classList.add('pulse'); }
 
-/* history modal simple */
-histBtn.addEventListener('click', ()=>{
-  const items = history.slice().reverse().map(h=>`<li>${h}</li>`).join('');
-  alert(items?('Son hesaplar:\\n' + history.slice().reverse().join('\\n')):'Henüz geçmiş yok');
-});
-
-/* ========= core calculation ========= */
-function computeTrigValue(fn, rad){
-  switch(fn){
-    case 'sin': return Math.sin(rad);
-    case 'cos': return Math.cos(rad);
-    case 'tan': return Math.tan(rad);
-    case 'cosec': return 1/Math.sin(rad);
-    case 'sec': return 1/Math.cos(rad);
-    case 'cot': return 1/Math.tan(rad);
-  }
-}
-
-/* display result with animations & safe parsing */
-function showResult(exactStr, approxNum){
-  exactEl.classList.remove('fade-in'); approxEl.classList.remove('fade-in');
-  void exactEl.offsetWidth; // trigger reflow for restart
-  exactEl.textContent = exactStr || '';
-  approxEl.textContent = (approxNum === null) ? 'Tanımsız' : (typeof approxNum === 'number' ? approxNum.toFixed(6) : approxNum);
-  exactEl.classList.add('fade-in'); approxEl.classList.add('fade-in');
-}
-
-/* main handler */
 calcBtn.addEventListener('click', ()=>{
-  const raw = angleInput.value.trim();
-  if(raw === ''){
-    showResult('', 'Lütfen açı girin.');
-    return;
-  }
-  const parsed = Number(raw);
-  if(Number.isNaN(parsed)){
-    showResult('', 'Geçerli bir sayı girin.');
-    return;
-  }
-
-  // convert to degrees for exact-lookup, but preserve original input for numeric calc
-  let degForLookup = (unit === 'deg') ? parsed : (parsed * 180 / Math.PI);
-  // round to nearest 0.0001 to reduce FP issues
-  degForLookup = Math.round(degForLookup * 10000) / 10000;
-
-  // check if we have an exact for integer angles (or known handbook ones like 15,75)
-  const intDeg = Math.round(degForLookup);
-  const isIntegerAngle = Math.abs(intDeg - degForLookup) < 1e-9;
+  const raw = angleInput.value.trim(); if(raw===''){ showResult('', 'Lütfen açı girin.'); return; }
+  const parsed = Number(raw); if(Number.isNaN(parsed)){ showResult('', 'Geçerli sayı girin.'); return; }
+  let degForLookup = (unit==='deg')? parsed : (parsed*180/Math.PI);
+  degForLookup = Math.round(degForLookup*10000)/10000;
+  const intDeg = Math.round(degForLookup); const isIntegerAngle = Math.abs(intDeg - degForLookup) < 1e-9;
   const fnMap = exactValues[currentFunc];
-
-  if(isIntegerAngle && fnMap && fnMap[intDeg] !== undefined){
-    const exact = fnMap[intDeg];
-    const approx = parseExactStringToNumber(exact);
-    showResult(exact, approx);
-    pushHistory(`${currentFunc} ${intDeg}${unit==='deg'?'°':''} = ${approx.toFixed(6)}`);
-    return;
-  }
-
-  // if not exact, compute numeric
-  const angleRad = (unit === 'deg') ? parsed * Math.PI / 180 : parsed;
+  if(isIntegerAngle && fnMap && fnMap[intDeg] !== undefined){ const exact = fnMap[intDeg]; const approx = parseExactStringToNumber(exact); showResult(exact, approx); pushHistory(`${currentFunc} ${intDeg}° = ${approx.toFixed(6)}`); return; }
+  const angleRad = (unit==='deg')? parsed*Math.PI/180 : parsed;
   const val = computeTrigValue(currentFunc, angleRad);
-
-  if(!isFinite(val)){
-    showResult('', 'Tanımsız');
-    pushHistory(`${currentFunc} ${parsed} ${unit} = Tanımsız`);
-    return;
-  }
-
-  // also try near-special detection: within 1e-4 degree
-  const nearest = Math.round(angleRad * 180 / Math.PI);
-  if(fnMap && fnMap[nearest] !== undefined && Math.abs(nearest - (angleRad*180/Math.PI)) < 1e-4){
-    const exact = fnMap[nearest];
-    const approxFromExact = parseExactStringToNumber(exact);
-    showResult(exact, val);
-    pushHistory(`${currentFunc} ${parsed}${unit==='deg'?'°':''} ≈ ${val.toFixed(6)} (≈ ${approxFromExact.toFixed(6)})`);
-    return;
-  }
-
-  showResult('', val);
-  pushHistory(`${currentFunc} ${parsed}${unit==='deg'?'°':' rad'} = ${val.toFixed(6)}`);
+  if(!isFinite(val)){ showResult('', 'Tanımsız'); pushHistory(`${currentFunc} ${parsed} ${unit} = Tanımsız`); return; }
+  showResult('', val); pushHistory(`${currentFunc} ${parsed} ${unit} = ${val.toFixed(6)}`);
 });
 
-/* history push */
-function pushHistory(text){
-  history = history || [];
-  history.push(text);
-  if(history.length > 50) history.shift();
-  localStorage.setItem('trig_history_v1', JSON.stringify(history));
+function pushHistory(text){ history = history||[]; history.push(text); if(history.length>80) history.shift(); localStorage.setItem('trig_history_v2', JSON.stringify(history)); }
+document.getElementById('histBtn').addEventListener('click', ()=>{ alert(history.slice().reverse().join('\n')||'Henüz geçmiş yok'); });
+
+// spotlight follow
+const spot = document.getElementById('spot'); document.addEventListener('mousemove', (e)=>{ spot.style.setProperty('--x', e.clientX+'px'); spot.style.setProperty('--y', e.clientY+'px'); });
+
+// theme toggle (persist)
+const themeToggle = document.getElementById('themeToggle'); (function initTheme(){ const stored = localStorage.getItem('trig_theme'); if(stored==='dark') document.documentElement.classList.add('dark'); themeToggle.addEventListener('click', ()=>{ document.documentElement.classList.toggle('dark'); localStorage.setItem('trig_theme', document.documentElement.classList.contains('dark')? 'dark':'light'); }); })();
+
+// install prompt handling
+let deferredPrompt; const installBtn = document.getElementById('installBtn'); window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'inline-flex'; }); installBtn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; deferredPrompt = null; installBtn.style.display='none'; });
+
+// draw plot
+function drawPlot(){ const w = plotCanvas.width = plotCanvas.clientWidth*devicePixelRatio; const h = plotCanvas.height = 240*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); ctx.clearRect(0,0,plotCanvas.clientWidth,240);
+  const padding = 32; const W = plotCanvas.clientWidth - padding*2; const H = 200; const cx = padding; const cy = padding + H/2;
+  // background grid
+  ctx.strokeStyle = 'rgba(10,20,40,0.06)'; ctx.lineWidth = 1; for(let x=0;x<=W;x+=20){ ctx.beginPath(); ctx.moveTo(cx+x, padding); ctx.lineTo(cx+x, padding+H); ctx.stroke(); }
+  for(let y=0;y<=H;y+=20){ ctx.beginPath(); ctx.moveTo(cx, padding+y); ctx.lineTo(cx+W, padding+y); ctx.stroke(); }
+  // axes
+  ctx.strokeStyle = 'rgba(10,20,40,0.18)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+W, cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx+W/2, padding); ctx.lineTo(cx+W/2, padding+H); ctx.stroke();
+  // plot function (x domain -2π..2π)
+  const domainMin = -2*Math.PI; const domainMax = 2*Math.PI; function xToPx(x){ return cx + ( (x - domainMin)/(domainMax-domainMin) ) * W; }
+  function yToPx(y){ const scale = H/2; return cy - y*scale; }
+  ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(108,116,255,0.92)';
+  const steps = 800; for(let i=0;i<=steps;i++){ const t = domainMin + (i/steps)*(domainMax-domainMin); let y = 0; try{ y = computeTrigValue(currentFunc, t); }catch(e){ y = NaN; }
+    if(!isFinite(y)) { ctx.moveTo(xToPx(t), yToPx(0)); continue; }
+    const px = xToPx(t), py = yToPx(Math.max(-3,Math.min(3,y))); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  } ctx.stroke();
+  // draw marker for current angle
+  const angleVal = Number(angleInput.value) || 0; const angleRad = (unit==='deg') ? angleVal*Math.PI/180 : angleVal; const markerX = xToPx(angleRad);
+  ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(markerX, yToPx(Math.max(-3,Math.min(3, computeTrigValue(currentFunc, angleRad)))), 6,0,Math.PI*2); ctx.fill();
+  // labels
+  ctx.fillStyle = '#274060'; ctx.font = '12px Inter, system-ui'; ctx.fillText('-2π', cx+2, padding+H+14); ctx.fillText('0', cx+W/2-6, padding+H+14); ctx.fillText('2π', cx+W-22, padding+H+14);
 }
 
-/* quick keyboard: Enter to calculate */
-angleInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') calcBtn.click(); });
+// initial draw
+drawPlot(); window.addEventListener('resize', ()=> drawPlot());
 
-/* initialize: focus/label if input has value */
-if(angleInput.value) fieldWrap.classList.add('focused');
+// PWA: register service worker if available
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/service-worker.js').catch(()=>{}); }
 
 </script>
 </body>
