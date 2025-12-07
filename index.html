@@ -4,100 +4,144 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Trigonometrik Değer Hesaplayıcı — Eğlenceli (v2.1)</title>
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <style>
-/* --- Aynı CSS kodun --- */
 :root{
-    --card-w:760px;
-    --accent1:#6c74ff;
-    --accent2:#34d399;
-    --bg1:#e6f2ff;
-    --bg2:#bfe0ff;
-    --glass: rgba(255,255,255,0.88);
-    --muted:#445a78;
-    --shadow: 0 18px 40px rgba(13,38,76,0.12);
-    --spot-x: 50%;
-    --spot-y: 50%;
-    --spot-size: 220px;
-    --spot-intensity: 1;
+  --card-w:760px;
+  --accent1:#6c74ff;
+  --accent2:#34d399;
+  --bg1:#e6f2ff;
+  --bg2:#bfe0ff;
+  --glass: rgba(255,255,255,0.88);
+  --muted:#445a78;
+  --shadow: 0 18px 40px rgba(13,38,76,0.12);
+  --spot-x: 50%;
+  --spot-y: 50%;
+  --spot-size: 220px;
+  --spot-intensity: 1;
 }
 
-/* ... bütün mevcut CSS kodunu buraya ekle ... */
+/* Temel CSS */
+*{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial,Helvetica,sans-serif}
+html,body{height:100%;margin:0}
+body{
+  background: linear-gradient(160deg,var(--bg1),var(--bg2));
+  display:flex;align-items:center;justify-content:center;padding:28px;color:#07204a;overflow:hidden;
+  transition:background .25s ease,color .25s ease;
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.28;
+  background-image: repeating-linear-gradient(0deg, rgba(10,20,40,0.04) 0 1px, transparent 1px 28px),
+                    repeating-linear-gradient(90deg, rgba(10,20,40,0.03) 0 1px, transparent 1px 28px);
+  background-size: 100% 100%;
+  animation: gridPan 40s linear infinite;
+  mix-blend-mode:multiply;
+}
+@keyframes gridPan{from{background-position:0 0}to{background-position:400px 400px}}
+.spot{
+  position:fixed; left:0; top:0; width:100%; height:100%;
+  pointer-events:none; mix-blend-mode:screen; z-index:1;
+  opacity: 1; filter: blur(10px) saturate(120%);
+  background:
+    radial-gradient(circle var(--spot-size) at var(--spot-x) var(--spot-y),
+      rgba(255,255,255,calc(0.45 * var(--spot-intensity))) 0%,
+      rgba(255,255,255,calc(0.20 * var(--spot-intensity))) 25%,
+      rgba(160,190,255,calc(0.06 * var(--spot-intensity))) 55%,
+      transparent 75%),
+    radial-gradient(circle calc(var(--spot-size) * 0.5) at calc(var(--spot-x) - 6%) calc(var(--spot-y) - 4%),
+      rgba(255,255,255,calc(0.22 * var(--spot-intensity))) 0%,
+      rgba(255,255,255,0) 45%);
+}
+.container{
+  position:relative;z-index:2;width:var(--card-w);padding:18px;border-radius:14px;background:var(--glass);
+  backdrop-filter:blur(8px) saturate(120%);box-shadow:var(--shadow);
+}
+header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+h1{font-size:18px;margin:0;font-weight:800}
+.controls{display:flex;gap:8px;align-items:center}
+.func-row{display:flex;gap:8px;margin:12px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:0;background:#f6f9ff;cursor:pointer;font-weight:700;box-shadow:0 6px 18px rgba(10,20,40,0.05);transition:transform .14s,box-shadow .14s,background .14s,opacity .18s}
+.btn:hover{transform:translateY(-3px)}
+.btn.active{background:linear-gradient(90deg,var(--accent1),#8a90ff);color:white;box-shadow:0 14px 40px rgba(106,115,255,0.16)}
+.field{display:flex;gap:8px;align-items:center;margin-top:8px}
+input[type=number]{padding:10px 12px;border-radius:10px;border:1px solid #d6e7ff;width:140px}
+.unit-toggle{display:flex;gap:6px}
+.unit-toggle .btn{padding:8px 10px;font-weight:700}
+.main{display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start}
+.plot-card{border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);}
+canvas{width:100%;height:240px;border-radius:8px;background:linear-gradient(180deg,#fbfdff,#eef8ff);display:block}
+.side{display:flex;flex-direction:column;gap:10px}
+.actions{display:flex;gap:8px}
+.calc-btn{flex:1;padding:12px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),#0fb07b);color:white;font-weight:800;cursor:pointer}
+.result{border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#f7fbff);min-height:72px;display:flex;flex-direction:column;gap:6px}
+.exact{font-weight:800;color:#0b2b52;font-size:15px}
+.approx{color:#556b86;font-size:13px}
+.pulse{animation:pulse 1.2s ease-in-out}
+@keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 rgba(100,116,255,0.12)}50%{transform:scale(1.02);box-shadow:0 18px 40px rgba(100,116,255,0.08)}100%{transform:scale(1);box-shadow:0 0 0 rgba(100,116,255,0)}}
+@media (max-width:860px){:root{--card-w:94vw}.main{grid-template-columns:1fr}.plot-card canvas{height:200px}}
 </style>
 </head>
 <body>
-  <div class="bg-grid" id="bgGrid"></div>
-  <div class="spot" id="spot"></div>
+<div class="bg-grid" id="bgGrid"></div>
+<div class="spot" id="spot"></div>
 
-  <div class="container">
-    <header>
-      <div style="display:flex;align-items:center;gap:12px">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20" stroke="#6c74ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h1>Trigonometrik Değer Hesaplayıcı</h1>
-      </div>
-      <div class="controls">
-        <button id="themeToggle" class="btn" title="Karanlık / Açık">🌙 Tema</button>
-        <button id="installBtn" class="btn" style="display:none">⬇️ Uygulamayı Ekle</button>
-      </div>
-    </header>
+<div class="container">
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#6c74ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h1>Trigonometrik Değer Hesaplayıcı</h1>
+  </div>
+  <div class="controls">
+    <button id="themeToggle" class="btn">🌙 Tema</button>
+    <button id="installBtn" class="btn" style="display:none">⬇️ Uygulamayı Ekle</button>
+  </div>
+</header>
 
-    <div class="func-row" id="funcRow">
-      <button class="btn active" data-f="sin">sin</button>
-      <button class="btn" data-f="cos">cos</button>
-      <button class="btn" data-f="tan">tan</button>
-      <button class="btn" data-f="cosec">cosec</button>
-      <button class="btn" data-f="sec">sec</button>
-      <button class="btn" data-f="cot">cot</button>
-    </div>
+<div class="func-row" id="funcRow">
+  <button class="btn active" data-f="sin">sin</button>
+  <button class="btn" data-f="cos">cos</button>
+  <button class="btn" data-f="tan">tan</button>
+  <button class="btn" data-f="cosec">cosec</button>
+  <button class="btn" data-f="sec">sec</button>
+  <button class="btn" data-f="cot">cot</button>
+</div>
 
-    <div class="main">
-      <div class="plot-card">
-        <canvas id="plotCanvas" width="800" height="320" aria-label="Trigonometrik fonksiyon grafiği"></canvas>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
-          <label style="font-weight:700">Açı:</label>
-          <input id="angle" type="number" inputmode="decimal" value="30" />
-          <div class="unit-toggle">
-            <button id="degBtn" class="btn active">°</button>
-            <button id="radBtn" class="btn">rad</button>
-          </div>
-        </div>
-        <input id="angleRange" type="range" min="-360" max="360" step="0.1" value="30" style="width:100%;margin-top:10px">
-      </div>
-
-      <div class="side">
-        <div style="display:flex;gap:8px">
-          <button id="calcBtn" class="calc-btn">Hesapla ✨</button>
-          <button id="histBtn" class="btn">📜</button>
-        </div>
-
-        <div class="result" id="result">
-          <div class="exact" id="exact">—</div>
-          <div class="approx" id="approx">Sonuç burada görünecek.</div>
-        </div>
-
-        <details>
-          <summary style="cursor:pointer;padding:8px 10px;border-radius:10px;background:#fff;">Formüller</summary>
-          <div style="padding:8px 12px">sin²x + cos²x = 1<br>1 + tan²x = sec²x<br>sin(α±β)=sinαcosβ±cosαsinβ</div>
-        </details>
+<div class="main">
+  <div class="plot-card">
+    <canvas id="plotCanvas"></canvas>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+      <label>Açı:</label>
+      <input id="angle" type="number" value="30" />
+      <div class="unit-toggle">
+        <button id="degBtn" class="btn active">°</button>
+        <button id="radBtn" class="btn">rad</button>
       </div>
     </div>
+    <input id="angleRange" type="range" min="-360" max="360" step="0.1" value="30" style="width:100%;margin-top:10px">
   </div>
 
-<script>
-// --- JS kodun ---
-// Buraya mevcut JS kodunun tamamını yapıştırabilirsin
-// spotlight, theme toggle, hesaplama, grafiği çizme vs.
-// Sadece service worker ve PWA install kısmı hazır.
-</script>
+  <div class="side">
+    <div style="display:flex;gap:8px">
+      <button id="calcBtn" class="calc-btn">Hesapla ✨</button>
+      <button id="histBtn" class="btn">📜</button>
+    </div>
+    <div class="result" id="result">
+      <div class="exact" id="exact">—</div>
+      <div class="approx" id="approx">Sonuç burada.</div>
+    </div>
+    <details>
+      <summary style="cursor:pointer;padding:8px 10px;border-radius:10px;background:#fff;">Formüller</summary>
+      <div style="padding:8px 12px">sin²x + cos²x = 1<br>1 + tan²x = sec²x<br>sin(α±β)=sinαcosβ±cosαsinβ</div>
+    </details>
+  </div>
+</div>
+</div>
 
+<script src="app.js"></script>
 <script>
-// Service Worker register
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-    .then(()=>console.log('Service Worker registered'))
-    .catch(()=>console.log('Service Worker failed'));
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
 }
 </script>
-
 </body>
 </html>
