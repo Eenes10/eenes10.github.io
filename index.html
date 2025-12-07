@@ -61,8 +61,7 @@
         rgba(255,255,255,0) 45%);
     will-change: background-position, opacity;
   }
-</body>
-</html>
+
   /* dark mode selectors target html.dark so toggling documentElement.classList works */
   .dark body{
     background: linear-gradient(160deg,#071428,#0b2a41);
@@ -111,27 +110,7 @@
 
   /* icons */
   .icon{width:18px;height:18px;display:inline-block}
-<!-- Instagram Butonu -->
-<a href="https://www.instagram.com/enesyavuz07/" target="_blank" style="
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  text-decoration: none;
-  transition: transform 0.2s;
-" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:22px;height:22px;fill:white;">
-    <path d="M349.33 69.33H162.67C114.95 69.33 77.33 106.95 77.33 154.67v186.67c0 47.72 37.62 85.34 85.34 85.34h186.67c47.72 0 85.34-37.62 85.34-85.34V154.67c0-47.72-37.62-85.34-85.34-85.34zM256 370.67c-63.78 0-115.67-51.89-115.67-115.67S192.22 139.33 256 139.33 371.67 191.22 371.67 256 319.78 370.67 256 370.67zm124.67-189.34c-14.14 0-25.67-11.53-25.67-25.67s11.53-25.67 25.67-25.67 25.67 11.53 25.67 25.67-11.53 25.67-25.67 25.67z"/>
-    <circle cx="256" cy="256" r="76"/>
-  </svg>
-</a>
+
   /* responsive */
   @media (max-width:860px){:root{--card-w:94vw}.main{grid-template-columns:1fr}.plot-card canvas{height:200px}}
 </style>
@@ -378,5 +357,3 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/service-wor
 </script>
 </body>
 </html>
-
-
