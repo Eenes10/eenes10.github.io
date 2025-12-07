@@ -106,6 +106,7 @@
 <script>
 // === PWA INSTALL ===
 let deferredPrompt;
+window.deferredPrompt = null;
 const installBtn = document.getElementById("installBtn");
 const installBtnTop = document.getElementById("installBtnTop");
 const floatingBtn = document.getElementById("installBtnFloating");
@@ -113,6 +114,7 @@ const floatingBtn = document.getElementById("installBtnFloating");
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
+    window.deferredPrompt = e;
   installBtn.style.display = "inline-flex";
   if (floatingBtn) floatingBtn.style.display = "inline-flex";
 });
