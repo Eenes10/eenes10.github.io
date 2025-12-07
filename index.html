@@ -109,42 +109,48 @@
 
   @media (max-width:860px){:root{--card-w:94vw}.main{grid-template-columns:1fr}.plot-card canvas{height:200px}}
 
-  /* Instagram Button - Soft & Theme Aware */
-  #instagramBtn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
-    background: rgba(108,116,255,0.6); /* Açık tema başlangıcı */
-    backdrop-filter: blur(6px);
-  }
+/* Instagram Button - Soft & Theme Aware (Düzeltilmiş Logo) */
+#instagramBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 45px;       /* Buton biraz küçüldü */
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
+  background: rgba(108,116,255,0.6); /* Açık tema başlangıcı */
+  backdrop-filter: blur(6px);
+}
 
-  #instagramBtn svg path {
-    transition: stroke 0.25s;
-    stroke: white;
-  }
+#instagramBtn svg {
+  width: 22px;  /* Logo boyutu küçültüldü */
+  height: 22px;
+}
 
-  #instagramBtn:hover {
-    transform: scale(1.12);
-    box-shadow: 0 8px 20px rgba(108,116,255,0.3);
-  }
+#instagramBtn svg path {
+  transition: stroke 0.25s;
+  stroke: white;
+}
 
-  html.dark #instagramBtn {
-    background: rgba(108,116,255,0.35);
-  }
+#instagramBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(108,116,255,0.25);
+}
 
-  html.dark #instagramBtn:hover {
-    box-shadow: 0 8px 20px rgba(108,116,255,0.45);
-  }
+html.dark #instagramBtn {
+  background: rgba(108,116,255,0.35);
+}
+
+html.dark #instagramBtn:hover {
+  box-shadow: 0 6px 18px rgba(108,116,255,0.4);
+}
+
 </style>
 </head>
 <body>
@@ -396,6 +402,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/service-wor
 </script>
 </body>
 </html>
+
 
 
 
