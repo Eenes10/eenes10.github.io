@@ -1,0 +1,8 @@
+{
+  "name": "Trigonometrik Değer Hesaplayıcı",
+  "short_name": "TrigHesap",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#e6f2ff",
+  "theme_color": "#6c74ff"
+}
