@@ -1,392 +1,224 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trigonometrik Değer Hesaplayıcı</title>
 
-<!-- GITHUB PAGES UYUMLU -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#6c74ff">
-
 <style>
-/* ===== SENİN TÜM CSS KODUN ===== */
 :root{
-  --card-w:760px;
-  --accent1:#6c74ff;
+  --accent:#6c74ff;
   --accent2:#34d399;
   --bg1:#e6f2ff;
-  --bg2:#bfe0ff;
-  --glass: rgba(255,255,255,0.88);
-  --muted:#445a78;
-  --shadow: 0 18px 40px rgba(13,38,76,0.12);
-  --spot-x:50%;
-  --spot-y:50%;
-  --spot-size:220px;
-  --spot-intensity:1;
+  --bg2:#bfdcff;
+  --card:#ffffff;
+  --shadow:0 18px 40px rgba(0,0,0,.12);
 }
 
-*{box-sizing:border-box;font-family:Inter,system-ui}
-html,body{height:100%;margin:0}
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+}
+
 body{
+  margin:0;
+  min-height:100vh;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:28px;
-  overflow:hidden;
-}
-
-/* GRID */
-.bg-grid{
-  position:fixed;
-  inset:0;
-  opacity:.28;
-  pointer-events:none;
-  background-image:
-    repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0 1px,transparent 1px 28px),
-    repeating-linear-gradient(90deg,rgba(0,0,0,.03) 0 1px,transparent 1px 28px);
-}
-
-/* SPOT */
-.spot{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  mix-blend-mode:screen;
-  background:
-    radial-gradient(circle var(--spot-size) at var(--spot-x) var(--spot-y),
-    rgba(255,255,255,.4),transparent 70%);
 }
 
 .container{
-  position:relative;
-  width:var(--card-w);
-  padding:18px;
-  border-radius:14px;
-  background:var(--glass);
+  width:760px;
+  max-width:95%;
+  background:var(--card);
+  border-radius:16px;
   box-shadow:var(--shadow);
-  z-index:2;
+  padding:20px;
 }
 
-h1{margin:0;font-size:18px;font-weight:800}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+h1{
+  margin:0;
+  font-size:18px;
+}
+
+.funcs{
+  margin-top:12px;
+}
 
 .btn{
-  padding:8px 12px;
+  padding:8px 14px;
   border-radius:10px;
   border:0;
-  background:#f6f9ff;
+  background:#f1f4ff;
   cursor:pointer;
   font-weight:700;
 }
 
 .btn.active{
-  background:linear-gradient(90deg,var(--accent1),#8a90ff);
-  color:white;
-}
-
-.calc-btn{
-  padding:12px;
-  background:linear-gradient(90deg,var(--accent2),#0fb07b);
-  color:white;
-  border-radius:12px;
-  border:0;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.result{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  background:#fff;
+  background:var(--accent);
+  color:#fff;
 }
 
 canvas{
   width:100%;
   height:240px;
-  background:#eef8ff;
-  border-radius:8px;
+  background:#eef5ff;
+  border-radius:10px;
+  margin-top:14px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.calc-btn{
+  margin-top:12px;
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:0;
+  background:linear-gradient(90deg,var(--accent2),#0fb07b);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:14px;
+  padding:12px;
+  background:#f8faff;
+  border-radius:10px;
+}
+
+.small{
+  font-size:13px;
+  opacity:.75;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg-grid"></div>
-<div class="spot" id="spot"></div>
-
 <div class="container">
 
-<header style="display:flex;justify-content:space-between;align-items:center">
-<h1>Trigonometrik Değer Hesaplayıcı</h1>
-<button id="themeToggle" class="btn">🌙</button>
+<header>
+  <h1>Trigonometrik Değer Hesaplayıcı</h1>
 </header>
 
-<div style="margin-top:12px">
-<button class="btn active" data-f="sin">sin</button>
-<button class="btn" data-f="cos">cos</button>
-<button class="btn" data-f="tan">tan</button>
+<div class="funcs">
+  <button class="btn active" data-f="sin">sin</button>
+  <button class="btn" data-f="cos">cos</button>
+  <button class="btn" data-f="tan">tan</button>
 </div>
 
-<canvas id="plotCanvas"></canvas>
+<canvas id="plot"></canvas>
 
-<div style="margin-top:12px">
-<input id="angle" type="number" value="30">
-<button class="calc-btn" id="calcBtn">Hesapla</button>
-</div>
+<input id="angle" type="number" value="30" placeholder="Açı (derece)">
+
+<button id="calc" class="calc-btn">Hesapla</button>
 
 <div class="result">
-<div id="exact">—</div>
-<div id="approx">Sonuç burada</div>
+  <div id="exact" class="small">—</div>
+  <div id="approx">Sonuç burada</div>
 </div>
 
 </div>
 
-<!-- INSTAGRAM -->
-<a href="https://www.instagram.com/enesyavuz07" target="_blank"
-style="position:fixed;bottom:24px;right:24px;
-width:45px;height:45px;border-radius:50%;
-display:flex;align-items:center;justify-content:center;
-background:rgba(108,116,255,.6);color:white;
-text-decoration:none;font-weight:900">
-IG
-</a>
-
 <script>
-/* ===== HESAPLAMA ===== */
-let currentFunc="sin";
-
-document.querySelectorAll("[data-f]").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll("[data-f]").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    currentFunc=b.dataset.f;
-    draw();
-  }
-});
-
-document.getElementById("calcBtn").onclick=()=>{
-  const a=Number(angle.value)*Math.PI/180;
-  let r=0;
-  if(currentFunc==="sin")r=Math.sin(a);
-  if(currentFunc==="cos")r=Math.cos(a);
-  if(currentFunc==="tan")r=Math.tan(a);
-  approx.textContent=r.toFixed(6);
-};
-
-/* ===== GRAFİK ===== */
-const c=plotCanvas.getContext("2d");
-function draw(){
-  c.clearRect(0,0,plotCanvas.width,plotCanvas.height);
-  c.beginPath();
-  for(let x=0;x<360;x++){
-    let rad=x*Math.PI/180;
-    let y=Math.sin(rad);
-    c.lineTo(x,120-100*y);
-  }
-  c.stroke();
-}
-draw();
-
-/* ===== SPOT ===== */
-document.addEventListener("mousemove",e=>{
-  spot.style.setProperty("--spot-x",e.clientX+"px");
-  spot.style.setProperty("--spot-y",e.clientY+"px");
-});
-
-/* ===== THEME ===== */
-themeToggle.onclick=()=>{
-  document.documentElement.classList.toggle("dark");
-};
-
-/* ===== SERVICE WORKER ===== */
-if("serviceWorker"in navigator){
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
-<script>
-// === small utility expressions parser (same as your original) ===
-function parseExactStringToNumber(s){
-  if(!s || s==='—') return NaN;
-  if(s === 'Tanımsız') return NaN;
-  s = s.replace(/\s+/g,'');
-  let numerator = s; let denom = 1;
-  if(s.includes('/')){
-    const parts = s.split('/');
-    numerator = parts.slice(0,parts.length-1).join('/');
-    denom = Number(parts[parts.length-1]);
-    if(Number.isNaN(denom)) denom = parseTerm(parts[parts.length-1]);
-  }
-  if(numerator.startsWith('(') && numerator.endsWith(')')) numerator = numerator.slice(1,-1);
-  const tokens = numerator.match(/[+-]?[^+-]+/g) || [];
-  let total = 0; for(let token of tokens) total += parseTerm(token);
-  return total / denom;
-}
-function parseTerm(token){
-  token = token.trim(); if(token === '') return 0; if(token[0] === '+') token = token.slice(1);
-  if(token.includes('√')){
-    token = token.replace(/\(/g,'').replace(/\)/g,'');
-    let sign = 1; if(token[0] === '-'){ sign=-1; token=token.slice(1);} if(token[0]==='+') token=token.slice(1);
-    const m = token.match(/^(\d*\.?\d*)?√(\d+(?:\.\d+)?)$/);
-    if(m){ const coeff = m[1] ? Number(m[1]) : 1; const rad = Number(m[2]); return sign * coeff * Math.sqrt(rad); }
-  }
-  const n = Number(token); if(!Number.isNaN(n)) return n;
-  const parts = token.match(/[+-]?[^+-]+/g);
-  if(parts && parts.length>1){ let s=0; for(const p of parts) s+=parseTerm(p); return s; }
-  return 0;
-}
-
-// === exact map (trimmed for brevity) ===
-const exactValues = { sin:{0:'0',15:'(√6-√2)/4',30:'1/2',45:'√2/2',60:'√3/2',90:'1',180:'0'}, cos:{0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0',180:'-1'}, tan:{0:'0',30:'1/√3',45:'1',60:'√3',90:'Tanımsız'} };
-
-// DOM refs
-const funcButtons = Array.from(document.querySelectorAll('.func-row .btn'));
+/* =======================
+   DEĞİŞKENLER
+======================= */
+const buttons = document.querySelectorAll('[data-f]');
 const angleInput = document.getElementById('angle');
-const angleRange = document.getElementById('angleRange');
-const degBtn = document.getElementById('degBtn');
-const radBtn = document.getElementById('radBtn');
-const calcBtn = document.getElementById('calcBtn');
+const calcBtn = document.getElementById('calc');
 const exactEl = document.getElementById('exact');
 const approxEl = document.getElementById('approx');
-const plotCanvas = document.getElementById('plotCanvas');
-const ctx = plotCanvas.getContext('2d');
-let currentFunc = 'sin'; let unit='deg'; let history = JSON.parse(localStorage.getItem('trig_history_v2')||'[]');
+const canvas = document.getElementById('plot');
+const ctx = canvas.getContext('2d');
 
-// set active func
-funcButtons.forEach(b=>b.addEventListener('click', ()=>{ funcButtons.forEach(x=>x.classList.remove('active')); b.classList.add('active'); currentFunc = b.dataset.f; drawPlot(); }));
+let currentFunc = 'sin';
 
-degBtn.addEventListener('click', ()=>{ unit='deg'; degBtn.classList.add('active'); radBtn.classList.remove('active'); syncInputs(); drawPlot(); });
-radBtn.addEventListener('click', ()=>{ unit='rad'; radBtn.classList.add('active'); degBtn.classList.remove('active'); syncInputs(); drawPlot(); });
+/* =======================
+   KESİN DEĞER TABLOSU
+======================= */
+const exactMap = {
+  sin:{0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1'},
+  cos:{0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0'},
+  tan:{0:'0',30:'1/√3',45:'1',60:'√3'}
+};
 
-angleInput.addEventListener('input', ()=>{ syncRange(); drawPlot(); });
-angleRange.addEventListener('input', ()=>{ syncInputs(true); drawPlot(); });
-
-function syncRange(){ const val = angleInput.value || 0; angleRange.value = (unit==='deg')?val: (Number(val)*(180/Math.PI)); }
-function syncInputs(fromRange){ if(fromRange){ const v = Number(angleRange.value); angleInput.value = (unit==='deg')? v : (v*Math.PI/180); } else { syncRange(); } }
-
-// compute trig
-function computeTrigValue(fn, rad){ switch(fn){ case 'sin': return Math.sin(rad); case 'cos': return Math.cos(rad); case 'tan': return Math.tan(rad); case 'cosec': return 1/Math.sin(rad); case 'sec': return 1/Math.cos(rad); case 'cot': return 1/Math.tan(rad); } }
-
-function showResult(exactStr, approxNum){ exactEl.classList.remove('pulse'); approxEl.classList.remove('pulse'); void exactEl.offsetWidth; exactEl.textContent = exactStr || ''; approxEl.textContent = (approxNum===null)? 'Tanımsız' : (typeof approxNum==='number'? approxNum.toFixed(6): approxNum); exactEl.classList.add('pulse'); approxEl.classList.add('pulse'); }
-
-calcBtn.addEventListener('click', ()=>{
-  const raw = angleInput.value.trim(); if(raw===''){ showResult('', 'Lütfen açı girin.'); return; }
-  const parsed = Number(raw); if(Number.isNaN(parsed)){ showResult('', 'Geçerli sayı girin.'); return; }
-  let degForLookup = (unit==='deg')? parsed : (parsed*180/Math.PI);
-  degForLookup = Math.round(degForLookup*10000)/10000;
-  const intDeg = Math.round(degForLookup); const isIntegerAngle = Math.abs(intDeg - degForLookup) < 1e-9;
-  const fnMap = exactValues[currentFunc];
-  if(isIntegerAngle && fnMap && fnMap[intDeg] !== undefined){ const exact = fnMap[intDeg]; const approx = parseExactStringToNumber(exact); showResult(exact, approx); pushHistory(`${currentFunc} ${intDeg}° = ${approx.toFixed(6)}`); return; }
-  const angleRad = (unit==='deg')? parsed*Math.PI/180 : parsed;
-  const val = computeTrigValue(currentFunc, angleRad);
-  if(!isFinite(val)){ showResult('', 'Tanımsız'); pushHistory(`${currentFunc} ${parsed} ${unit} = Tanımsız`); return; }
-  showResult('', val); pushHistory(`${currentFunc} ${parsed} ${unit} = ${val.toFixed(6)}`);
+/* =======================
+   BUTON SEÇİMİ
+======================= */
+buttons.forEach(b=>{
+  b.onclick=()=>{
+    buttons.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    currentFunc=b.dataset.f;
+    drawGraph();
+  };
 });
 
-function pushHistory(text){ history = history||[]; history.push(text); if(history.length>80) history.shift(); localStorage.setItem('trig_history_v2', JSON.stringify(history)); }
-document.getElementById('histBtn').addEventListener('click', ()=>{ alert(history.slice().reverse().join('\n')||'Henüz geçmiş yok'); });
+/* =======================
+   HESAPLAMA
+======================= */
+calcBtn.onclick=()=>{
+  const deg=Number(angleInput.value);
+  const rad=deg*Math.PI/180;
 
-// spotlight follow & improved fade behaviour
-const spot = document.getElementById('spot');
-const bgGrid = document.getElementById('bgGrid');
-let spotFadeTimeout = null;
-function setSpot(x, y, sizeRatio=1, intensity=1){
-  // set CSS vars (use percentages for positions)
-  const px = Math.round(x);
-  const py = Math.round(y);
-  spot.style.setProperty('--spot-x', px + 'px');
-  spot.style.setProperty('--spot-y', py + 'px');
-  // responsive size (base var * ratio)
-  const base = Math.max(140, Math.min(420, window.innerWidth * 0.18));
-  spot.style.setProperty('--spot-size', (base * sizeRatio) + 'px');
-  spot.style.setProperty('--spot-intensity', intensity);
-  // gentle scale to mimic glow movement
-  spot.style.transform = 'translateZ(0) scale(' + (1 + (0.015 * sizeRatio)) + ')';
-  spot.style.opacity = 1;
-  bgGrid.style.opacity = 0.28; // keep grid visible normally
-  if(spotFadeTimeout) clearTimeout(spotFadeTimeout);
-  spotFadeTimeout = setTimeout(()=>{ // slowly reduce intensity when mouse stops
-    spot.style.setProperty('--spot-intensity', 0.6);
-  }, 220);
-}
+  let val;
+  if(currentFunc==='sin') val=Math.sin(rad);
+  if(currentFunc==='cos') val=Math.cos(rad);
+  if(currentFunc==='tan') val=Math.tan(rad);
 
-document.addEventListener('mousemove', (e)=>{
-  // map pointer to viewport and set size/intensity based on speed
-  setSpot(e.clientX, e.clientY, 1.05, 1.15);
-});
+  exactEl.textContent =
+    exactMap[currentFunc][deg] ?? `${currentFunc}(${deg}°)`;
 
-// when pointer leaves window, fade out
-document.addEventListener('mouseout', (e)=>{
-  // if leaving to outside of viewport
-  if(!e.relatedTarget){
-    spot.style.opacity = 0.28;
-    bgGrid.style.opacity = 0.14;
+  approxEl.textContent =
+    isFinite(val) ? val.toFixed(6) : 'Tanımsız';
+};
+
+/* =======================
+   GRAFİK
+======================= */
+function drawGraph(){
+  canvas.width=canvas.clientWidth;
+  canvas.height=240;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  ctx.beginPath();
+
+  for(let x=0;x<=360;x++){
+    const r=x*Math.PI/180;
+    let y=Math.sin(r);
+    if(currentFunc==='cos') y=Math.cos(r);
+    if(currentFunc==='tan') y=Math.tan(r)/5;
+
+    const px=(x/360)*canvas.width;
+    const py=120-y*100;
+
+    x===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
   }
-});
 
-// touch support: center-ish, lower intensity
-document.addEventListener('touchstart', (e)=>{
-  const t = e.touches[0];
-  setSpot(t.clientX, t.clientY, 0.9, 0.8);
-});
-document.addEventListener('touchmove', (e)=>{
-  const t = e.touches[0];
-  setSpot(t.clientX, t.clientY, 0.95, 0.9);
-});
-
-// theme toggle (persist) - fixed to toggle class on <html>
-const themeToggle = document.getElementById('themeToggle');
-(function initTheme(){
-  const stored = localStorage.getItem('trig_theme');
-  const isDark = (stored === 'dark') || (stored === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  if(isDark) document.documentElement.classList.add('dark');
-  updateThemeButtonIcon();
-  themeToggle.addEventListener('click', ()=>{
-    document.documentElement.classList.toggle('dark');
-    const nowDark = document.documentElement.classList.contains('dark');
-    localStorage.setItem('trig_theme', nowDark ? 'dark' : 'light');
-    updateThemeButtonIcon();
-  });
-})();
-function updateThemeButtonIcon(){
-  const isDarkNow = document.documentElement.classList.contains('dark');
-  themeToggle.textContent = (isDarkNow ? '☀️ Açık' : '🌙 Karanlık');
+  ctx.strokeStyle='#6c74ff';
+  ctx.lineWidth=2;
+  ctx.stroke();
 }
 
-// install prompt handling
-let deferredPrompt; const installBtn = document.getElementById('installBtn'); window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'inline-flex'; }); installBtn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; deferredPrompt = null; installBtn.style.display='none'; });
-
-// draw plot
-function drawPlot(){ const w = plotCanvas.width = plotCanvas.clientWidth*devicePixelRatio; const h = plotCanvas.height = 240*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); ctx.clearRect(0,0,plotCanvas.clientWidth,240);
-  const padding = 32; const W = plotCanvas.clientWidth - padding*2; const H = 200; const cx = padding; const cy = padding + H/2;
-  // background grid
-  ctx.strokeStyle = 'rgba(10,20,40,0.06)'; ctx.lineWidth = 1; for(let x=0;x<=W;x+=20){ ctx.beginPath(); ctx.moveTo(cx+x, padding); ctx.lineTo(cx+x, padding+H); ctx.stroke(); }
-  for(let y=0;y<=H;y+=20){ ctx.beginPath(); ctx.moveTo(cx, padding+y); ctx.lineTo(cx+W, padding+y); ctx.stroke(); }
-  // axes
-  ctx.strokeStyle = 'rgba(10,20,40,0.18)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+W, cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx+W/2, padding); ctx.lineTo(cx+W/2, padding+H); ctx.stroke();
-  // plot function (x domain -2π..2π)
-  const domainMin = -2*Math.PI; const domainMax = 2*Math.PI; function xToPx(x){ return cx + ( (x - domainMin)/(domainMax-domainMin) ) * W; }
-  function yToPx(y){ const scale = H/2; return cy - y*scale; }
-  ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(108,116,255,0.92)';
-  const steps = 800; for(let i=0;i<=steps;i++){ const t = domainMin + (i/steps)*(domainMax-domainMin); let y = 0; try{ y = computeTrigValue(currentFunc, t); }catch(e){ y = NaN; }
-    if(!isFinite(y)) { ctx.moveTo(xToPx(t), yToPx(0)); continue; }
-    const px = xToPx(t), py = yToPx(Math.max(-3,Math.min(3,y))); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-  } ctx.stroke();
-  // draw marker for current angle
-  const angleVal = Number(angleInput.value) || 0; const angleRad = (unit==='deg') ? angleVal*Math.PI/180 : angleVal; const markerX = xToPx(angleRad);
-  ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(markerX, yToPx(Math.max(-3,Math.min(3, computeTrigValue(currentFunc, angleRad)))), 6,0,Math.PI*2); ctx.fill();
-  // labels
-  ctx.fillStyle = '#274060'; ctx.font = '12px Inter, system-ui'; ctx.fillText('-2π', cx+2, padding+H+14); ctx.fillText('0', cx+W/2-6, padding+H+14); ctx.fillText('2π', cx+W-22, padding+H+14);
-}
-
-// initial draw
-drawPlot(); window.addEventListener('resize', ()=> drawPlot());
-
-// PWA: register service worker if available
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/service-worker.js').catch(()=>{}); }
-
+drawGraph();
 </script>
+
 </body>
 </html>
-
