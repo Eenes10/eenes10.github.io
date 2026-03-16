@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
+  <title>ASTEROIDS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- MENÜ -->
+  <div id="s-menu" class="screen active">
+    <canvas id="bg-canvas"></canvas>
+    <div class="menu-inner">
+      <div class="logo">
+        <div class="logo-sub">— ARCADE —</div>
+        <h1 class="logo-title">ASTEROIDS</h1>
+        <div class="logo-line"></div>
+      </div>
+      <div id="hi-disp" class="hi-text"></div>
+      <div class="menu-btns">
+        <button class="btn btn-glow" id="btn-play">▶  OYNA</button>
+        <button class="btn btn-dim"  id="btn-how">NASIL OYNANIR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NASIL OYNANIR -->
+  <div id="s-how" class="screen">
+    <canvas id="bg-canvas2"></canvas>
+    <div class="how-inner">
+      <h2 class="how-title">KONTROLLER</h2>
+      <div class="how-grid">
+        <div class="how-card"><div class="hc-icon joy-icon"></div><div class="hc-label">Joystick<br><span>Dön + İtki</span></div></div>
+        <div class="how-card"><div class="hc-icon fire-icon">●</div><div class="hc-label">Ateş Butonu<br><span>Dokunup tut</span></div></div>
+      </div>
+      <h2 class="how-title" style="margin-top:4px">GÜÇLENDIRICI</h2>
+      <div class="power-list">
+        <div class="pi"><span class="pc cyan">K</span> Kalkan — bir çarpışmayı engeller</div>
+        <div class="pi"><span class="pc yellow">H</span> Hızlı Ateş — 3x ateş hızı</div>
+        <div class="pi"><span class="pc green">+</span> Ekstra Can</div>
+        <div class="pi"><span class="pc orange">2x</span> Skor Çarpanı (10sn)</div>
+      </div>
+      <h2 class="how-title" style="margin-top:4px">ASTEROID TİPLERİ</h2>
+      <div class="type-list">
+        <div class="ti"><span class="dot" style="background:#7acde0"></span>Normal</div>
+        <div class="ti"><span class="dot" style="background:#ff8c00"></span>Hızlı — 2x puan</div>
+        <div class="ti"><span class="dot" style="background:#ff3c50"></span>Zor — 2 vuruş</div>
+        <div class="ti"><span class="dot" style="background:#8cdeff"></span>Buzlu — yavaş</div>
+        <div class="ti"><span class="dot" style="background:#b400ff"></span>Karanlık — 3x puan</div>
+        <div class="ti"><span class="dot" style="background:#ff3cb4"></span>UFO — 500 puan</div>
+      </div>
+      <button class="btn btn-dim" id="btn-back" style="margin-top:8px">← GERİ</button>
+    </div>
+  </div>
+
+  <!-- OYUN -->
+  <div id="s-game" class="screen">
+    <canvas id="canvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div id="hud-l">
+        <div id="h-score">000000</div>
+        <div id="h-hi">EN İYİ 000000</div>
+      </div>
+      <div id="hud-c">
+        <div id="h-wave">DALGA 1</div>
+        <div id="h-mult" style="display:none">2x SKOR!</div>
+      </div>
+      <div id="hud-r">
+        <div id="h-lives"></div>
+      </div>
+    </div>
+    <div id="pbars"></div>
+    <div id="wave-pop" class="wave-pop"></div>
+    <div id="ufo-warn" class="ufo-warn">⚠ UFO ⚠</div>
+
+    <!-- Joystick -->
+    <div id="joy-zone">
+      <div id="joy-outer"><div id="joy-inner"></div></div>
+    </div>
+
+    <!-- Ateş butonu -->
+    <div id="fire-zone">
+      <button id="btn-fire">●</button>
+    </div>
+  </div>
+
+  <!-- OYUN BİTTİ -->
+  <div id="s-over" class="screen">
+    <canvas id="bg-canvas3"></canvas>
+    <div class="over-inner">
+      <h2 class="over-title">OYUN BİTTİ</h2>
+      <div class="score-card">
+        <div class="sc-row"><span>SKOR</span><span id="o-score" class="sc-val">000000</span></div>
+        <div class="sc-row"><span>EN YÜKSEK</span><span id="o-hi" class="sc-val yellow">000000</span></div>
+        <div class="sc-row"><span>DALGA</span><span id="o-wave" class="sc-val cyan">1</span></div>
+      </div>
+      <div id="o-record" class="new-rec">★ YENİ REKOR ★</div>
+      <div class="over-btns">
+        <button class="btn btn-glow"  id="btn-retry">↺  TEKRAR</button>
+        <button class="btn btn-dim"   id="btn-omenu">⌂  MENÜ</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
