@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg:     #05050e;
+  --cyan:   #00d8ff;
+  --green:  #00ff9d;
+  --yellow: #ffe600;
+  --orange: #ff8c00;
+  --red:    #ff3c50;
+  --pink:   #ff3cb4;
+  --purple: #b400ff;
+  --white:  #dde8ff;
+  --dim:    #3a3a5c;
+  --dim2:   #6060a0;
+  --f:      'Orbitron', monospace;
+  --m:      'Share Tech Mono', monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-family:var(--f);color:var(--white);touch-action:none;}
+
+/* ── EKRANLAR ── */
+.screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .25s;}
+.screen.active{display:flex;opacity:1;}
+
+/* ── ARKA PLAN CANVAS ── */
+#bg-canvas,#bg-canvas2,#bg-canvas3{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── MENÜ ── */
+.menu-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:clamp(14px,3.5vh,28px);padding:20px;width:100%;max-width:420px;}
+
+.logo{text-align:center;}
+.logo-sub{font-family:var(--m);font-size:clamp(10px,2.5vw,13px);letter-spacing:.35em;color:var(--dim2);margin-bottom:6px;}
+.logo-title{
+  font-size:clamp(42px,11vw,88px);font-weight:900;letter-spacing:.18em;
+  color:transparent;
+  background:linear-gradient(160deg,#fff 0%,var(--cyan) 50%,#0088bb 100%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(0,216,255,.55));
+  animation:title-breathe 4s ease-in-out infinite;
+}
+@keyframes title-breathe{0%,100%{filter:drop-shadow(0 0 18px rgba(0,216,255,.55))}50%{filter:drop-shadow(0 0 32px rgba(0,216,255,.9))}}
+
+.logo-line{height:1px;width:75%;margin:.7rem auto 0;background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+
+.hi-text{font-family:var(--m);font-size:clamp(11px,2.8vw,14px);color:var(--dim2);letter-spacing:.1em;min-height:1.2em;}
+
+.menu-btns{display:flex;flex-direction:column;gap:12px;width:100%;max-width:260px;}
+
+/* ── BUTONLAR ── */
+.btn{
+  font-family:var(--f);font-size:clamp(13px,3.2vw,16px);font-weight:700;
+  letter-spacing:.12em;padding:15px 24px;border:none;border-radius:6px;
+  cursor:pointer;transition:all .12s;position:relative;overflow:hidden;
+}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .1s;}
+.btn:active::after{background:rgba(255,255,255,.12);}
+
+.btn-glow{
+  background:rgba(0,216,255,.1);color:var(--cyan);
+  border:1.5px solid rgba(0,216,255,.6);
+  box-shadow:0 0 14px rgba(0,216,255,.15),inset 0 0 14px rgba(0,216,255,.04);
+}
+.btn-glow:hover{background:rgba(0,216,255,.18);box-shadow:0 0 22px rgba(0,216,255,.35);}
+.btn-glow:active{transform:scale(.97);}
+
+.btn-dim{background:rgba(255,255,255,.04);color:var(--dim2);border:1px solid var(--dim);}
+.btn-dim:hover{color:var(--white);border-color:var(--dim2);}
+.btn-dim:active{transform:scale(.97);}
+
+/* ── NASIL OYNANIR ── */
+.how-inner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:16px 20px;width:100%;max-width:460px;
+  max-height:100vh;overflow-y:auto;
+}
+.how-title{font-size:clamp(12px,3.2vw,15px);font-weight:700;letter-spacing:.2em;color:var(--dim2);width:100%;text-align:left;}
+
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+.how-card{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.03);border:1px solid var(--dim);
+  border-radius:8px;padding:12px;
+}
+.hc-icon{font-size:22px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
+.joy-icon{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--dim2);position:relative;
+}
+.joy-icon::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:14px;height:14px;border-radius:50%;background:var(--dim2);
+}
+.fire-icon{color:var(--yellow);text-shadow:0 0 8px var(--yellow);}
+.hc-label{font-family:var(--m);font-size:clamp(11px,2.8vw,13px);color:var(--white);}
+.hc-label span{color:var(--dim2);font-size:.85em;}
+
+.power-list,.type-list{width:100%;display:flex;flex-direction:column;gap:6px;}
+.pi,.ti{display:flex;align-items:center;gap:8px;font-family:var(--m);font-size:clamp(11px,2.8vw,13px);color:var(--dim2);}
+.pc{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--f);border:1px solid currentColor;}
+.pc.cyan{color:var(--cyan);}
+.pc.yellow{color:var(--yellow);}
+.pc.green{color:var(--green);}
+.pc.orange{color:var(--orange);}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* ── OYUN CANVAS ── */
+#s-game{background:var(--bg);}
+#canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── HUD ── */
+#hud{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:10px 14px 8px;
+  background:linear-gradient(180deg,rgba(5,5,14,.85) 0%,transparent 100%);
+  border-bottom:1px solid rgba(0,216,255,.07);
+  pointer-events:none;
+}
+#h-score{font-size:clamp(15px,4.5vw,22px);font-weight:700;color:var(--cyan);text-shadow:0 0 10px rgba(0,216,255,.5);letter-spacing:.05em;}
+#h-hi{font-family:var(--m);font-size:clamp(9px,2.2vw,12px);color:var(--dim2);margin-top:2px;}
+#h-wave{font-size:clamp(12px,3.5vw,16px);font-weight:700;color:var(--green);text-shadow:0 0 8px rgba(0,255,157,.4);letter-spacing:.08em;}
+#h-mult{font-size:clamp(11px,2.8vw,13px);font-weight:700;color:var(--yellow);text-shadow:0 0 8px var(--yellow);letter-spacing:.1em;animation:pulse .5s ease-in-out infinite alternate;}
+@keyframes pulse{from{opacity:.6}to{opacity:1}}
+#h-lives{display:flex;gap:3px;justify-content:flex-end;}
+.life{font-size:clamp(13px,3.8vw,18px);color:var(--red);text-shadow:0 0 6px rgba(255,60,80,.5);}
+
+/* ── GÜÇLENDIRICI BARLAR ── */
+#pbars{position:absolute;top:54px;right:12px;z-index:10;pointer-events:none;display:flex;flex-direction:column;gap:5px;}
+.pbar{display:none;flex-direction:column;gap:2px;}
+.pbar.show{display:flex;}
+.pbar-lbl{font-family:var(--m);font-size:clamp(8px,1.8vw,10px);letter-spacing:.1em;}
+.pbar-track{width:90px;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:3px;transition:width .08s;}
+.pbar-fill.c{background:var(--cyan);box-shadow:0 0 5px var(--cyan);}
+.pbar-fill.y{background:var(--yellow);box-shadow:0 0 5px var(--yellow);}
+.pbar-fill.o{background:var(--orange);box-shadow:0 0 5px var(--orange);}
+
+/* ── DALGA BİLDİRİMİ ── */
+.wave-pop{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(22px,7vw,40px);font-weight:900;letter-spacing:.2em;
+  color:var(--green);text-shadow:0 0 22px rgba(0,255,157,.7);
+  pointer-events:none;z-index:20;opacity:0;transition:opacity .3s;white-space:nowrap;
+}
+.wave-pop.show{opacity:1;}
+
+.ufo-warn{
+  position:absolute;bottom:clamp(110px,22vh,160px);left:50%;transform:translateX(-50%);
+  font-family:var(--m);font-size:clamp(11px,3vw,14px);
+  color:var(--pink);text-shadow:0 0 8px var(--pink);letter-spacing:.1em;
+  pointer-events:none;z-index:20;display:none;
+  animation:blink .45s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── JOYSTİCK ── */
+#joy-zone{
+  position:absolute;
+  left:clamp(16px,5vw,32px);
+  bottom:clamp(20px,5vh,40px);
+  width:clamp(120px,28vw,160px);
+  height:clamp(120px,28vw,160px);
+  z-index:10;
+}
+#joy-outer{
+  width:100%;height:100%;border-radius:50%;
+  border:2px solid rgba(0,216,255,.2);
+  background:rgba(0,216,255,.04);
+  position:relative;
+  box-shadow:0 0 20px rgba(0,216,255,.06);
+}
+#joy-inner{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:44%;height:44%;border-radius:50%;
+  background:rgba(0,216,255,.18);
+  border:2px solid rgba(0,216,255,.5);
+  box-shadow:0 0 12px rgba(0,216,255,.3);
+  transition:transform .04s;
+  pointer-events:none;
+}
+
+/* ── ATEŞ BUTONU ── */
+#fire-zone{
+  position:absolute;
+  right:clamp(16px,5vw,32px);
+  bottom:clamp(20px,5vh,40px);
+  z-index:10;
+}
+#btn-fire{
+  width:clamp(70px,18vw,90px);
+  height:clamp(70px,18vw,90px);
+  border-radius:50%;
+  background:rgba(255,230,0,.08);
+  border:2px solid rgba(255,230,0,.4);
+  color:var(--yellow);
+  font-size:clamp(22px,6vw,30px);
+  cursor:pointer;
+  box-shadow:0 0 16px rgba(255,230,0,.1);
+  transition:all .08s;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-user-select:none;user-select:none;touch-action:none;
+}
+#btn-fire:active,#btn-fire.pressed{
+  background:rgba(255,230,0,.22);
+  border-color:var(--yellow);
+  box-shadow:0 0 24px rgba(255,230,0,.35);
+  transform:scale(.92);
+}
+
+/* ── OYUN BİTTİ ── */
+.over-inner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  padding:24px;width:100%;max-width:400px;
+}
+.over-title{
+  font-size:clamp(30px,9vw,56px);font-weight:900;letter-spacing:.15em;
+  color:var(--red);text-shadow:0 0 22px rgba(255,60,80,.65),0 0 44px rgba(255,60,80,.25);
+}
+.score-card{
+  width:100%;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden;
+}
+.sc-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-family:var(--m);
+}
+.sc-row:last-child{border-bottom:none;}
+.sc-row>span:first-child{font-size:clamp(10px,2.5vw,13px);color:var(--dim2);letter-spacing:.1em;}
+.sc-val{font-size:clamp(18px,5vw,26px);font-weight:700;letter-spacing:.04em;}
+.sc-val.yellow{color:var(--yellow);text-shadow:0 0 8px rgba(255,230,0,.4);}
+.sc-val.cyan{color:var(--cyan);}
+
+.new-rec{
+  font-size:clamp(14px,4vw,19px);font-weight:700;
+  color:var(--yellow);letter-spacing:.15em;
+  text-shadow:0 0 12px rgba(255,230,0,.6);
+  display:none;animation:pulse .8s ease-in-out infinite alternate;
+}
+
+.over-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:240px;}
+
+/* ── DESKTOP KLAVYE İPUCU ── */
+@media(min-width:900px){
+  #joy-zone,#fire-zone{display:none;}
+  #hud::after{
+    content:'A/D=Dön  W=İtki  SPACE=Ateş  ESC=Menü';
+    position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+    font-family:var(--m);font-size:10px;color:var(--dim);opacity:.45;white-space:nowrap;pointer-events:none;
+  }
+}
