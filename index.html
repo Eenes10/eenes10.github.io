@@ -283,7 +283,7 @@ h1{
   <span>@enesyavuz07</span>
 </a>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/main.js"></script>
 <script>
 'use strict';
 
@@ -295,17 +295,23 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 var supabase = null;
 
 try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  console.log('✅ Supabase başarıyla yüklendi');
+  if (window.supabase && window.supabase.createClient) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase başarıyla yüklendi');
+  } else {
+    console.log('⚠️ Supabase SDK yüklenmedi, localStorage kullanılıyor');
+    supabase = null;
+  }
 } catch(e) {
   console.error('Supabase başlatma hatası:', e);
+  supabase = null;
 }
 
 // Leaderboard Functions
 async function saveScoreToSupabase(nickname, scoreValue) {
   if (!supabase) {
     console.error('Supabase bağlantı hatası');
-    return false;
+    return saveScoreLocal(nickname, scoreValue);
   }
   
   try {
@@ -321,20 +327,39 @@ async function saveScoreToSupabase(nickname, scoreValue) {
     
     if (error) {
       console.error('Skor kaydetme hatası:', error);
-      return false;
+      return saveScoreLocal(nickname, scoreValue);
     }
     
     return true;
   } catch(e) {
     console.error('Skor kaydetme hatası:', e);
+    return saveScoreLocal(nickname, scoreValue);
+  }
+}
+
+// LocalStorage Fallback
+function saveScoreLocal(nickname, scoreValue) {
+  try {
+    let leaderboardData = JSON.parse(localStorage.getItem('enesblast_leaderboard') || '[]');
+    leaderboardData.push({
+      nickname: nickname,
+      score: scoreValue,
+      created_at: new Date().toISOString()
+    });
+    leaderboardData.sort((a, b) => b.score - a.score);
+    leaderboardData = leaderboardData.slice(0, 100);
+    localStorage.setItem('enesblast_leaderboard', JSON.stringify(leaderboardData));
+    return true;
+  } catch(e) {
+    console.error('LocalStorage hatası:', e);
     return false;
   }
 }
 
 async function getTopScores() {
   if (!supabase) {
-    console.error('Supabase bağlantı hatası');
-    return [];
+    console.log('Supabase yok, localStorage kullanılıyor');
+    return getTopScoresLocal();
   }
   
   try {
@@ -346,12 +371,24 @@ async function getTopScores() {
     
     if (error) {
       console.error('Sıralama yükleme hatası:', error);
-      return [];
+      return getTopScoresLocal();
     }
     
     return data || [];
   } catch(e) {
     console.error('Sıralama yükleme hatası:', e);
+    return getTopScoresLocal();
+  }
+}
+
+// LocalStorage Fallback
+function getTopScoresLocal() {
+  try {
+    let leaderboardData = JSON.parse(localStorage.getItem('enesblast_leaderboard') || '[]');
+    leaderboardData.sort((a, b) => b.score - a.score);
+    return leaderboardData.slice(0, 10);
+  } catch(e) {
+    console.error('LocalStorage hatası:', e);
     return [];
   }
 }
@@ -713,13 +750,19 @@ function onMove(e) {
   const pt=e.touches?e.touches[0]:e;
   const isTouch=!!e.touches;
   moveGhost(pt.clientX, pt.clientY, isTouch);
-  highlightDrop(pt.clientX, pt.clientY);
+  
+  // Touch'ta, highlight parmağın üstünde gösterilip bloğun düşeceği yerde konulması için
+  // dropTarget'e düzeltilmiş Y geçir
+  const adjustedY = isTouch ? (pt.clientY - LIFT_PX) : pt.clientY;
+  highlightDrop(pt.clientX, adjustedY);
+  
   if (e.cancelable) e.preventDefault();
 }
 
 function onEnd(e) {
   if (!drag.active) return;
   const pt=e.changedTouches?e.changedTouches[0]:e;
+  const isTouch=!!e.changedTouches;
 
   document.removeEventListener('mousemove',onMove);
   document.removeEventListener('mouseup',onEnd);
@@ -731,8 +774,9 @@ function onEnd(e) {
   if (slots[drag.pieceIndex]) slots[drag.pieceIndex].classList.remove('dragging');
   clearHighlights();
 
-  // Highlight drop: gerçek pozisyon (lift yok)
-  const {r,c}=dropTarget(pt.clientX, pt.clientY);
+  // Touch'ta offset'i dikkate al
+  const adjustedY = isTouch ? (pt.clientY - LIFT_PX) : pt.clientY;
+  const {r,c}=dropTarget(pt.clientX, adjustedY);
 
   if (r!==-1 && canPlace(drag.piece.shape,r,c)) {
     const pieceCopy = drag.piece; // onEnd sonrası null olacak
