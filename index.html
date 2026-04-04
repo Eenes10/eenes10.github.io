@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Cache Buster: v1.2.3 -->
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -31,29 +32,30 @@ body{
   padding:22px 12px 56px; overflow-x:hidden;
   -webkit-tap-highlight-color:transparent; user-select:none;
 }
-header{text-align:center;margin-bottom:22px}
+header{text-align:center;margin-bottom:28px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.header-controls{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
 h1{
   font-family:'Fredoka One',cursive; font-size:clamp(2rem,7vw,3.2rem);
   letter-spacing:3px; color:var(--blue2); line-height:1;
   text-shadow:0 2px 0 rgba(255,255,255,.7),0 4px 14px rgba(30,95,153,.18);
 }
 .subtitle{font-size:.78rem;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
-.game-wrapper{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;width:100%;max-width:740px}
-.side-panel{display:flex;flex-direction:column;gap:12px;min-width:120px}
+.game-wrapper{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:740px;margin:0 auto}
+
 .score-box{
   background:var(--panel);border:1.5px solid var(--border);border-radius:var(--r-md);
-  padding:14px 16px;text-align:center;
+  padding:10px 16px;text-align:center;flex:0 1 auto;min-width:90px;
   box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.7);
 }
 .score-box .label{font-size:.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--text2);margin-bottom:4px}
-.score-box .value{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--blue);line-height:1}
+.score-box .value{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--blue);line-height:1}
 .score-box.best .value{color:var(--gold)}
 .btn{
   background:linear-gradient(160deg,var(--blue) 0%,var(--blue2) 100%);
-  color:#fff;border:none;border-radius:var(--r-md);padding:13px 18px;
-  font-family:'Fredoka One',cursive;font-size:1.05rem;letter-spacing:1px;cursor:pointer;
+  color:#fff;border:none;border-radius:var(--r-md);padding:11px 20px;
+  font-family:'Fredoka One',cursive;font-size:0.95rem;letter-spacing:1px;cursor:pointer;
   box-shadow:0 4px 14px rgba(30,95,153,.35),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:transform .13s,box-shadow .13s;
+  transition:transform .13s,box-shadow .13s;white-space:nowrap;
 }
 .btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 22px rgba(30,95,153,.42)}
 .btn:active{transform:scale(.97)}
@@ -64,9 +66,10 @@ h1{
   opacity:0;transform:scale(.85);
   transition:opacity .25s,transform .25s;
   box-shadow:0 4px 14px rgba(184,123,26,.35);pointer-events:none;
+  position:absolute;top:-40px;left:50%;transform:translateX(-50%) scale(.85);
 }
-.combo-badge.show{opacity:1;transform:scale(1)}
-.board-container{display:flex;flex-direction:column;align-items:center;gap:16px}
+.combo-badge.show{opacity:1;transform:translateX(-50%) scale(1)}
+.board-container{display:flex;flex-direction:column;align-items:center;gap:16px;position:relative}
 #board{
   display:grid;
   grid-template-columns:repeat(8,var(--cell));
@@ -138,7 +141,7 @@ h1{
 .drag-ghost{
   position:fixed;pointer-events:none;z-index:999;
   display:none;opacity:.88;transform-origin:top left;
-  filter:drop-shadow(0 10px 18px rgba(44,36,22,.3));
+  filter:drop-shadow(0 10px 18px rgba(44,36,22,.3));cursor:grabbing;
 }
 .drag-ghost.active{display:block}
 .drag-ghost .piece-grid{gap:3px}
@@ -170,6 +173,31 @@ h1{
 .overlay-card h2{font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--red);margin-bottom:6px}
 .overlay-card .final-score{font-family:'Fredoka One',cursive;font-size:3.4rem;color:var(--blue);margin:8px 0 18px;line-height:1}
 .overlay-card p{color:var(--text2);margin-bottom:22px;font-size:.95rem}
+.leaderboard-section{
+  background:rgba(255,255,255,.3);border-radius:var(--r-md);padding:16px;margin:18px 0;max-height:280px;overflow-y:auto;border:1.5px solid var(--border);
+}
+.leaderboard-section h3{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--blue2);margin-bottom:12px}
+.leaderboard{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:12px;
+}
+.leaderboard-row{
+  display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.5);border-radius:8px;font-size:0.9rem;border:1px solid rgba(255,255,255,.3);
+}
+.leaderboard-row.own{background:linear-gradient(135deg,rgba(30,95,153,.2),rgba(184,123,26,.15));border-color:var(--blue-lt)}
+.leaderboard-rank{font-family:'Fredoka One',cursive;font-weight:bold;min-width:24px;color:var(--blue2)}
+.leaderboard-rank.top1{color:var(--gold);font-size:1.1rem}
+.leaderboard-rank.top2{color:#c0c0c0;font-size:1.05rem}
+.leaderboard-rank.top3{color:#cd7f32;font-size:1.05rem}
+.leaderboard-name{flex:1;margin:0 10px;text-align:left;color:var(--text);font-weight:600;word-break:break-all}
+.leaderboard-score{font-family:'Fredoka One',cursive;color:var(--gold);font-weight:bold}
+.loading{text-align:center;color:var(--text2);font-size:0.9rem;padding:10px}
+.nickname-form{display:flex;gap:8px;margin-bottom:12px}
+#nicknameInput{
+  flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:0.9rem;
+  background:rgba(255,255,255,.6);color:var(--text);outline:none;transition:border-color .2s;
+}
+#nicknameInput:focus{border-color:var(--blue-lt);background:rgba(255,255,255,.8)}
+.btn-small{padding:9px 12px;font-size:0.85rem}
 .ig-btn{
   position:fixed;bottom:22px;right:22px;z-index:300;
   display:flex;align-items:center;gap:8px;
@@ -184,9 +212,9 @@ h1{
 .ig-btn:active{transform:scale(.97)}
 @media(max-width:680px){
   :root{--cell:38px;--gap:3px;--pcell:17px}
-  .side-panel{flex-direction:row;min-width:unset;justify-content:center;flex-wrap:wrap;gap:10px}
-  .score-box{padding:10px 14px}.score-box .value{font-size:1.6rem}
-  .piece-slot{width:92px;height:92px}.btn{padding:11px 16px;font-size:1rem}
+  .header-controls{gap:10px}
+  .score-box{padding:8px 12px;font-size:0.85rem}.score-box .value{font-size:1.2rem}
+  .piece-slot{width:92px;height:92px}.btn{padding:10px 16px;font-size:0.9rem}
 }
 @media(max-width:420px){
   :root{--cell:32px;--gap:2px;--pcell:15px}
@@ -203,22 +231,20 @@ h1{
 <header>
   <h1>EnesBlast</h1>
   <p class="subtitle">Satırları ve sütunları temizle</p>
-</header>
-
-<main class="game-wrapper">
-  <aside class="side-panel">
+  <div class="header-controls">
     <div class="score-box">
       <div class="label">Puan</div>
       <div class="value" id="score">0</div>
     </div>
+    <button class="btn" id="restartBtn">↺ Yeniden</button>
     <div class="score-box best">
       <div class="label">En İyi</div>
       <div class="value" id="best">0</div>
     </div>
-    <div class="combo-badge" id="combo">✨ Temizlendi!</div>
-    <button class="btn" id="restartBtn">↺ Yeniden</button>
-  </aside>
+  </div>
+</header>
   <section class="board-container">
+    <div class="combo-badge" id="combo">✨ Temizlendi!</div>
     <div id="board"></div>
     <div class="pieces-tray" id="tray"></div>
   </section>
@@ -232,6 +258,18 @@ h1{
     <h2>Oyun Bitti!</h2>
     <div class="final-score" id="finalScore">0</div>
     <p>Hiçbir parça sığmıyor.</p>
+    
+    <div class="leaderboard-section">
+      <h3>🏆 Top 10 Oyuncu</h3>
+      <div class="leaderboard" id="leaderboard">
+        <div class="loading">Yükleniyor...</div>
+      </div>
+      <div class="nickname-form">
+        <input type="text" id="nicknameInput" placeholder="Adını gir" maxlength="15" />
+        <button class="btn btn-small" id="submitScoreBtn">Skoru Kaydet</button>
+      </div>
+    </div>
+    
     <button class="btn" id="overlayRestartBtn">Tekrar Oyna</button>
   </div>
 </div>
@@ -245,8 +283,80 @@ h1{
   <span>@enesyavuz07</span>
 </a>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
+
+// Supabase Configuration
+const SUPABASE_URL = 'https://ifawcmxqksmnnefrbkql.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmYXdjbXhxa3Ntbm5lZnJia3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI0NjkzNDAsImV4cCI6MjA0ODA0NTM0MH0.8VnDj1h3KhZ-_-vDw8Kq-8vD_-vDw8Kq-8vD_-vDw8Kq';
+
+// Initialize Supabase
+var supabase = null;
+
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✅ Supabase başarıyla yüklendi');
+} catch(e) {
+  console.error('Supabase başlatma hatası:', e);
+}
+
+// Leaderboard Functions
+async function saveScoreToSupabase(nickname, scoreValue) {
+  if (!supabase) {
+    console.error('Supabase bağlantı hatası');
+    return false;
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .insert([
+        {
+          nickname: nickname,
+          score: scoreValue,
+          created_at: new Date().toISOString()
+        }
+      ]);
+    
+    if (error) {
+      console.error('Skor kaydetme hatası:', error);
+      return false;
+    }
+    
+    return true;
+  } catch(e) {
+    console.error('Skor kaydetme hatası:', e);
+    return false;
+  }
+}
+
+async function getTopScores() {
+  if (!supabase) {
+    console.error('Supabase bağlantı hatası');
+    return [];
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .order('score', { ascending: false })
+      .limit(10);
+    
+    if (error) {
+      console.error('Sıralama yükleme hatası:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch(e) {
+    console.error('Sıralama yükleme hatası:', e);
+    return [];
+  }
+}
+
+console.log('✅ Leaderboard sistemi başarıyla yüklendi');
 
 /* ══════════════════════════════════════════════════
    SES ENJİNİ — Web Audio API (dosyasız sentez)
@@ -296,16 +406,16 @@ function burst(t0, dur, vol, fc) {
 /* ── PICKUP: parçayı alınca ─────────────────────
    Hafif "whoosh" + tiz tık */
 function sfxPickup() {
-  tone(380, 'sine',     0,    0.10, 0.09, 640);
-  burst(0,  0.05,       0.04, 900);
+  tone(380, 'sine',     0,    0.10, 0.16, 640);
+  burst(0,  0.05,       0.08, 900);
 }
 
 /* ── PLACE: blok bırakınca ──────────────────────
    Tok "thud" + hafif çıtırtı */
 function sfxPlace() {
-  tone(140, 'sine',     0,    0.09, 0.32, 50);   // derin tok
-  tone(280, 'triangle', 0,    0.04, 0.10);         // orta tını
-  burst(0,  0.035,      0.09, 1800);               // yüzey çıtırtısı
+  tone(140, 'sine',     0,    0.09, 0.50, 50);   // derin tok
+  tone(280, 'triangle', 0,    0.04, 0.18);         // orta tını
+  burst(0,  0.035,      0.14, 1800);               // yüzey çıtırtısı
 }
 
 /* ── CLEAR: satır/sütun patlarken ───────────────
@@ -313,31 +423,38 @@ function sfxPlace() {
 function sfxClear(n) {
   const notes = [523, 659, 784, 1047, 1319];
   for (let i = 0; i < Math.min(n, notes.length); i++) {
-    tone(notes[i],     'sine', i * 0.055, 0.20, 0.16);
-    tone(notes[i] * 2, 'sine', i * 0.055, 0.10, 0.04); // parlak oktav
+    tone(notes[i],     'sine', i * 0.055, 0.20, 0.26);
+    tone(notes[i] * 2, 'sine', i * 0.055, 0.10, 0.08); // parlak oktav
   }
-  tone(2093, 'sine',   n * 0.055, 0.14, 0.06);   // tavan sparkle
-  tone(75,   'sine',   0,         0.22, 0.20, 35); // derin boom
-  burst(0,   0.08,     0.10 * n,  700);
+  tone(2093, 'sine',   n * 0.055, 0.14, 0.12);   // tavan sparkle
+  tone(75,   'sine',   0,         0.22, 0.32, 35); // derin boom
+  burst(0,   0.08,     0.18 * n,  700);
 }
 
 /* ── COMBO: arka arkaya satır temizleme ─────────
    Kısa fanfar kademesi */
 function sfxCombo(count) {
   const base = 440 * Math.pow(1.14, Math.min(count - 1, 5));
-  tone(base,        'triangle', 0,    0.13, 0.16);
-  tone(base * 1.26, 'triangle', 0.09, 0.13, 0.14);
-  tone(base * 1.5,  'sine',     0.18, 0.16, 0.15);
-  tone(base * 2,    'sine',     0.27, 0.12, 0.09);
-  burst(0, 0.05, 0.06, 1400);
+  tone(base,        'triangle', 0,    0.13, 0.28);
+  tone(base * 1.26, 'triangle', 0.09, 0.13, 0.24);
+  tone(base * 1.5,  'sine',     0.18, 0.16, 0.26);
+  tone(base * 2,    'sine',     0.27, 0.12, 0.18);
+  burst(0, 0.05, 0.12, 1400);
 }
 
 /* ── GAMEOVER: hüzünlü iniş ──────────────────── */
 function sfxGameOver() {
-  tone(370, 'sine', 0,    0.40, 0.16);
-  tone(311, 'sine', 0.28, 0.40, 0.15);
-  tone(247, 'sine', 0.58, 0.55, 0.16, 180);
-  burst(0.58, 0.45, 0.07, 180);
+  tone(370, 'sine', 0,    0.40, 0.28);
+  tone(311, 'sine', 0.28, 0.40, 0.26);
+  tone(247, 'sine', 0.58, 0.55, 0.28, 180);
+  burst(0.58, 0.45, 0.14, 180);
+}
+
+/* ── RESTART: başlama tik sesi ──────────────── */
+function sfxRestart() {
+  tone(880,  'sine',   0,    0.08, 0.16);    // yüksek tik
+  tone(440,  'sine',   0.06, 0.12, 0.14);    // orta tik
+  burst(0,   0.04,     0.08, 2000);          // hafif çıtırtı
 }
 
 /* ══════════════════════════════════════════════════
@@ -360,14 +477,14 @@ function addParts(x, y, color, n, power) {
       vx: Math.cos(a)*s, vy: Math.sin(a)*s - power*0.35,
       r: 2 + Math.random() * power * 0.9,
       color, alpha: 1,
-      decay: 0.022 + Math.random()*0.02,
+      decay: 0.015 + Math.random()*0.015,
       grav: 0.15,
       sq: Math.random() < 0.4,
     });
   }
 }
 function addRing(x, y, color) {
-  parts.push({ ring:true, x, y, r:5, tr:50+Math.random()*35, color, alpha:0.65, decay:0.034 });
+  parts.push({ ring:true, x, y, r:5, tr:50+Math.random()*35, color, alpha:1.0, decay:0.034 });
 }
 
 function tickFx() {
@@ -440,21 +557,15 @@ function fxClear(cellSet) {
 const GRID_SIZE = 8;
 const COLORS    = ['--c1','--c2','--c3','--c4','--c5','--c6','--c7'];
 const SHAPES    = [
-  [[0,0]],
-  [[0,0],[0,1]],[[0,0],[1,0]],
+  [[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],
   [[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],
-  [[0,0],[0,1],[0,2],[0,3]],[[0,0],[1,0],[2,0],[3,0]],
-  [[0,0],[0,1],[0,2],[0,3],[0,4]],[[0,0],[1,0],[2,0],[3,0],[4,0]],
   [[0,0],[0,1],[1,0],[1,1]],
   [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]],
-  [[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]],
-  [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],
-  [[0,0],[1,0],[2,0],[2,1]],[[0,0],[0,1],[1,0],[2,0]],
+  [[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,0],[1,0],[1,1]],[[0,1],[1,0],[1,1]],
   [[0,0],[0,1],[0,2],[1,0]],[[0,0],[1,0],[1,1],[1,2]],
   [[0,0],[0,1],[1,1],[2,1]],[[0,2],[1,2],[1,1],[1,0]],
   [[0,0],[0,1],[0,2],[1,1]],[[0,1],[1,0],[1,1],[2,1]],[[0,1],[1,0],[1,1],[1,2]],
   [[0,1],[0,2],[1,0],[1,1]],[[0,0],[0,1],[1,1],[1,2]],
-  [[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,0],[1,0],[1,1]],[[0,1],[1,0],[1,1]],
 ];
 
 /* ══════════════════════════════════════════════════
@@ -484,9 +595,13 @@ const comboEl      = document.getElementById('combo');
 const ghostEl      = document.getElementById('ghost');
 const overlayEl    = document.getElementById('overlay');
 const finalScoreEl = document.getElementById('finalScore');
+const leaderboardEl = document.getElementById('leaderboard');
+const nicknameInput = document.getElementById('nicknameInput');
+const submitScoreBtn = document.getElementById('submitScoreBtn');
 
 document.getElementById('restartBtn').addEventListener('click', restartGame);
 document.getElementById('overlayRestartBtn').addEventListener('click', restartGame);
+submitScoreBtn.addEventListener('click', submitScore);
 
 /* ══════════════════════════════════════════════════
    INIT
@@ -659,7 +774,7 @@ function onEnd(e) {
       hideCombo();
     }
 
-    const pts=pieceCopy.shape.length*10 + cleared*80 + (comboCount>1?comboCount*20:0);
+    const pts=pieceCopy.shape.length*15 + cleared*100 + (comboCount>1?comboCount*50:0);
     addScore(pts);
 
     if (pieces.every(x=>!x)) dealPieces(); else renderTray();
@@ -785,7 +900,7 @@ function addScore(pts) {
   const el=document.createElement('div');
   el.className='float-score';
   el.textContent='+'+pts;
-  el.style.color=pts>=160?'#b87b1a':'#1e5f99';
+    el.style.color=pts>=150?'#b87b1a':'#1e5f99';
   el.style.left=(rect.left+rect.width/2-24)+'px';
   el.style.top=(rect.top+14)+'px';
   document.body.appendChild(el);
@@ -809,9 +924,77 @@ function hideCombo(){ comboEl.classList.remove('show'); }
 function showGameOver() {
   sfxGameOver();
   finalScoreEl.textContent=score;
+  loadLeaderboard();
+  nicknameInput.value='';
+  nicknameInput.focus();
   overlayEl.classList.add('show');
 }
+
+function submitScore() {
+  const nickname = nicknameInput.value.trim();
+  if (!nickname) {
+    alert('Lütfen adını gir!');
+    return;
+  }
+  
+  submitScoreBtn.disabled = true;
+  submitScoreBtn.textContent = 'Kaydediliyor...';
+  
+  saveScoreToSupabase(nickname, score).then(success => {
+    if (success) {
+      alert('🎉 Skor kaydedildi! Sıralamayı kontrol et.');
+      loadLeaderboard();
+      nicknameInput.value = '';
+    } else {
+      alert('Skor kaydedilemedi. Tekrar dene.');
+    }
+    submitScoreBtn.disabled = false;
+    submitScoreBtn.textContent = 'Skoru Kaydet';
+  });
+}
+
+function loadLeaderboard() {
+  leaderboardEl.innerHTML = '<div class="loading">Sıralama yükleniyor...</div>';
+  
+  getTopScores().then(topScores => {
+    if (topScores.length === 0) {
+      leaderboardEl.innerHTML = '<div class="loading">Henüz skor yok. İlk olmak için oyna!</div>';
+      return;
+    }
+    
+    leaderboardEl.innerHTML = '';
+    topScores.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'leaderboard-row';
+      
+      let rankClass = '';
+      let rankEmoji = '';
+      if (idx === 0) { rankClass = 'top1'; rankEmoji = '🥇'; }
+      else if (idx === 1) { rankClass = 'top2'; rankEmoji = '🥈'; }
+      else if (idx === 2) { rankClass = 'top3'; rankEmoji = '🥉'; }
+      
+      row.innerHTML = `
+        <div class="leaderboard-rank ${rankClass}">${rankEmoji} ${idx+1}</div>
+        <div class="leaderboard-name">${escapeHtml(item.nickname)}</div>
+        <div class="leaderboard-score">${item.score}</div>
+      `;
+      
+      leaderboardEl.appendChild(row);
+    });
+  }).catch(error => {
+    leaderboardEl.innerHTML = '<div class="loading">Yükleme hatası</div>';
+    console.error('Leaderboard yükleme hatası:', error);
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 function restartGame() {
+  sfxRestart();
   drag.active=false; ghostEl.classList.remove('active'); clearHighlights(); init();
 }
 
