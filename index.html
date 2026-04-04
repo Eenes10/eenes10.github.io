@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Cache Buster: v1.2.3 -->
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -173,31 +172,6 @@ h1{
 .overlay-card h2{font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--red);margin-bottom:6px}
 .overlay-card .final-score{font-family:'Fredoka One',cursive;font-size:3.4rem;color:var(--blue);margin:8px 0 18px;line-height:1}
 .overlay-card p{color:var(--text2);margin-bottom:22px;font-size:.95rem}
-.leaderboard-section{
-  background:rgba(255,255,255,.3);border-radius:var(--r-md);padding:16px;margin:18px 0;max-height:280px;overflow-y:auto;border:1.5px solid var(--border);
-}
-.leaderboard-section h3{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--blue2);margin-bottom:12px}
-.leaderboard{
-  display:flex;flex-direction:column;gap:8px;margin-bottom:12px;
-}
-.leaderboard-row{
-  display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.5);border-radius:8px;font-size:0.9rem;border:1px solid rgba(255,255,255,.3);
-}
-.leaderboard-row.own{background:linear-gradient(135deg,rgba(30,95,153,.2),rgba(184,123,26,.15));border-color:var(--blue-lt)}
-.leaderboard-rank{font-family:'Fredoka One',cursive;font-weight:bold;min-width:24px;color:var(--blue2)}
-.leaderboard-rank.top1{color:var(--gold);font-size:1.1rem}
-.leaderboard-rank.top2{color:#c0c0c0;font-size:1.05rem}
-.leaderboard-rank.top3{color:#cd7f32;font-size:1.05rem}
-.leaderboard-name{flex:1;margin:0 10px;text-align:left;color:var(--text);font-weight:600;word-break:break-all}
-.leaderboard-score{font-family:'Fredoka One',cursive;color:var(--gold);font-weight:bold}
-.loading{text-align:center;color:var(--text2);font-size:0.9rem;padding:10px}
-.nickname-form{display:flex;gap:8px;margin-bottom:12px}
-#nicknameInput{
-  flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:0.9rem;
-  background:rgba(255,255,255,.6);color:var(--text);outline:none;transition:border-color .2s;
-}
-#nicknameInput:focus{border-color:var(--blue-lt);background:rgba(255,255,255,.8)}
-.btn-small{padding:9px 12px;font-size:0.85rem}
 .ig-btn{
   position:fixed;bottom:22px;right:22px;z-index:300;
   display:flex;align-items:center;gap:8px;
@@ -258,18 +232,6 @@ h1{
     <h2>Oyun Bitti!</h2>
     <div class="final-score" id="finalScore">0</div>
     <p>Hiçbir parça sığmıyor.</p>
-    
-    <div class="leaderboard-section">
-      <h3>🏆 Top 10 Oyuncu</h3>
-      <div class="leaderboard" id="leaderboard">
-        <div class="loading">Yükleniyor...</div>
-      </div>
-      <div class="nickname-form">
-        <input type="text" id="nicknameInput" placeholder="Adını gir" maxlength="15" />
-        <button class="btn btn-small" id="submitScoreBtn">Skoru Kaydet</button>
-      </div>
-    </div>
-    
     <button class="btn" id="overlayRestartBtn">Tekrar Oyna</button>
   </div>
 </div>
@@ -283,117 +245,8 @@ h1{
   <span>@enesyavuz07</span>
 </a>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/main.js"></script>
 <script>
 'use strict';
-
-// Supabase Configuration
-const SUPABASE_URL = 'https://ifawcmxqksmnnefrbkql.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmYXdjbXhxa3Ntbm5lZnJia3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI0NjkzNDAsImV4cCI6MjA0ODA0NTM0MH0.8VnDj1h3KhZ-_-vDw8Kq-8vD_-vDw8Kq-8vD_-vDw8Kq';
-
-// Initialize Supabase
-var supabase = null;
-
-try {
-  if (window.supabase && window.supabase.createClient) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Supabase başarıyla yüklendi');
-  } else {
-    console.log('⚠️ Supabase SDK yüklenmedi, localStorage kullanılıyor');
-    supabase = null;
-  }
-} catch(e) {
-  console.error('Supabase başlatma hatası:', e);
-  supabase = null;
-}
-
-// Leaderboard Functions
-async function saveScoreToSupabase(nickname, scoreValue) {
-  if (!supabase) {
-    console.error('Supabase bağlantı hatası');
-    return saveScoreLocal(nickname, scoreValue);
-  }
-  
-  try {
-    const { data, error } = await supabase
-      .from('leaderboard')
-      .insert([
-        {
-          nickname: nickname,
-          score: scoreValue,
-          created_at: new Date().toISOString()
-        }
-      ]);
-    
-    if (error) {
-      console.error('Skor kaydetme hatası:', error);
-      return saveScoreLocal(nickname, scoreValue);
-    }
-    
-    return true;
-  } catch(e) {
-    console.error('Skor kaydetme hatası:', e);
-    return saveScoreLocal(nickname, scoreValue);
-  }
-}
-
-// LocalStorage Fallback
-function saveScoreLocal(nickname, scoreValue) {
-  try {
-    let leaderboardData = JSON.parse(localStorage.getItem('enesblast_leaderboard') || '[]');
-    leaderboardData.push({
-      nickname: nickname,
-      score: scoreValue,
-      created_at: new Date().toISOString()
-    });
-    leaderboardData.sort((a, b) => b.score - a.score);
-    leaderboardData = leaderboardData.slice(0, 100);
-    localStorage.setItem('enesblast_leaderboard', JSON.stringify(leaderboardData));
-    return true;
-  } catch(e) {
-    console.error('LocalStorage hatası:', e);
-    return false;
-  }
-}
-
-async function getTopScores() {
-  if (!supabase) {
-    console.log('Supabase yok, localStorage kullanılıyor');
-    return getTopScoresLocal();
-  }
-  
-  try {
-    const { data, error } = await supabase
-      .from('leaderboard')
-      .select('*')
-      .order('score', { ascending: false })
-      .limit(10);
-    
-    if (error) {
-      console.error('Sıralama yükleme hatası:', error);
-      return getTopScoresLocal();
-    }
-    
-    return data || [];
-  } catch(e) {
-    console.error('Sıralama yükleme hatası:', e);
-    return getTopScoresLocal();
-  }
-}
-
-// LocalStorage Fallback
-function getTopScoresLocal() {
-  try {
-    let leaderboardData = JSON.parse(localStorage.getItem('enesblast_leaderboard') || '[]');
-    leaderboardData.sort((a, b) => b.score - a.score);
-    return leaderboardData.slice(0, 10);
-  } catch(e) {
-    console.error('LocalStorage hatası:', e);
-    return [];
-  }
-}
-
-console.log('✅ Leaderboard sistemi başarıyla yüklendi');
 
 /* ══════════════════════════════════════════════════
    SES ENJİNİ — Web Audio API (dosyasız sentez)
@@ -632,13 +485,9 @@ const comboEl      = document.getElementById('combo');
 const ghostEl      = document.getElementById('ghost');
 const overlayEl    = document.getElementById('overlay');
 const finalScoreEl = document.getElementById('finalScore');
-const leaderboardEl = document.getElementById('leaderboard');
-const nicknameInput = document.getElementById('nicknameInput');
-const submitScoreBtn = document.getElementById('submitScoreBtn');
 
 document.getElementById('restartBtn').addEventListener('click', restartGame);
 document.getElementById('overlayRestartBtn').addEventListener('click', restartGame);
-submitScoreBtn.addEventListener('click', submitScore);
 
 /* ══════════════════════════════════════════════════
    INIT
@@ -750,19 +599,15 @@ function onMove(e) {
   const pt=e.touches?e.touches[0]:e;
   const isTouch=!!e.touches;
   moveGhost(pt.clientX, pt.clientY, isTouch);
-  
-  // Touch'ta, highlight parmağın üstünde gösterilip bloğun düşeceği yerde konulması için
-  // dropTarget'e düzeltilmiş Y geçir
-  const adjustedY = isTouch ? (pt.clientY - LIFT_PX) : pt.clientY;
-  highlightDrop(pt.clientX, adjustedY);
-  
+  // Touch'ta ghost LIFT_PX yukarı gösterildiği için highlight da aynı y'yi kullanmalı
+  const aimY = isTouch ? pt.clientY - LIFT_PX : pt.clientY;
+  highlightDrop(pt.clientX, aimY);
   if (e.cancelable) e.preventDefault();
 }
 
 function onEnd(e) {
   if (!drag.active) return;
   const pt=e.changedTouches?e.changedTouches[0]:e;
-  const isTouch=!!e.changedTouches;
 
   document.removeEventListener('mousemove',onMove);
   document.removeEventListener('mouseup',onEnd);
@@ -774,9 +619,10 @@ function onEnd(e) {
   if (slots[drag.pieceIndex]) slots[drag.pieceIndex].classList.remove('dragging');
   clearHighlights();
 
-  // Touch'ta offset'i dikkate al
-  const adjustedY = isTouch ? (pt.clientY - LIFT_PX) : pt.clientY;
-  const {r,c}=dropTarget(pt.clientX, adjustedY);
+  // Touch'ta ghost LIFT_PX yukarıda gösterildiği için bırakma noktası da ona göre hesaplanmalı
+  const isTouch=!!e.changedTouches;
+  const dropY = isTouch ? pt.clientY - LIFT_PX : pt.clientY;
+  const {r,c}=dropTarget(pt.clientX, dropY);
 
   if (r!==-1 && canPlace(drag.piece.shape,r,c)) {
     const pieceCopy = drag.piece; // onEnd sonrası null olacak
@@ -968,75 +814,8 @@ function hideCombo(){ comboEl.classList.remove('show'); }
 function showGameOver() {
   sfxGameOver();
   finalScoreEl.textContent=score;
-  loadLeaderboard();
-  nicknameInput.value='';
-  nicknameInput.focus();
   overlayEl.classList.add('show');
 }
-
-function submitScore() {
-  const nickname = nicknameInput.value.trim();
-  if (!nickname) {
-    alert('Lütfen adını gir!');
-    return;
-  }
-  
-  submitScoreBtn.disabled = true;
-  submitScoreBtn.textContent = 'Kaydediliyor...';
-  
-  saveScoreToSupabase(nickname, score).then(success => {
-    if (success) {
-      alert('🎉 Skor kaydedildi! Sıralamayı kontrol et.');
-      loadLeaderboard();
-      nicknameInput.value = '';
-    } else {
-      alert('Skor kaydedilemedi. Tekrar dene.');
-    }
-    submitScoreBtn.disabled = false;
-    submitScoreBtn.textContent = 'Skoru Kaydet';
-  });
-}
-
-function loadLeaderboard() {
-  leaderboardEl.innerHTML = '<div class="loading">Sıralama yükleniyor...</div>';
-  
-  getTopScores().then(topScores => {
-    if (topScores.length === 0) {
-      leaderboardEl.innerHTML = '<div class="loading">Henüz skor yok. İlk olmak için oyna!</div>';
-      return;
-    }
-    
-    leaderboardEl.innerHTML = '';
-    topScores.forEach((item, idx) => {
-      const row = document.createElement('div');
-      row.className = 'leaderboard-row';
-      
-      let rankClass = '';
-      let rankEmoji = '';
-      if (idx === 0) { rankClass = 'top1'; rankEmoji = '🥇'; }
-      else if (idx === 1) { rankClass = 'top2'; rankEmoji = '🥈'; }
-      else if (idx === 2) { rankClass = 'top3'; rankEmoji = '🥉'; }
-      
-      row.innerHTML = `
-        <div class="leaderboard-rank ${rankClass}">${rankEmoji} ${idx+1}</div>
-        <div class="leaderboard-name">${escapeHtml(item.nickname)}</div>
-        <div class="leaderboard-score">${item.score}</div>
-      `;
-      
-      leaderboardEl.appendChild(row);
-    });
-  }).catch(error => {
-    leaderboardEl.innerHTML = '<div class="loading">Yükleme hatası</div>';
-    console.error('Leaderboard yükleme hatası:', error);
-  });
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
 function restartGame() {
   sfxRestart();
   drag.active=false; ghostEl.classList.remove('active'); clearHighlights(); init();
