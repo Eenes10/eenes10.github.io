@@ -19,8 +19,10 @@
   --sh-lg:0 12px 40px rgba(44,36,22,.22);
   --r-sm:10px; --r-md:16px; --r-lg:22px;
   --cell:46px; --gap:4px; --pcell:20px;
+  --header-h:72px; --tray-h:120px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;}
 body{
   background:var(--bg);
   background-image:
@@ -28,18 +30,18 @@ body{
     radial-gradient(ellipse at 85% 85%,rgba(200,166,42,.06) 0%,transparent 55%);
   color:var(--text); font-family:'Nunito',sans-serif;
   min-height:100vh; display:flex; flex-direction:column; align-items:center;
-  padding:22px 12px 56px; overflow-x:hidden;
+  padding:12px 12px 16px; overflow:hidden;
   -webkit-tap-highlight-color:transparent; user-select:none;
 }
-header{text-align:center;margin-bottom:28px;display:flex;flex-direction:column;align-items:center;gap:14px}
-.header-controls{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+header{text-align:center;margin-bottom:10px;display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;width:100%}
+.header-controls{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
 h1{
-  font-family:'Fredoka One',cursive; font-size:clamp(2rem,7vw,3.2rem);
+  font-family:'Fredoka One',cursive; font-size:clamp(1.6rem,6vw,3.2rem);
   letter-spacing:3px; color:var(--blue2); line-height:1;
   text-shadow:0 2px 0 rgba(255,255,255,.7),0 4px 14px rgba(30,95,153,.18);
 }
-.subtitle{font-size:.78rem;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
-.game-wrapper{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:740px;margin:0 auto}
+.subtitle{font-size:.68rem;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.game-wrapper{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:740px;margin:0 auto;flex:1;min-height:0}
 
 .score-box{
   background:var(--panel);border:1.5px solid var(--border);border-radius:var(--r-md);
@@ -68,7 +70,7 @@ h1{
   position:absolute;top:-40px;left:50%;transform:translateX(-50%) scale(.85);
 }
 .combo-badge.show{opacity:1;transform:translateX(-50%) scale(1)}
-.board-container{display:flex;flex-direction:column;align-items:center;gap:16px;position:relative}
+.board-container{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;width:100%}
 #board{
   display:grid;
   grid-template-columns:repeat(8,var(--cell));
@@ -120,9 +122,10 @@ h1{
   30%{transform:scale(1.25);filter:brightness(2.4) saturate(1.6)}
   100%{transform:scale(0);opacity:0;filter:brightness(1)}
 }
-.pieces-tray{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.pieces-tray{display:flex;gap:12px;justify-content:center;flex-wrap:nowrap;width:100%}
 .piece-slot{
-  width:108px;height:108px;background:var(--panel);
+  flex:1;max-width:120px;min-width:80px;
+  aspect-ratio:1;background:var(--panel);
   border:2px solid var(--border);border-radius:var(--r-lg);
   display:flex;align-items:center;justify-content:center;cursor:grab;
   box-shadow:var(--sh-md),inset 0 1px 0 rgba(255,255,255,.7);
@@ -188,15 +191,19 @@ h1{
   :root{--cell:38px;--gap:3px;--pcell:17px}
   .header-controls{gap:10px}
   .score-box{padding:8px 12px;font-size:0.85rem}.score-box .value{font-size:1.2rem}
-  .piece-slot{width:92px;height:92px}.btn{padding:10px 16px;font-size:0.9rem}
+  .btn{padding:10px 16px;font-size:0.9rem}
 }
 @media(max-width:420px){
   :root{--cell:32px;--gap:2px;--pcell:15px}
-  h1{font-size:1.9rem}
+  h1{font-size:1.6rem}
   #board{padding:7px;border-radius:16px}
-  .piece-slot{width:80px;height:80px;border-radius:14px}.pieces-tray{gap:10px}
-  .overlay-card{padding:28px 24px}.overlay-card h2{font-size:1.8rem}.overlay-card .final-score{font-size:2.8rem}
+  .piece-slot{border-radius:14px}
+  .overlay-card{padding:28px 20px}.overlay-card h2{font-size:1.8rem}.overlay-card .final-score{font-size:2.8rem}
   .ig-btn span{display:none}.ig-btn{padding:11px;border-radius:50%}
+}
+@media(max-width:360px){
+  :root{--cell:28px;--gap:2px;--pcell:13px}
+  h1{font-size:1.4rem}
 }
   </style>
 </head>
@@ -246,6 +253,34 @@ h1{
 </a>
 
 <script>
+/* ══════════════════════════════════════════════════
+   DİNAMİK BOYUTLANDIRMA — Ekranı doldur
+══════════════════════════════════════════════════ */
+function calcCellSize() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  // Header + tray + padding için alan ayır
+  const headerH = document.querySelector('header').offsetHeight || 80;
+  const trayH = 130; // tray + gap
+  const padding = 40;
+  const availH = vh - headerH - trayH - padding;
+  const availW = vw - 24; // yatay padding
+  // 8 hücre + 7 boşluk + 20px board padding her yanda = 8*cell + 7*gap + 40
+  // cell = (avail - 7*gap - 40) / 8
+  const gap = vw < 400 ? 2 : vw < 600 ? 3 : 4;
+  const cellFromW = Math.floor((availW - gap*7 - 24) / 8);
+  const cellFromH = Math.floor((availH - gap*7 - 24) / 8);
+  const cell = Math.max(28, Math.min(52, cellFromW, cellFromH));
+  const pcell = Math.max(12, Math.floor(cell * 0.43));
+  const root = document.documentElement;
+  root.style.setProperty('--cell', cell+'px');
+  root.style.setProperty('--gap', gap+'px');
+  root.style.setProperty('--pcell', pcell+'px');
+}
+calcCellSize();
+window.addEventListener('resize', calcCellSize);
+window.addEventListener('orientationchange', ()=>setTimeout(calcCellSize,100));
+
 'use strict';
 
 /* ══════════════════════════════════════════════════
@@ -472,7 +507,7 @@ let comboTimer = null;
 // Fakat "görünen yere koy" için dropTarget parmağın gerçek y'sini kullanır.
 const LIFT_PX = 72;
 
-const drag = { active:false, pieceIndex:-1, piece:null, originFracR:0, originFracC:0, isTouch:false };
+const drag = { active:false, pieceIndex:-1, piece:null, originFracR:0, originFracC:0, isTouch:false, lastX:0, lastY:0 };
 
 /* ══════════════════════════════════════════════════
    DOM
@@ -526,14 +561,64 @@ function dealPieces() {
   renderTray();
 }
 function randomPiece() {
-  // Tahtaya sığan parçaları bul, ağırlıklı seç (daha fazla yere sığan = daha yüksek ağırlık)
-  const weights = SHAPES.map(shape => {
+  // Parça kategorileri: kolay (düz çizgiler) daha sık, zor (L/T/Z) daha nadir
+  const SHAPE_WEIGHTS = [
+    2.0, // [[0,0]] - tek
+    2.5, // [[0,0],[0,1]] - yatay 2
+    2.5, // [[0,0],[1,0]] - dikey 2
+    2.8, // [[0,0],[0,1],[0,2]] - yatay 3
+    2.8, // [[0,0],[1,0],[2,0]] - dikey 3
+    1.4, // 2x2 kare
+    0.7, // 2x3 dikdörtgen (nadir)
+    1.0, // L köşe 1
+    1.0, // L köşe 2
+    1.0, // L köşe 3
+    1.0, // L köşe 4
+    0.8, // L uzun 1
+    0.8, // L uzun 2
+    0.8, // L uzun 3
+    0.8, // L uzun 4
+    0.7, // T 1
+    0.7, // T 2
+    0.7, // T 3
+    0.6, // S 1
+    0.6, // S 2
+  ];
+
+  // Tahtadaki eksik hücreleri analiz et: hangi satır/sütunda kaç eksik var?
+  const rowMissing = Array.from({length:GRID_SIZE},(_,r)=>grid[r].filter(v=>!v).length);
+  const colMissing = Array.from({length:GRID_SIZE},(_,c)=>grid.map(row=>row[c]).filter(v=>!v).length);
+
+  // Neredeyse dolu satır/sütunlar için gereken blokları belirle
+  const neededSizes = new Set();
+  for (let r=0;r<GRID_SIZE;r++) if (rowMissing[r]>0 && rowMissing[r]<=4) neededSizes.add(rowMissing[r]);
+  for (let c=0;c<GRID_SIZE;c++) if (colMissing[c]>0 && colMissing[c]<=4) neededSizes.add(colMissing[c]);
+
+  // Her şekli değerlendir: tahtaya sığabilme + gerekli boyutlarla uyum
+  const weights = SHAPES.map((shape, idx) => {
     let fits = 0;
     for (let r=0;r<GRID_SIZE;r++) for (let c=0;c<GRID_SIZE;c++) {
       if (canPlace(shape,r,c)) fits++;
     }
-    return fits > 0 ? Math.pow(fits, 0.6) : 0;
+    if (fits === 0) return 0;
+
+    let w = SHAPE_WEIGHTS[idx] || 1.0;
+    w *= Math.pow(fits / (GRID_SIZE*GRID_SIZE), 0.3);
+
+    // Satır/sütun tamamlamaya yardımcı olacak parçaları bonus
+    const maxR = Math.max(...shape.map(([r])=>r));
+    const maxC = Math.max(...shape.map(([,c])=>c));
+    const isHLine = maxR===0; // düz yatay
+    const isVLine = maxC===0; // düz dikey
+    const len = shape.length;
+
+    if (isHLine && neededSizes.has(len)) w *= 2.8;
+    else if (isVLine && neededSizes.has(len)) w *= 2.8;
+    else if (neededSizes.has(len)) w *= 1.4;
+
+    return w;
   });
+
   const totalW = weights.reduce((a,b)=>a+b, 0);
   let shape;
   if (totalW === 0) {
@@ -597,6 +682,7 @@ function startDrag(e, idx, isTouch) {
   drag.originFracC=(Math.max(...p.shape.map(([,c])=>c))+1)/2-0.5;
 
   const pt=isTouch?e.touches[0]:e;
+  drag.lastX=pt.clientX; drag.lastY=pt.clientY;
   moveGhost(pt.clientX, pt.clientY, isTouch);
 
   // Hemen highlight göster (gecikme olmasın)
@@ -620,8 +706,8 @@ function onMove(e) {
   if (!drag.active) return;
   const pt=e.touches?e.touches[0]:e;
   const isTouch=!!e.touches;
+  drag.lastX=pt.clientX; drag.lastY=pt.clientY;
   moveGhost(pt.clientX, pt.clientY, isTouch);
-  // Touch'ta ghost LIFT_PX yukarı gösterildiği için highlight da aynı y'yi kullanmalı
   const aimY = isTouch ? pt.clientY - LIFT_PX : pt.clientY;
   highlightDrop(pt.clientX, aimY);
   if (e.cancelable) e.preventDefault();
@@ -641,19 +727,23 @@ function onEnd(e) {
   if (slots[drag.pieceIndex]) slots[drag.pieceIndex].classList.remove('dragging');
   clearHighlights();
 
-  // Touch'ta ghost LIFT_PX yukarıda gösterildiği için bırakma noktası da ona göre hesaplanmalı
   const isTouch=!!e.changedTouches;
-  const dropY = isTouch ? pt.clientY - LIFT_PX : pt.clientY;
-  const {r,c}=dropTarget(pt.clientX, dropY);
+  // Hızlı sürüklemede changedTouches koordinatları yanlış olabilir, lastX/lastY kullan
+  const cx = isTouch ? drag.lastX : pt.clientX;
+  const cy = isTouch ? drag.lastY : pt.clientY;
+  const dropY = isTouch ? cy - LIFT_PX : cy;
+  let {r,c}=dropTarget(cx, dropY);
+
+  // Eğer direkt düşme noktası geçersizse, yakın geçerli hücreyi dene (hızlı bırakma düzeltmesi)
+  if (r===-1 || !canPlace(drag.piece.shape,r,c)) {
+    const found = findNearestValid(cx, dropY, drag.piece.shape);
+    if (found) { r=found.r; c=found.c; }
+  }
 
   if (r!==-1 && canPlace(drag.piece.shape,r,c)) {
-    const pieceCopy = drag.piece; // onEnd sonrası null olacak
-
-    // Grid'i güncelle
+    const pieceCopy = drag.piece;
     placePiece(pieceCopy, r, c);
     pieces[drag.pieceIndex]=null;
-
-    // Hücre animasyonu
     pieceCopy.shape.forEach(([dr,dc],i) => {
       const cell=getCell(r+dr,c+dc);
       if (cell) {
@@ -663,18 +753,12 @@ function onEnd(e) {
         setTimeout(()=>{cell.classList.remove('place-pop')}, i*16+280);
       }
     });
-
-    // SES + parçacık: blok koyma
     sfxPlace();
     fxPlace(pieceCopy.shape, r, c, pieceCopy.color);
-
-    // Board bump
     boardEl.classList.remove('bump');
     void boardEl.offsetWidth;
     boardEl.classList.add('bump');
     setTimeout(()=>boardEl.classList.remove('bump'),200);
-
-    // Satır/sütun temizle
     const cleared=clearLines();
     if (cleared>0) {
       comboCount++;
@@ -685,15 +769,30 @@ function onEnd(e) {
       comboCount=0;
       hideCombo();
     }
-
     const pts=pieceCopy.shape.length*15 + cleared*100 + (comboCount>1?comboCount*50:0);
     addScore(pts);
-
     if (pieces.every(x=>!x)) dealPieces(); else renderTray();
     if (!anyFits()) setTimeout(showGameOver,400);
   }
 
   drag.active=false; drag.piece=null;
+}
+
+/* Hızlı bırakmada en yakın geçerli hücreyi bul */
+function findNearestValid(cx, cy, shape) {
+  const rect=boardEl.getBoundingClientRect();
+  const cPx=cellPx(), gPx=gapPx();
+  const pad=parseInt(getComputedStyle(boardEl).paddingLeft)||10;
+  const fracC=(cx-rect.left-pad)/(cPx+gPx);
+  const fracR=(cy-rect.top -pad)/(cPx+gPx);
+  const baseR=Math.round(fracR-drag.originFracR);
+  const baseC=Math.round(fracC-drag.originFracC);
+  // 2 hücre yarıçapında ara
+  for (let dr=-2;dr<=2;dr++) for (let dc=-2;dc<=2;dc++) {
+    const tr=baseR+dr, tc=baseC+dc;
+    if (canPlace(shape,tr,tc)) return {r:tr,c:tc};
+  }
+  return null;
 }
 
 /* ══════════════════════════════════════════════════
