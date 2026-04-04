@@ -526,7 +526,25 @@ function dealPieces() {
   renderTray();
 }
 function randomPiece() {
-  return { shape:SHAPES[Math.floor(Math.random()*SHAPES.length)], color:COLORS[Math.floor(Math.random()*COLORS.length)] };
+  // Tahtaya sığan parçaları bul, ağırlıklı seç (daha fazla yere sığan = daha yüksek ağırlık)
+  const weights = SHAPES.map(shape => {
+    let fits = 0;
+    for (let r=0;r<GRID_SIZE;r++) for (let c=0;c<GRID_SIZE;c++) {
+      if (canPlace(shape,r,c)) fits++;
+    }
+    return fits > 0 ? Math.pow(fits, 0.6) : 0;
+  });
+  const totalW = weights.reduce((a,b)=>a+b, 0);
+  let shape;
+  if (totalW === 0) {
+    shape = SHAPES[Math.floor(Math.random()*SHAPES.length)];
+  } else {
+    let rnd = Math.random() * totalW;
+    let idx = 0;
+    for (; idx < weights.length-1; idx++) { rnd -= weights[idx]; if (rnd <= 0) break; }
+    shape = SHAPES[idx];
+  }
+  return { shape, color:COLORS[Math.floor(Math.random()*COLORS.length)] };
 }
 function renderTray() {
   trayEl.innerHTML='';
@@ -580,6 +598,10 @@ function startDrag(e, idx, isTouch) {
 
   const pt=isTouch?e.touches[0]:e;
   moveGhost(pt.clientX, pt.clientY, isTouch);
+
+  // Hemen highlight göster (gecikme olmasın)
+  const aimY0 = isTouch ? pt.clientY - LIFT_PX : pt.clientY;
+  highlightDrop(pt.clientX, aimY0);
 
   // Ses: parça alındı
   sfxPickup();
