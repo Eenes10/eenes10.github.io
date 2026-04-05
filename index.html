@@ -408,6 +408,19 @@ header{
   .btn{font-size:.74rem;padding:0 8px}
 }
   </style>
+  <!-- OneSignal Push Notification SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "0f36f02b-5dba-4fb9-bcc0-fe21f0d7bd86",
+        serviceWorkerParam: { scope: "/" },
+        notifyButton: { enable: false },
+        allowLocalhostAsSecureOrigin: true,
+      });
+    });
+  </script>
 </head>
 <body>
 <header>
