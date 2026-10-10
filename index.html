@@ -12,11 +12,7 @@
 :root{
   color-scheme:light;
   --bg:#f5f9ff;
-  --navy:#12307f;      /* isim */
-  --blue:#1f63e0;      /* başlıklar */
-  --blue-soft:#6f93d6; /* alt yazılar */
-  --blue-main:#3b9bff; /* butonlar / avatar */
-  --blue-main2:#66b5ff;
+  --navy:#12307f;  --blue:#1f63e0;  --blue-soft:#6f93d6;  --blue-main:#3b9bff;  --blue-main2:#66b5ff;
   --line:#dfeaff;
   --panel:#eaf2ff;
   --shadow:0 10px 30px -16px rgba(47,123,255,.35);
@@ -29,7 +25,6 @@ body{
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   overflow-x:hidden;
 }
-/* Arka plandaki yumuşak mavi şekiller */
 .shape{position:fixed;z-index:-1;pointer-events:none}
 .s1{top:-140px;left:-170px;width:440px;height:380px;
   border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;
@@ -41,7 +36,6 @@ body{
 
 main{max-width:520px;margin:0 auto;padding:44px 20px 40px}
 
-/* Profil */
 .profile{text-align:center;margin-bottom:30px}
 .avatar{
   width:104px;height:104px;border-radius:50%;margin:0 auto 20px;
@@ -53,7 +47,6 @@ main{max-width:520px;margin:0 auto;padding:44px 20px 40px}
 h1{font-size:1.9rem;font-weight:800;letter-spacing:-.02em;color:var(--navy)}
 .bio{color:var(--blue-soft);margin-top:8px;font-size:1.05rem}
 
-/* Linkler */
 .links{display:flex;flex-direction:column;gap:12px}
 .link{
   display:flex;align-items:center;gap:16px;padding:14px 18px 14px 14px;border-radius:26px;
@@ -74,7 +67,6 @@ h1{font-size:1.9rem;font-weight:800;letter-spacing:-.02em;color:var(--navy)}
 .link small{color:var(--blue-soft);font-size:.92rem}
 .arrow{width:20px;height:20px;stroke:#2f7bff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
-/* Notlar */
 .notes{margin-top:40px}
 .nh{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .nh svg{width:44px;height:44px;flex-shrink:0}
@@ -158,11 +150,10 @@ footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
 </main>
 
 <script>
-/* ============ BURAYI KENDİNE GÖRE DÜZENLE ============ */
 const CONFIG = {
   name: "Enes Yavuz",
   bio: "herhangi bir adam",
-  avatar: "",   // istersen fotoğraf yolu: "foto.jpg" (boşsa ismin baş harfi görünür)
+  avatar: "",
   links: [
     { key:"spotify",   label:"Spotify",   sub:"Çalma listelerim", url:"https://open.spotify.com/user/31x46gloovijc3vq7grg26fkpgka", bg:"#1ed760" },
     { key:"instagram", label:"Instagram", sub:"@Enesyavuz07",     url:"https://instagram.com/enesyavuz07",
@@ -172,15 +163,12 @@ const CONFIG = {
   ],
   firebase: { projectId: "enes-41855", apiKey: "AIzaSyAoU1VY8M4DYlMu_XP7dpTzO702d9ZEXJU" }
 };
-/* ====================================================== */
 
-// Gerçek marka logoları (Simple Icons, sabit sürüm)
 const LOGO = key => `https://cdn.jsdelivr.net/npm/simple-icons@11.14.0/icons/${key}.svg`;
 const ARROW = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6"/><path d="M8 6h10v10"/></svg>';
 
 const $ = id => document.getElementById(id);
 
-// Profil
 document.title = CONFIG.name;
 $("name").textContent = CONFIG.name;
 $("bio").textContent = CONFIG.bio;
@@ -189,7 +177,6 @@ $("year").textContent = new Date().getFullYear();
 if (CONFIG.avatar) { const i = new Image(); i.src = CONFIG.avatar; i.alt = CONFIG.name; $("avatar").appendChild(i); }
 else $("avatar").textContent = (CONFIG.name.trim()[0] || "?").toUpperCase();
 
-// Linkler
 CONFIG.links.forEach(l => {
   const a = document.createElement("a");
   a.className = "link"; a.href = l.url; a.target = "_blank"; a.rel = "noopener noreferrer";
@@ -197,7 +184,7 @@ CONFIG.links.forEach(l => {
     <span class="t"><b></b><small></small></span>${ARROW}`;
   a.querySelector(".ico").style.background = l.bg;
   const logo = a.querySelector(".logo");
-  if (l.fx) { // TikTok'a özgü cyan/pembe gölge efekti
+  if (l.fx) {
     logo.style.setProperty("--m", `url("${LOGO(l.key)}")`);
     logo.innerHTML = '<i class="c"></i><i class="p"></i>';
   }
@@ -210,7 +197,6 @@ CONFIG.links.forEach(l => {
   $("links").appendChild(a);
 });
 
-// Notlar
 const fb = CONFIG.firebase;
 const LIVE = !!(fb.projectId && fb.apiKey);
 const BASE = LIVE ? `https://firestore.googleapis.com/v1/projects/${fb.projectId}/databases/(default)/documents/notes` : "";
@@ -279,7 +265,7 @@ text.addEventListener("input", () => { $("count").textContent = text.value.lengt
 $("form").addEventListener("submit", async e => {
   e.preventDefault();
   const msg = $("msg"); msg.className = "msg";
-  if ($("hp").value) return; // bot tuzağı
+  if ($("hp").value) return;
   const last = +localStorage.getItem("lastNote") || 0;
   if (Date.now() - last < 30000) { msg.textContent = "30 saniye bekle."; msg.classList.add("err"); return; }
   const note = {
