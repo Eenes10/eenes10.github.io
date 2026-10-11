@@ -3,11 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f9ff">
+<script>
+(function(){
+  var d=new Date(),h=d.getHours(),t=(h>=19||h<6)?"dark":"light";
+  document.documentElement.dataset.theme=t;
+})();
+</script>
 <title>Enes Yavuz</title>
 <meta name="description" content="Kişisel sayfam.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme:light;
@@ -160,12 +169,162 @@ textarea{border-radius:22px;resize:none;min-height:52px;max-height:160px;display
 .lb p{color:#fff;text-align:center;max-width:480px}
 .lb small{display:block;color:#b9d1ff;margin-top:4px}
 .lb .x{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:22px;cursor:pointer}
+
+/* ===== Görünüm yenileme ===== */
+:root{--head:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif}
+body{font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:540px;padding-top:56px}
+
+.shape{animation:drift 22s ease-in-out infinite alternate}
+.s2{animation-duration:28s;animation-delay:-8s}
+.s3{animation-duration:25s;animation-delay:-14s}
+@keyframes drift{from{transform:translate3d(0,0,0) rotate(0)}to{transform:translate3d(34px,26px,0) rotate(8deg)}}
+
+.profile{margin-bottom:34px}
+.avatar{width:124px;height:124px;overflow:visible;font-family:var(--head);font-size:56px;margin-bottom:24px;
+  box-shadow:0 0 0 5px #fff,0 0 0 11px rgba(59,155,255,.28),0 24px 48px -14px rgba(31,99,224,.75)}
+.avatar img{border-radius:50%}
+h1{font-family:var(--head);font-size:clamp(2.2rem,9vw,2.9rem);line-height:1.12;letter-spacing:-.03em;
+  background:linear-gradient(100deg,#12307f 10%,#1f63e0 55%,#3b9bff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.bio{display:inline-block;margin-top:14px;padding:7px 18px;border-radius:999px;font-weight:600;font-size:.98rem;color:var(--blue);
+  background:rgba(255,255,255,.72);border:1px solid #fff;box-shadow:0 8px 20px -14px rgba(18,48,127,.5);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+
+/* tek bir açılış hareketi: profil, şarkı kartı, bağlantılar */
+.profile,.np,.links{animation:rise .7s cubic-bezier(.2,.75,.2,1) both}
+.np{animation-delay:.12s}.links{animation-delay:.22s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* şu an dinlediğim şarkı: tıklanmaz */
+.np{position:relative;overflow:hidden;cursor:default;margin-bottom:16px;padding:14px 20px 14px 14px;border-radius:30px;border:0;color:#fff;
+  background:linear-gradient(135deg,#12307f 0%,#1f63e0 58%,#3b9bff 100%);box-shadow:0 26px 46px -22px rgba(31,99,224,.85)}
+.np::after{content:"";position:absolute;right:-50px;top:-70px;width:200px;height:200px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.25),transparent 65%)}
+.np .cover{position:relative;width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.18)}
+.np.live .cover{border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.22);animation:spin 9s linear infinite}
+.np.live .cover::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-6px 0 0 -6px;border-radius:50%;
+  background:#12307f;box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.np .lbl{color:#cfe3ff;font-weight:600}
+.np b{color:#fff;font-family:var(--head);font-size:1.12rem}
+.np small{color:#d7e8ff}
+.eq i{background:#fff}
+
+.link{position:relative;gap:16px;padding:14px 18px 14px 14px;border-radius:28px;background:rgba(255,255,255,.8);border:1px solid #fff;
+  box-shadow:0 14px 32px -20px rgba(18,48,127,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.link:hover,.link:focus-visible{transform:translateY(-4px);box-shadow:0 22px 40px -20px rgba(18,48,127,.6)}
+.ico{width:58px;height:58px;border-radius:19px;box-shadow:0 12px 24px -8px var(--glow,rgba(0,0,0,.4))}
+.link b{font-family:var(--head);font-size:1.18rem;color:var(--navy)}
+.link small{font-weight:500}
+.arrow{transition:transform .2s}
+.link:hover .arrow,.link:focus-visible .arrow{transform:translate(3px,-3px)}
+
+.notes{margin-top:48px}.photos{margin-top:52px}
+.nh{gap:14px;margin-bottom:16px}
+.nh svg{width:50px;height:50px;filter:drop-shadow(0 10px 12px rgba(47,123,255,.4))}
+.nh h2{font-family:var(--head);font-size:1.6rem;letter-spacing:-.02em;color:var(--navy)}
+form{padding:16px;border-radius:30px;border:1px solid #fff;background:linear-gradient(160deg,rgba(255,255,255,.8),rgba(228,239,255,.9));
+  box-shadow:0 22px 44px -28px rgba(18,48,127,.55)}
+.send{background:linear-gradient(145deg,#1f63e0,#3b9bff);box-shadow:0 12px 22px -8px rgba(31,99,224,.85)}
+.note{border-radius:24px;background:rgba(255,255,255,.88);border-color:#fff;box-shadow:0 14px 30px -22px rgba(18,48,127,.55)}
+.note .av{box-shadow:0 0 0 3px #fff,0 0 0 5px rgba(59,155,255,.25)}
+.pick{border-color:#8dbcff;background:rgba(255,255,255,.85);transition:background .2s,transform .1s}
+.pick:hover{background:#fff}.pick:active{transform:scale(.99)}
+.ph{border-radius:20px;box-shadow:0 14px 28px -18px rgba(18,48,127,.6)}
+.ph img{transition:transform .45s ease}
+.ph:hover img{transform:scale(1.07)}
+.grid.mosaic .ph:first-child{grid-column:span 2;grid-row:span 2}
+footer{margin-top:48px;font-weight:500}
+
+/* ===== Gece / gündüz ===== */
+.sky{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.sky .day,.sky .night{position:absolute;inset:0;transition:opacity 1.6s ease}
+.sky .day{background:linear-gradient(180deg,#b9dbff 0%,#dcecff 42%,#f5f9ff 100%)}
+.sky .night{opacity:0;background:linear-gradient(180deg,#030716 0%,#09133a 55%,#13245c 100%)}
+html[data-theme=dark] .sky .night{opacity:1}
+
+.sky .orbit{position:absolute;left:72%;top:108%;width:140vh;height:140vh;margin:-70vh 0 0 -70vh;
+  transition:transform 2s cubic-bezier(.45,.05,.25,1)}
+html[data-theme=dark] .sky .orbit{transform:rotate(180deg)}
+.sky .sun{position:absolute;left:50%;top:0;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;
+  background:radial-gradient(circle at 40% 38%,#fffbd0,#ffd65c 55%,#ffb53b);
+  box-shadow:0 0 50px 24px rgba(255,205,90,.6),0 0 150px 70px rgba(255,225,150,.38)}
+.sky .moon{position:absolute;left:50%;bottom:0;width:96px;height:96px;margin:0 0 -48px -48px;border-radius:50%;
+  background:radial-gradient(circle at 35% 32%,#fffff4,#e5eafa 60%,#b6c2e4);
+  box-shadow:0 0 46px 12px rgba(190,212,255,.4),0 0 140px 60px rgba(110,150,255,.2)}
+.sky .moon::before,.sky .moon::after{content:"";position:absolute;border-radius:50%;background:rgba(140,157,200,.4)}
+.sky .moon::before{left:20px;top:24px;width:18px;height:18px}
+.sky .moon::after{left:56px;top:52px;width:12px;height:12px}
+
+.sky .stars{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease .5s}
+html[data-theme=dark] .sky .stars{opacity:1}
+.sky .stars i{position:absolute;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.sky .shoot{display:none;position:absolute;top:10%;left:85%;width:120px;height:2px;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,#fff,transparent);animation:shoot 11s linear infinite 4s}
+html[data-theme=dark] .sky .shoot{display:block}
+@keyframes shoot{0%,90%{opacity:0;transform:translate(0,0) rotate(-35deg)}91%{opacity:1}100%{opacity:0;transform:translate(-340px,238px) rotate(-35deg)}}
+
+.sky .cloud{position:absolute;left:0;width:150px;height:44px;border-radius:999px;background-color:rgba(255,255,255,.88);
+  box-shadow:0 14px 30px -16px rgba(60,110,200,.4);transition:background-color 1.6s ease,opacity 1.6s ease;animation:cloud linear infinite}
+.sky .cloud::before,.sky .cloud::after{content:"";position:absolute;background:inherit;border-radius:50%}
+.sky .cloud::before{width:68px;height:68px;left:24px;top:-32px}
+.sky .cloud::after{width:52px;height:52px;left:80px;top:-22px}
+.sky .c1{top:13%;animation-duration:80s;animation-delay:-30s}
+.sky .c2{top:34%;scale:.7;animation-duration:110s;animation-delay:-75s}
+.sky .c3{top:62%;scale:1.2;animation-duration:140s;animation-delay:-10s}
+@keyframes cloud{from{transform:translateX(-260px)}to{transform:translateX(calc(100vw + 260px))}}
+html[data-theme=dark] .sky .cloud{background-color:rgba(95,125,210,.13);box-shadow:none}
+
+.shape{transition:opacity 1.6s ease}
+html[data-theme=dark] .s1{opacity:.07}
+html[data-theme=dark] .s2{opacity:.06}
+html[data-theme=dark] .s3{opacity:.07}
+
+
+/* koyu mod renkleri */
+html[data-theme=dark]{
+  color-scheme:dark;
+  --bg:#060b1d;--navy:#e8f0ff;--blue:#8bbcff;--blue-soft:#93a9d6;--line:#1e2d58;--panel:#0f1a3a;
+  --shadow:0 12px 30px -16px rgba(0,0,0,.75);
+}
+html[data-theme=dark] h1{background:linear-gradient(100deg,#fff 10%,#aacdff 55%,#6fb2ff);-webkit-background-clip:text;background-clip:text}
+html[data-theme=dark] .bio{background:rgba(16,26,56,.7);border-color:rgba(120,160,255,.2);color:var(--blue)}
+html[data-theme=dark] .avatar{box-shadow:0 0 0 5px #0b1430,0 0 0 11px rgba(59,155,255,.4),0 24px 48px -14px rgba(59,155,255,.55)}
+html[data-theme=dark] .link{background:rgba(16,26,56,.74);border-color:rgba(120,160,255,.16);box-shadow:0 18px 36px -22px rgba(0,0,0,.85)}
+html[data-theme=dark] .link:hover,html[data-theme=dark] .link:focus-visible{box-shadow:0 24px 44px -20px rgba(0,0,0,.95)}
+html[data-theme=dark] .np{box-shadow:0 26px 46px -22px rgba(0,0,0,.9),0 0 0 1px rgba(160,200,255,.14)}
+html[data-theme=dark] form{background:linear-gradient(160deg,rgba(18,30,64,.82),rgba(11,21,48,.92));border-color:rgba(120,160,255,.16);box-shadow:0 22px 44px -28px rgba(0,0,0,.9)}
+html[data-theme=dark] input,html[data-theme=dark] textarea{background:#0a1331;border-color:#27396e;color:var(--navy)}
+html[data-theme=dark] input::placeholder,html[data-theme=dark] textarea::placeholder{color:#5f78ab}
+html[data-theme=dark] input:focus,html[data-theme=dark] textarea:focus{border-color:var(--blue-main);box-shadow:0 0 0 4px rgba(59,155,255,.22)}
+html[data-theme=dark] .note{background:rgba(16,26,56,.82);border-color:rgba(120,160,255,.16);box-shadow:0 14px 30px -22px rgba(0,0,0,.9)}
+html[data-theme=dark] .note .av{box-shadow:0 0 0 3px #0b1430,0 0 0 5px rgba(59,155,255,.35)}
+html[data-theme=dark] .like.on{background:rgba(244,63,94,.18);color:#ff7b95}
+html[data-theme=dark] .like.on svg{fill:#ff7b95}
+html[data-theme=dark] .pick{background:rgba(16,26,56,.7);border-color:#35508f;color:var(--blue)}
+html[data-theme=dark] .pick:hover{background:#13214a}
+html[data-theme=dark] .more{background:#101c40;border-color:var(--line);color:var(--blue)}
+html[data-theme=dark] .ph{background:var(--panel);box-shadow:0 14px 28px -18px rgba(0,0,0,.9)}
+html[data-theme=dark] .demo{background:#2a2210;border-color:#5c4a14;color:#f0c869}
+html[data-theme=dark] .msg.ok{color:#4ade80}
+html[data-theme=dark] .msg.err{color:#ff8080}
+
+/* geçiş anında renkler yumuşak değişsin */
+.theming *,.theming *::before,.theming *::after{transition:background-color 1.4s ease,color 1.4s ease,border-color 1.4s ease,box-shadow 1.4s ease,opacity 1.4s ease,fill 1.4s ease,stroke 1.4s ease}
 footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="sky" aria-hidden="true">
+  <div class="day"></div><div class="night"></div>
+  <div class="stars" id="stars"></div>
+  <div class="orbit"><div class="sun"></div><div class="moon"></div></div>
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <i class="shoot"></i>
+</div>
 <div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div>
 
 <main>
@@ -175,13 +334,13 @@ footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
     <p class="bio" id="bio"></p>
   </section>
 
-  <a class="np" id="np" hidden target="_blank" rel="noopener noreferrer">
+  <div class="np" id="np" hidden>
     <span class="cover" id="npCover">🎧</span>
     <span class="t">
       <span class="lbl"><span class="eq" id="npEq" aria-hidden="true"><i></i><i></i><i></i></span><span id="npLbl">Şu an dinliyor</span></span>
       <b id="npTitle"></b><small id="npArtist"></small>
     </span>
-  </a>
+  </div>
 
   <nav class="links" id="links" aria-label="Sosyal hesaplarım"></nav>
 
@@ -271,6 +430,7 @@ const CONFIG = {
 const LOGO = key => `https://cdn.jsdelivr.net/npm/simple-icons@11.14.0/icons/${key}.svg`;
 const ARROW = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6"/><path d="M8 6h10v10"/></svg>';
 
+const GLOW = { spotify:"rgba(30,215,96,.75)", instagram:"rgba(225,48,108,.65)", tiktok:"rgba(37,244,238,.6)", x:"rgba(0,0,0,.5)" };
 const $ = id => document.getElementById(id);
 
 document.title = CONFIG.name;
@@ -287,6 +447,7 @@ CONFIG.links.forEach(l => {
   a.innerHTML = `<span class="ico"><span class="logo"></span></span>
     <span class="t"><b></b><small></small></span>${ARROW}`;
   a.querySelector(".ico").style.background = l.bg;
+  a.style.setProperty("--glow", GLOW[l.key] || "rgba(18,48,127,.4)");
   const logo = a.querySelector(".logo");
   if (l.fx) {
     logo.style.setProperty("--m", `url("${LOGO(l.key)}")`);
@@ -449,7 +610,7 @@ function showNP(t){
   if (!t || !t.title) { $("np").hidden = true; return; }
   const np = $("np");
   np.hidden = false;
-  if (t.url) np.href = t.url; else np.removeAttribute("href");
+  np.classList.toggle("live", t.live !== false);
   $("npTitle").textContent = t.title;
   $("npArtist").textContent = t.artist || "";
   $("npLbl").textContent = t.live === false ? "Son dinlenen" : "Şu an dinliyor";
@@ -542,7 +703,7 @@ function shrink(file){
 }
 
 function renderPhotos(){
-  const g = $("grid"); g.innerHTML = "";
+  const g = $("grid"); g.innerHTML = ""; g.classList.toggle("mosaic", pItems.length >= 4);
   if (!pItems.length) { g.innerHTML = '<div class="empty" style="grid-column:1/-1">Henüz fotoğraf yok, ilk fotoğrafı sen ekle! 📸</div>'; return; }
   pItems.forEach(p => {
     if (!p.img.startsWith("data:image/")) return;
@@ -609,6 +770,35 @@ $("pform").addEventListener("submit", async e => {
 });
 
 loadPhotos(false);
+
+/* ===== Gece / gündüz ===== */
+(function(){
+  const root = document.documentElement;
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  let timer;
+  const stars = $("stars");
+  for (let i = 0; i < 90; i++) {
+    const s = document.createElement("i"), z = Math.random();
+    s.style.cssText = `left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*78).toFixed(1)}%;width:${(1+z*2).toFixed(1)}px;height:${(1+z*2).toFixed(1)}px;animation-delay:${(-Math.random()*5).toFixed(1)}s;animation-duration:${(2.5+Math.random()*3).toFixed(1)}s`;
+    stars.appendChild(s);
+  }
+  function paint(){
+    metaTheme.content = root.dataset.theme === "dark" ? "#060b1d" : "#f5f9ff";
+  }
+  const autoTheme = (d = new Date()) => (d.getHours() >= 19 || d.getHours() < 6) ? "dark" : "light";
+  function apply(t){
+    if (root.dataset.theme === t) return;
+    root.classList.add("theming");
+    clearTimeout(timer); timer = setTimeout(() => root.classList.remove("theming"), 2200);
+    root.dataset.theme = t; paint();
+  }
+  /* saat kontrolü: 06:00'da açık, 19:00'da koyu */
+  function tick(){ apply(autoTheme()); }
+  setInterval(tick, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
+  tick();
+  paint();
+})();
 </script>
 </body>
 </html>
