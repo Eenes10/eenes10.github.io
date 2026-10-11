@@ -163,12 +163,6 @@ textarea{border-radius:22px;resize:none;min-height:52px;max-height:160px;display
 .ph:focus-visible{outline:3px solid var(--blue-main);outline-offset:2px}
 .more{display:block;margin:14px auto 0;border:0;background:#fff;color:var(--blue);font:inherit;font-weight:600;padding:10px 22px;border-radius:999px;border:1px solid var(--line);cursor:pointer;box-shadow:var(--shadow)}
 .more[hidden]{display:none}
-.lb{position:fixed;inset:0;z-index:50;background:rgba(10,24,60,.88);display:none;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));flex-direction:column;gap:12px}
-.lb.on{display:flex}
-.lb img{max-width:100%;max-height:75vh;border-radius:16px;object-fit:contain}
-.lb p{color:#fff;text-align:center;max-width:480px}
-.lb small{display:block;color:#b9d1ff;margin-top:4px}
-.lb .x{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:22px;cursor:pointer}
 
 /* ===== Görünüm yenileme ===== */
 :root{--head:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif}
@@ -191,9 +185,6 @@ h1{font-family:var(--head);font-size:clamp(2.2rem,9vw,2.9rem);line-height:1.12;l
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 
 /* tek bir açılış hareketi: profil, şarkı kartı, bağlantılar */
-.profile,.np,.links{animation:rise .7s cubic-bezier(.2,.75,.2,1) both}
-.np{animation-delay:.12s}.links{animation-delay:.22s}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* şu an dinlediğim şarkı: tıklanmaz */
 .np{position:relative;overflow:hidden;cursor:default;margin-bottom:16px;padding:14px 20px 14px 14px;border-radius:30px;border:0;color:#fff;
@@ -312,6 +303,55 @@ html[data-theme=dark] .msg.err{color:#ff8080}
 
 /* geçiş anında renkler yumuşak değişsin */
 .theming *,.theming *::before,.theming *::after{transition:background-color 1.4s ease,color 1.4s ease,border-color 1.4s ease,box-shadow 1.4s ease,opacity 1.4s ease,fill 1.4s ease,stroke 1.4s ease}
+
+/* ===== Kaydırma animasyonları (Apple tarzı) ===== */
+.hero-in{transform-origin:50% 0;will-change:transform,opacity}
+.rv{opacity:0;translate:0 46px;scale:.94;
+  transition:opacity .8s cubic-bezier(.2,.7,.2,1),translate .95s cubic-bezier(.2,.7,.2,1),scale .95s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;translate:0 0;scale:1;transition-delay:var(--d,0s)}
+.link.rv{transition:opacity .8s cubic-bezier(.2,.7,.2,1),translate .95s cubic-bezier(.2,.7,.2,1),scale .95s cubic-bezier(.2,.7,.2,1),transform .2s,box-shadow .2s}
+.link.rv.in{transition-delay:var(--d,0s),var(--d,0s),var(--d,0s),0s,0s}
+.note{animation:none}
+.sky .orbit{translate:0 calc(var(--sy,0)*-.06px)}
+.sky .stars{transform:translate3d(0,calc(var(--sy,0)*-.04px),0)}
+.sky .cloud{translate:0 calc(var(--sy,0)*-.12px)}
+.shape{translate:0 calc(var(--sy,0)*-.1px)}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1!important;translate:none!important;scale:none!important}.hero-in{transform:none!important;opacity:1!important}}
+
+/* ===== Fotoğraf detayı: beğeni + yorum ===== */
+.ph .stat{position:absolute;left:8px;bottom:8px;display:flex;gap:8px;font-size:.72rem;font-weight:700;color:#fff;padding:3px 9px;border-radius:999px;
+  background:rgba(10,24,60,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ph .stat[hidden]{display:none}
+.lb{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.78);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom))}
+.lb.on{display:flex;animation:lbfade .25s ease}
+.lbc{position:relative;width:100%;max-width:520px;max-height:100%;overflow-y:auto;overscroll-behavior:contain;border-radius:30px;
+  background:#f7faff;color:var(--navy);box-shadow:0 40px 80px -30px rgba(0,0,0,.75);animation:lbsheet .45s cubic-bezier(.2,.8,.2,1)}
+html[data-theme=dark] .lbc{background:#0b1430;box-shadow:0 0 0 1px rgba(120,160,255,.2),0 40px 80px -30px rgba(0,0,0,.9)}
+.lbc>img{display:block;width:100%;max-height:52vh;object-fit:contain;background:#050a1a}
+.lb .x{position:absolute;top:12px;right:12px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(10,24,60,.6);color:#fff;font-size:22px;cursor:pointer;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.lbb{padding:16px 18px 22px}
+.lbh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lbh b{display:block;color:var(--blue);font-family:var(--head);font-size:1.05rem}
+.lbh span{color:var(--blue-soft);font-size:.85rem}
+.lbcap{margin-top:10px;line-height:1.5;word-break:break-word;white-space:pre-wrap}
+.lbcap:empty{display:none}
+.ch{margin:20px 0 10px;font-family:var(--head);font-size:1.05rem;color:var(--navy)}
+.ch span{color:var(--blue-soft);font-weight:500;font-size:.9rem}
+.clist{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.cm{display:flex;gap:10px;animation:lbfade .3s ease}
+.cm .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;font-size:.85rem;color:#fff;
+  background:linear-gradient(145deg,var(--blue-main),var(--blue-main2))}
+.cm .bd{min-width:0;flex:1;background:var(--panel);border-radius:18px;padding:8px 14px}
+.cm .who{display:flex;justify-content:space-between;gap:8px;font-size:.82rem}
+.cm .who b{color:var(--blue)}.cm .who span{color:var(--blue-soft)}
+.cm p{line-height:1.45;word-break:break-word;white-space:pre-wrap;font-size:.95rem}
+.lb .cform{background:transparent;border:0;box-shadow:none;padding:0;border-radius:0}
+.send.sm{width:46px;height:46px}
+.send.sm svg{width:20px;height:20px}
+@keyframes lbfade{from{opacity:0}to{opacity:1}}
+@keyframes lbsheet{from{opacity:0;transform:translateY(34px) scale(.96)}to{opacity:1;transform:none}}
 footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -329,9 +369,11 @@ footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
 
 <main>
   <section class="profile">
-    <div class="avatar" id="avatar"></div>
-    <h1 id="name"></h1>
-    <p class="bio" id="bio"></p>
+    <div class="hero-in" id="heroIn">
+      <div class="avatar" id="avatar"></div>
+      <h1 id="name"></h1>
+      <p class="bio" id="bio"></p>
+    </div>
   </section>
 
   <div class="np" id="np" hidden>
@@ -399,9 +441,29 @@ footer{text-align:center;color:var(--blue-soft);font-size:.8rem;margin-top:40px}
   </section>
 
   <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Fotoğraf">
-    <button class="x" id="lbX" type="button" aria-label="Kapat">×</button>
-    <img id="lbImg" alt="">
-    <p id="lbCap"></p>
+    <div class="lbc" id="lbc">
+      <button class="x" id="lbX" type="button" aria-label="Kapat">×</button>
+      <img id="lbImg" alt="">
+      <div class="lbb">
+        <div class="lbh">
+          <div><b id="lbName"></b><span id="lbTime"></span></div>
+          <button class="like" id="lbLike" type="button"></button>
+        </div>
+        <p class="lbcap" id="lbCap"></p>
+        <h3 class="ch">Yorumlar <span id="cCount"></span></h3>
+        <div class="clist" id="clist"></div>
+        <form class="cform" id="cform" autocomplete="off">
+          <input id="cwho" maxlength="30" placeholder="Adın (boş bırakırsan Anonim)">
+          <div class="compose">
+            <input id="ctext" maxlength="200" placeholder="Yorum yaz..." required>
+            <button class="send sm" id="csend" type="submit" aria-label="Yorumu gönder">
+              <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <div class="meta"><span class="msg" id="cmsg" role="status"></span><span id="ccount">0/200</span></div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <footer>© <span id="year"></span> · <span id="foot"></span></footer>
@@ -557,7 +619,7 @@ function setupLike(btn, n){
 function render(notes){
   const list = $("list"); list.innerHTML = "";
   if (!notes.length) { list.innerHTML = '<div class="empty">Henüz not yok, ilk notu sen bırak! ✨</div>'; return; }
-  notes.forEach(n => {
+  notes.forEach((n, i) => {
     const el = document.createElement("div"); el.className = "note";
     el.innerHTML = '<div class="av"></div><div class="body"><div class="who"><b></b><span></span></div><p></p><div class="act"><button type="button" class="like"></button></div></div>';
     el.querySelector(".av").textContent = (n.name.trim()[0] || "?").toUpperCase();
@@ -565,7 +627,7 @@ function render(notes){
     el.querySelector("span").textContent = ago(n.createdAt);
     el.querySelector("p").textContent = n.text;
     setupLike(el.querySelector(".like"), n);
-    list.appendChild(el);
+    list.appendChild(el); watch(el, i % 6);
   });
 }
 
@@ -660,6 +722,9 @@ const pstore = {
     return {
       next: d.nextPageToken || "",
       items: (d.documents || []).map(x => ({
+        id: x.name.split("/").pop(),
+        likes: +(x.fields.likes?.integerValue || 0),
+        comments: +(x.fields.comments?.integerValue || 0),
         name: x.fields.name?.stringValue || "Anonim",
         caption: x.fields.caption?.stringValue || "",
         img: x.fields.img?.stringValue || "",
@@ -669,19 +734,63 @@ const pstore = {
   },
   async add(p){
     if (!LIVE) {
-      const all = (await this.list()).items; all.unshift(p);
+      const all = (await this.list()).items; p.id = "lp" + Date.now(); p.likes = 0; p.comments = 0; all.unshift(p);
       try { localStorage.setItem("photos", JSON.stringify(all.slice(0,8))); } catch { throw new Error("quota"); }
       return;
     }
     const r = await fetch(`${PBASE}?key=${fb.apiKey}`, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ fields:{
-        name:{stringValue:p.name}, caption:{stringValue:p.caption}, img:{stringValue:p.img}, createdAt:{timestampValue:p.createdAt}
+        name:{stringValue:p.name}, caption:{stringValue:p.caption}, img:{stringValue:p.img}, createdAt:{timestampValue:p.createdAt},
+        likes:{integerValue:"0"}, comments:{integerValue:"0"}
       }})
     });
     if (!r.ok) throw new Error("padd");
+  },
+  async like(id, delta){
+    if (!LIVE) {
+      const all = (await this.list()).items, x = all.find(i => i.id === id);
+      if (x) x.likes = Math.max(0, (x.likes || 0) + delta);
+      try { localStorage.setItem("photos", JSON.stringify(all)); } catch {}
+      return;
+    }
+    await commit([{ transform:{ document: dpath("photos/" + id), fieldTransforms:[{ fieldPath:"likes", increment:{ integerValue:String(delta) } }] } }]);
+  },
+  async comments(id){
+    if (!LIVE) { try { return JSON.parse(localStorage.getItem("pc:" + id) || "[]"); } catch { return []; } }
+    const r = await fetch(`${PBASE}/${id}/comments?pageSize=100&orderBy=createdAt&key=${fb.apiKey}`);
+    if (!r.ok) throw new Error("clist");
+    const d = await r.json();
+    return (d.documents || []).map(x => ({
+      name: x.fields.name?.stringValue || "Anonim",
+      text: x.fields.text?.stringValue || "",
+      createdAt: x.fields.createdAt?.timestampValue
+    }));
+  },
+  async addComment(id, c){
+    if (!LIVE) {
+      const arr = await this.comments(id); arr.push(c);
+      try { localStorage.setItem("pc:" + id, JSON.stringify(arr)); } catch {}
+      const all = (await this.list()).items, x = all.find(i => i.id === id);
+      if (x) { x.comments = (x.comments || 0) + 1; try { localStorage.setItem("photos", JSON.stringify(all)); } catch {} }
+      return;
+    }
+    const cid = Array.from(crypto.getRandomValues(new Uint8Array(10)), b => (b % 36).toString(36)).join("");
+    await commit([
+      { update:{ name: dpath(`photos/${id}/comments/${cid}`), fields:{
+          name:{stringValue:c.name}, text:{stringValue:c.text}, createdAt:{timestampValue:c.createdAt} } },
+        currentDocument:{ exists:false } },
+      { transform:{ document: dpath("photos/" + id), fieldTransforms:[{ fieldPath:"comments", increment:{ integerValue:"1" } }] } }
+    ]);
   }
 };
+const dpath = p => `projects/${fb.projectId}/databases/(default)/documents/${p}`;
+async function commit(writes){
+  const r = await fetch(`https://firestore.googleapis.com/v1/projects/${fb.projectId}/databases/(default)/documents:commit?key=${fb.apiKey}`, {
+    method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ writes })
+  });
+  if (!r.ok) throw new Error("commit");
+}
 
 /* Fotoğrafı tarayıcıda küçült (en fazla 900px, JPEG) */
 function shrink(file){
@@ -705,14 +814,15 @@ function shrink(file){
 function renderPhotos(){
   const g = $("grid"); g.innerHTML = ""; g.classList.toggle("mosaic", pItems.length >= 4);
   if (!pItems.length) { g.innerHTML = '<div class="empty" style="grid-column:1/-1">Henüz fotoğraf yok, ilk fotoğrafı sen ekle! 📸</div>'; return; }
-  pItems.forEach(p => {
+  pItems.forEach((p, idx) => {
     if (!p.img.startsWith("data:image/")) return;
     const b = document.createElement("button"); b.type = "button"; b.className = "ph";
     b.setAttribute("aria-label", (p.caption || "Fotoğraf") + " - " + p.name);
     const i = new Image(); i.src = p.img; i.alt = p.caption || ""; i.loading = "lazy";
-    b.appendChild(i);
+    const st = document.createElement("span"); st.className = "stat"; st.hidden = true;
+    b.append(i, st); p._el = b; paintStat(p);
     b.addEventListener("click", () => openLb(p));
-    g.appendChild(b);
+    g.appendChild(b); watch(b, idx % 6);
   });
   $("more").hidden = !pToken;
 }
@@ -725,15 +835,97 @@ async function loadPhotos(more){
 }
 $("more").addEventListener("click", async e => { e.target.disabled = true; await loadPhotos(true); e.target.disabled = false; });
 
-function openLb(p){
-  $("lbImg").src = p.img; $("lbImg").alt = p.caption || "";
-  const cap = $("lbCap"); cap.textContent = p.caption || "";
-  const s = document.createElement("small"); s.textContent = p.name + " · " + ago(p.createdAt); cap.appendChild(s);
-  $("lb").classList.add("on"); $("lbX").focus();
+function paintStat(p){
+  const st = p._el && p._el.querySelector(".stat"); if (!st) return;
+  const l = p.likes || 0, c = p.comments || 0;
+  st.hidden = !(l || c);
+  st.textContent = [l ? "♥ " + l : "", c ? "💬 " + c : ""].filter(Boolean).join("  ");
 }
-const closeLb = () => $("lb").classList.remove("on");
-$("lb").addEventListener("click", e => { if (e.target.id !== "lbImg") closeLb(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeLb(); });
+const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+let curP = null, opener = null;
+
+function paintPLike(){
+  const p = curP, btn = $("lbLike"); if (!p) return;
+  const on = liked.has("p:" + p.id);
+  btn.classList.toggle("on", on);
+  btn.setAttribute("aria-pressed", on);
+  btn.setAttribute("aria-label", on ? "Beğenmekten vazgeç" : "Beğen");
+  btn.innerHTML = HEART + "<span>" + (p.likes || 0) + "</span>";
+}
+function commentEl(c){
+  const el = document.createElement("div"); el.className = "cm";
+  el.innerHTML = '<div class="av"></div><div class="bd"><div class="who"><b></b><span></span></div><p></p></div>';
+  el.querySelector(".av").textContent = (c.name.trim()[0] || "?").toUpperCase();
+  el.querySelector("b").textContent = c.name;
+  el.querySelector("span").textContent = ago(c.createdAt);
+  el.querySelector("p").textContent = c.text;
+  return el;
+}
+function setCount(n){ $("cCount").textContent = n ? "(" + n + ")" : ""; }
+async function openLb(p){
+  curP = p; opener = document.activeElement;
+  $("lbImg").src = p.img; $("lbImg").alt = p.caption || "";
+  $("lbName").textContent = p.name; $("lbTime").textContent = ago(p.createdAt);
+  $("lbCap").textContent = p.caption || "";
+  $("cwho").value = lsGet("myname") || ""; $("ctext").value = ""; $("ccount").textContent = "0/200";
+  $("cmsg").textContent = ""; $("cmsg").className = "msg";
+  paintPLike(); setCount(p.comments || 0);
+  const cl = $("clist"); cl.innerHTML = '<div class="empty">Yükleniyor...</div>';
+  $("lbc").scrollTop = 0;
+  $("lb").classList.add("on"); document.documentElement.style.overflow = "hidden"; $("lbX").focus();
+  try {
+    const arr = await pstore.comments(p.id);
+    if (curP !== p) return;
+    cl.innerHTML = "";
+    if (!arr.length) cl.innerHTML = '<div class="empty">Henüz yorum yok, ilk yorumu sen yaz! 💬</div>';
+    arr.forEach(c => cl.appendChild(commentEl(c)));
+    setCount(arr.length);
+  } catch { if (curP === p) cl.innerHTML = '<div class="empty">Yorumlar yüklenemedi 😕</div>'; }
+}
+function closeLb(){
+  $("lb").classList.remove("on"); document.documentElement.style.overflow = ""; curP = null;
+  if (opener && opener.focus) opener.focus();
+}
+$("lb").addEventListener("click", e => { if (e.target.id === "lb") closeLb(); });
+$("lbX").addEventListener("click", closeLb);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && curP) closeLb(); });
+
+$("lbLike").addEventListener("click", async () => {
+  const p = curP, btn = $("lbLike"); if (!p || !p.id || btn.disabled) return;
+  const key = "p:" + p.id, on = !liked.has(key), d = on ? 1 : -1;
+  on ? liked.add(key) : liked.delete(key);
+  p.likes = Math.max(0, (p.likes || 0) + d); paintPLike(); paintStat(p);
+  if (on) { btn.classList.add("pop"); setTimeout(() => btn.classList.remove("pop"), 300); }
+  saveLiked(); btn.disabled = true;
+  try { await pstore.like(p.id, d); }
+  catch {
+    on ? liked.delete(key) : liked.add(key);
+    p.likes = Math.max(0, p.likes - d); paintStat(p); saveLiked(); if (curP === p) paintPLike();
+  }
+  btn.disabled = false;
+});
+$("ctext").addEventListener("input", () => { $("ccount").textContent = $("ctext").value.length + "/200"; });
+$("cform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const p = curP, cm = $("cmsg"); cm.className = "msg"; if (!p) return;
+  const text = $("ctext").value.trim().slice(0, 200); if (!text) return;
+  if (Date.now() - (+lsGet("lastComment") || 0) < 15000) { cm.textContent = "15 saniye bekle."; cm.classList.add("err"); return; }
+  const c = { name: ($("cwho").value.trim() || "Anonim").slice(0, 30), text, createdAt: new Date().toISOString() };
+  $("csend").disabled = true;
+  try {
+    await pstore.addComment(p.id, c);
+    lsSet("lastComment", Date.now()); lsSet("myname", $("cwho").value.trim());
+    p.comments = (p.comments || 0) + 1; paintStat(p);
+    if (curP === p) {
+      const cl = $("clist"); if (cl.querySelector(".empty")) cl.innerHTML = "";
+      cl.appendChild(commentEl(c)); setCount(p.comments);
+      $("ctext").value = ""; $("ccount").textContent = "0/200";
+      cm.textContent = "Yorumun eklendi 💙"; cm.classList.add("ok");
+    }
+  } catch { cm.textContent = "Gönderilemedi, tekrar dene."; cm.classList.add("err"); }
+  $("csend").disabled = false;
+});
 
 function clearPick(){ pBlob = ""; $("file").value = ""; $("preview").classList.remove("on"); $("pick").hidden = false; }
 $("prevX").addEventListener("click", clearPick);
@@ -770,6 +962,34 @@ $("pform").addEventListener("submit", async e => {
 });
 
 loadPhotos(false);
+
+/* ===== Kaydırma animasyonları ===== */
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const revealIO = ("IntersectionObserver" in window && !reduceMotion)
+  ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("in", e.isIntersecting)),
+      { threshold: .1, rootMargin: "0px 0px -6% 0px" })
+  : null;
+function watch(el, i = 0){
+  el.classList.add("rv");
+  el.style.setProperty("--d", Math.min(i, 8) * 70 + "ms");
+  if (revealIO) revealIO.observe(el); else el.classList.add("in");
+}
+document.querySelectorAll(".profile,.np,.nh,#form,#pform,footer").forEach(el => watch(el));
+document.querySelectorAll("#links .link").forEach((el, i) => watch(el, i));
+
+if (!reduceMotion) {
+  const rootEl = document.documentElement, hero = $("heroIn");
+  let ticking = false;
+  const upd = () => {
+    ticking = false;
+    const y = Math.max(0, window.scrollY), p = Math.min(y / 420, 1);
+    rootEl.style.setProperty("--sy", y);
+    hero.style.transform = `translate3d(0,${(y * .18).toFixed(1)}px,0) scale(${(1 - .08 * p).toFixed(3)})`;
+    hero.style.opacity = (1 - p * .9).toFixed(3);
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, { passive: true });
+  upd();
+}
 
 /* ===== Gece / gündüz ===== */
 (function(){
